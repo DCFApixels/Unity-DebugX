@@ -329,8 +329,8 @@ namespace DCFApixels
             #region Quad
             //[IN(LINE)] public DrawHandler Quad(Vector3 position, Vector3 normal, float size) => Mesh(Meshes.Quad, position, Quaternion.LookRotation(normal), new Vector3(size, size, size));
             //[IN(LINE)] public DrawHandler Quad(Vector3 position, Vector3 normal, Vector2 size) => Mesh(Meshes.Quad, position, Quaternion.LookRotation(normal), size); 
-            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, float size) => Mesh<QuadMesh, LitMat>(position, rotation, new Vector3(size, size, size));
-            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, Vector2 size) => Mesh<QuadMesh, LitMat>(position, rotation, size);
+            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, float size) => Mesh<CubeMesh, LitMat>(position, rotation, new Vector3(size, size, 0.0000000001f)); //TODO fix quad mesh
+            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, Vector2 size) => Mesh<CubeMesh, LitMat>(position, rotation, new Vector3(size.x, size.y, 0.0000000001f)); //TODO fix quad mesh
             #endregion
 
             #region WireQuad

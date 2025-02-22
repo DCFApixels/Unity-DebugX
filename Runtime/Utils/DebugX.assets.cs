@@ -53,7 +53,7 @@ namespace DCFApixels
             private static Material _billboard;
             private static Material _dot;
 
-            private static void Init()
+            private static void Init()//TODO переработать на подгрузку из ассетов
             {
                 if (_lit != null) { return; }
                 _lit = CreateMaterial("DCFApixels/DebugX/Handles Lit");

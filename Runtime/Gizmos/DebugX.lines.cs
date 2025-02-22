@@ -15,12 +15,12 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler LineFade(Vector3 start, Vector3 end)
             {
-                const int StepsCount = 6;
+                const int StepsCount = 7;
                 const float Step = 1f / StepsCount;
                 Color color = Color;
 
                 Vector3 startPoint = start;
-                for (int i = 1; i <= StepsCount; i++)
+                for (int i = 1; i < StepsCount; i++)
                 {
                     Vector3 endPoint = Vector3.Lerp(start, end, i * Step);
                     color.a = 1f - Color.a * i * Step;

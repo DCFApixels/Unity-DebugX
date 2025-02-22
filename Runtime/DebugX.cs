@@ -441,7 +441,7 @@ namespace DCFApixels
         {
             return _currentCamera == null ? Camera.current : _currentCamera;
         }
-        private static RenderContextController _currenRenderContextControler;
+        private static RenderContextController _currenRenderContextControler = RenderContextController.GetController(new RenderContext(null));
         public readonly partial struct DrawHandler
         {
             [IN(LINE)]
