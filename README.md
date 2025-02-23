@@ -6,12 +6,12 @@
 Многофункциональный, расширяемый и высоко производительный инструмент для рисования Gizmos.
 
 API для рисования заготовленные Gizmo: 
-'''c#
+```c#
 DebugX.Draw(duration, color).*Gizmo Function*(...);
-'''
+```
 
 API для рисования кастомного меша и материала:
-'''c#
+```c#
 //Рисования любого меша lit материалом. Без instansing. 
 DebugX.Draw(...).Mesh(mesh, pos, rot, sc);
 //UnlitMesh - меш с unlit материалом
@@ -22,4 +22,4 @@ DebugX.Draw(...).Mesh<IStaticMesh>(pos, rot, sc);
 
 //Рисования статического меша кастомным материалом. В режиме instansing. 
 DebugX.Draw(...).Mesh<IStaticMesh, IStaticMat>(pos, rot, sc);
-'''
+```
