@@ -1,17 +1,37 @@
 # Unity-DebugX
  
-![image](https://github.com/user-attachments/assets/fb3edbce-9164-4ad7-a7a2-85748edf58e0)
+v![image](https://github.com/user-attachments/assets/fb3edbce-9164-4ad7-a7a2-85748edf58e0)
 
-Многофункциональная, расширяемая и высокопроизводительная утилита рисования Gizmos для Unity. Работает как в редакторе так и в билде, а вызывать методы отрисовки можно в Update.
+Многофункциональная, расширяемая и производительная утилита рисования Gizmos для Unity. Работает как в редакторе так и в билде, а рисовать можно и в Update.
 
-Синтаксис рисования заготовленныех Gizmo: 
+Синтаксис: 
 ```c#
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
 
 ![image](https://github.com/user-attachments/assets/97d77716-145d-4357-bcb1-8601871d2fe0)
 
-API для рисования кастомного меша и материала:
+
+# Установка
+Семантика версионирования - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
+### Unity-пакет
+Поддерживается установка в виде Unity-пакета через добавление [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json` этого git-URL: 
+```
+https://github.com/DCFApixels/DragonECS.git
+```
+### В виде исходников
+Пакет так же может быть добавлен в проект в виде исходников.
+</br>
+
+
+# API
+
+Синтаксис рисования заготовленных Gizmo: 
+```c#
+DebugX.Draw(duration, color).*Gizmo Function*(...);
+```
+
+Рисование кастомных меша и материала:
 ```c#
 //Рисования любого меша lit материалом. Без GPU instancing. 
 DebugX.Draw(...).Mesh(mesh, pos, rot, sc);
@@ -31,7 +51,7 @@ DebugX.Draw(...).Mesh<IStaticMesh, IStaticMat>(pos, rot, sc);
 
 Для оптимизации отрисовки используются статические данные:
 ```c#
-// Статический меш. 
+// Статический меш. Обязателен для отрисовки с GPU instancing. 
 public struct SomeMesh : IStaticMesh
 {
     public Mesh GetMesh() => StaticStorage.SomeMesh;
@@ -42,17 +62,20 @@ public struct SomeMesh : IStaticMesh
 public struct SomeMesh : IStaticMesh
 {
     // Контроль порядка выполнения рендереров. 
-    public int GetExecutuonOrder() => 100;
+    public int GetExecuteOrder() => 100;
     public Mesh GetMaterial() => StaticStorage.SomeMaterial;
 } 
 ```
+
+> Утилита для загрузки статических ассетов: //TODO
+
+# Настройки
 Окно настроек "Tools -> DebugX -> Settings":
 
 ![image](https://github.com/user-attachments/assets/7dd981c1-1e00-4b7d-9a73-376638094689)
 
 
-
-Утилита для загрузки статических ассетов: //TODO
+# Кастомный Gizmo
 
 Кастомная реализация Gizmo:
 ```c#
@@ -62,7 +85,7 @@ public readonly struct SomeGizmo : IGizmo<SomeGizmo>
 
     public SomeGizmo(/*...*/)
     {
-        //... 
+        // Заполнение данных.
     } 
     
     public IGizmoRenderer<SomeGizmo> RegisterNewRenderer() => new Renderer();
