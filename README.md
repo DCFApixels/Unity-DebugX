@@ -28,14 +28,14 @@ DebugX.Draw(...).Mesh<IStaticMesh, IStaticMat>(pos, rot, sc);
 // Статический меш. 
 public struct SomeMesh : IStaticMesh
 {
-		public Mesh GetMesh() => StaticStorage.SomeMesh;
+	public Mesh GetMesh() => StaticStorage.SomeMesh;
 } 
 
 // Статический материал. 
 public struct SomeMesh : IStaticMesh
 {
-		public int GetExecutuonOrder() => 100;
-		public Mesh GetMaterial() => StaticStorage.SomeMaterial;
+	public int GetExecutuonOrder() => 100;
+	public Mesh GetMaterial() => StaticStorage.SomeMaterial;
 } 
 ```
 Утилита для загрузки мешей: //TODO
