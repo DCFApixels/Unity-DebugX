@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace DCFApixels
 {
+    [SelectionBase]
     public class DebugXSample_Lines : MonoBehaviour
     {
         public Gradient Gradient;
@@ -11,7 +12,18 @@ namespace DCFApixels
 
         public float WidthMultiplier = 1f;
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
+        {
+            Draw();
+        }
+#else
+        private void Update()
+        {
+            Draw();
+        }
+#endif
+        private void Draw()
         {
             int i = -1;
 

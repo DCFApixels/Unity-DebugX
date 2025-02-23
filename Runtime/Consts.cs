@@ -7,8 +7,8 @@ namespace DCFApixels
     {
         internal const MethodImplOptions LINE = MethodImplOptions.AggressiveInlining;
 
-        private const float MinTime = 0f;
-        private static readonly Color DefaultColor = Color.white;
+        private const float DEFAULT_DURATION = 0f;
+        private static readonly Color DEFAULT_COLOR = Color.white;
 
         private const float DOT_SIZE = DOT_RADIUS * 2f;
         private const float DOT_RADIUS = 0.05f;

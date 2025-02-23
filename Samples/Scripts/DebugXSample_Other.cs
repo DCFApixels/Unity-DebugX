@@ -3,13 +3,26 @@ using UnityEngine;
 
 namespace DCFApixels
 {
+    [SelectionBase]
     public class DebugXSample_Other : MonoBehaviour
     {
         public Gradient Gradient;
         public float GradientMultiplier = 5;
         public Transform[] Points;
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
+        {
+            Draw();
+        }
+#else
+        private void Update()
+        {
+            Draw();
+        }
+#endif
+
+        private void Draw()
         {
             int i = -1;
             const float RADIUS_M = 0.5f;

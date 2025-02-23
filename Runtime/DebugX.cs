@@ -197,17 +197,28 @@ namespace DCFApixels
         #endregion
 
         #region Draw/DrawHandler
+        private static float GetCurrentDefaultDuration()
+        {
+            if(GetCurrentContextController().Context.Camera == null)
+            {
+                return DEFAULT_DURATION;
+            }
+            else
+            {
+                return IMMEDIATE_DURATION;
+            }
+        }
         public static DrawHandler Draw()
         {
-            return new DrawHandler(MinTime, DefaultColor);
+            return new DrawHandler(GetCurrentDefaultDuration(), DEFAULT_COLOR);
         }
         public static DrawHandler Draw(float duration)
         {
-            return new DrawHandler(duration, DefaultColor);
+            return new DrawHandler(duration, DEFAULT_COLOR);
         }
         public static DrawHandler Draw(Color color)
         {
-            return new DrawHandler(MinTime, color);
+            return new DrawHandler(GetCurrentDefaultDuration(), color);
         }
         public static DrawHandler Draw(float duration, Color color)
         {
@@ -456,34 +467,33 @@ namespace DCFApixels
                 GetCurrentContextController().AddRange(values, Duration, Color);
                 return this;
             }
+        }
+        private static RenderContextController GetCurrentContextController()
+        {
+            //RenderContextController controller;
+            //if (ContextController == null)
+            //{
+            //    controller = DrawHandler.GetCurrentContextController();
+            //}
+            //else
+            //{
+            //    controller = ContextController;
+            //}
+            //return controller;
 
-            private static RenderContextController GetCurrentContextController()
+
+            if (_isCameraContext)
             {
-                //RenderContextController controller;
-                //if (ContextController == null)
-                //{
-                //    controller = DrawHandler.GetCurrentContextController();
-                //}
-                //else
-                //{
-                //    controller = ContextController;
-                //}
-                //return controller;
-
-
-                if (_isCameraContext)
+                if (_currenRenderContextControler.Context.Camera != GetCurrentCamera())
                 {
-                    if (_currenRenderContextControler.Context.Camera != GetCurrentCamera())
-                    {
-                        _currenRenderContextControler = RenderContextController.GetController(new RenderContext(Camera.current));
-                    }
+                    _currenRenderContextControler = RenderContextController.GetController(new RenderContext(Camera.current));
                 }
-                else
-                {
-                    _currenRenderContextControler = RenderContextController.StaicContextController;
-                }
-                return _currenRenderContextControler;
             }
+            else
+            {
+                _currenRenderContextControler = RenderContextController.StaicContextController;
+            }
+            return _currenRenderContextControler;
         }
         #endregion
 

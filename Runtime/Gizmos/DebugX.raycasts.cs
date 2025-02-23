@@ -129,7 +129,7 @@ namespace DCFApixels
             #region Raycast2D
             [IN(LINE)] public DrawHandler Raycast2D(Ray ray, RaycastHit2D hit) => Raycast2D(ray.origin, ray.direction, hit);
             [IN(LINE)]
-            public DrawHandler Raycast2D(Vector2 origin, Vector2 direction, RaycastHit2D hit)
+            public DrawHandler Raycast2D(Vector3 origin, Vector2 direction, RaycastHit2D hit)
             {
                 if (hit.collider == null)
                 {
@@ -137,10 +137,10 @@ namespace DCFApixels
                 }
                 else
                 {
-                    Line(origin, origin + direction * hit.distance);
+                    Line(origin, origin + (Vector3)direction * hit.distance);
 
-                    DotDiamond(hit.point);
-                    RayArrow(hit.point, hit.normal);
+                    DotDiamond(new Vector3(hit.point.x, hit.point.y, origin.z));
+                    RayArrow(new Vector3(hit.point.x, hit.point.y, origin.z), hit.normal);
                 }
                 return this;
             }
@@ -150,7 +150,7 @@ namespace DCFApixels
             private static readonly Vector3 Normal2D = Vector3.forward;
             [IN(LINE)] public DrawHandler CircleCast2D(Ray ray, float radius, RaycastHit2D hit) => CircleCast2D(ray.origin, ray.direction, radius, hit);
             [IN(LINE)]
-            public DrawHandler CircleCast2D(Vector2 origin, Vector2 direction, float radius, RaycastHit2D hit)
+            public DrawHandler CircleCast2D(Vector3 origin, Vector2 direction, float radius, RaycastHit2D hit)
             {
                 WireCircle(origin, Normal2D, radius);
                 if (hit.collider == null)
@@ -159,13 +159,13 @@ namespace DCFApixels
                 }
                 else
                 {
-                    Vector2 end = origin + direction * hit.distance;
+                    Vector3 end = origin + (Vector3)direction * hit.distance;
 
                     //WidthOutLine(origin, end, radius * 2f);
 
-                    DotDiamond(hit.point);
+                    DotDiamond(new Vector3(hit.point.x, hit.point.y, origin.z));
                     WireCircle(end, Normal2D, radius);
-                    RayArrow(hit.point, hit.normal);
+                    RayArrow(new Vector3(hit.point.x, hit.point.y, origin.z), hit.normal);
 
                     //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
                         Line(origin, end);
@@ -177,7 +177,7 @@ namespace DCFApixels
             #region BoxCast2D
             [IN(LINE)] public DrawHandler BoxCast2D(Ray ray, float angle, Vector3 size, RaycastHit2D hit) => BoxCast2D(ray.origin, ray.direction, angle, size, hit);
             [IN(LINE)]
-            public DrawHandler BoxCast2D(Vector2 origin, Vector2 direction, float angle, Vector3 size, RaycastHit2D hit)
+            public DrawHandler BoxCast2D(Vector3 origin, Vector2 direction, float angle, Vector3 size, RaycastHit2D hit)
             {
                 size *= 0.5f;
                 Quaternion rotation = Quaternion.Euler(0, 0, angle);
@@ -188,13 +188,13 @@ namespace DCFApixels
                 }
                 else
                 {
-                    Vector3 end = origin + direction * hit.distance;
+                    Vector3 end = origin + (Vector3)direction * hit.distance;
 
                     //WidthOutLine(origin, end, size.x * 2f);
 
-                    DotDiamond(hit.point);
+                    DotDiamond(new Vector3(hit.point.x, hit.point.y, origin.z));
                     WireQuad(end, rotation, size * 2f);
-                    RayArrow(hit.point, hit.normal);
+                    RayArrow(new Vector3(hit.point.x, hit.point.y, origin.z), hit.normal);
 
 
                     //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
@@ -207,7 +207,7 @@ namespace DCFApixels
             #region CapsuleCast2D
             [IN(LINE)] public DrawHandler CapsuleCast2D(Ray ray, float angle, Vector2 size, CapsuleDirection2D capsuleDirection, RaycastHit2D hit) => CapsuleCast2D(ray.origin, ray.direction, angle, size, capsuleDirection, hit);
             [IN(LINE)]
-            public DrawHandler CapsuleCast2D(Vector2 origin, Vector2 direction, float angle, Vector2 size, CapsuleDirection2D capsuleDirection, RaycastHit2D hit)
+            public DrawHandler CapsuleCast2D(Vector3 origin, Vector2 direction, float angle, Vector2 size, CapsuleDirection2D capsuleDirection, RaycastHit2D hit)
             {
                 var rotation = Quaternion.Euler(0, 0, angle);
                 var height = (capsuleDirection == CapsuleDirection2D.Vertical ? size.y : size.x);
@@ -219,13 +219,13 @@ namespace DCFApixels
                 }
                 else
                 {
-                    Vector3 end = origin + direction * hit.distance;
+                    Vector3 end = origin + (Vector3)direction * hit.distance;
             
                     //WidthOutLine(origin, end, radius * 2f);
             
-                    DotDiamond(hit.point);
+                    DotDiamond(new Vector3(hit.point.x, hit.point.y, origin.z));
                     WireFlatCapsule(end, rotation, radius, height);
-                    RayArrow(hit.point, hit.normal);
+                    RayArrow(new Vector3(hit.point.x, hit.point.y, origin.z), hit.normal);
             
             
                     //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
