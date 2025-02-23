@@ -31,26 +31,6 @@ namespace DCFApixels
             }
             #endregion
 
-            #region Raycast2D
-            //[IN(LINE)] public DrawHandler Raycast2D(Ray ray, RaycastHit hit) => Raycast(ray.origin, ray.direction, hit);
-            [IN(LINE)]
-            public DrawHandler Raycast2D(Vector2 origin, Vector2 direction, RaycastHit2D hit)
-            {
-                if (hit.collider == null)
-                {
-                    RayFade(origin, direction * 3f);
-                }
-                else
-                {
-                    Line(origin, origin + direction * hit.distance);
-
-                    DotDiamond(hit.point);
-                    RayArrow(hit.point, hit.normal);
-                }
-                return this;
-            }
-            #endregion
-
             #region SphereCast
             [IN(LINE)] public DrawHandler SphereCast(Ray ray, float radius, RaycastHit hit) => SphereCast(ray.origin, ray.direction, radius, hit);
             [IN(LINE)]
@@ -140,6 +120,116 @@ namespace DCFApixels
 
 
                     Setup(Color.SetAlpha(ShadowAlphaMultiplier)).Line(origin, end);
+                }
+                return this;
+            }
+            #endregion
+
+
+            #region Raycast2D
+            [IN(LINE)] public DrawHandler Raycast2D(Ray ray, RaycastHit2D hit) => Raycast2D(ray.origin, ray.direction, hit);
+            [IN(LINE)]
+            public DrawHandler Raycast2D(Vector2 origin, Vector2 direction, RaycastHit2D hit)
+            {
+                if (hit.collider == null)
+                {
+                    RayFade(origin, direction * 3f);
+                }
+                else
+                {
+                    Line(origin, origin + direction * hit.distance);
+
+                    DotDiamond(hit.point);
+                    RayArrow(hit.point, hit.normal);
+                }
+                return this;
+            }
+            #endregion
+
+            #region CircleCast2D
+            private static readonly Vector3 Normal2D = Vector3.forward;
+            [IN(LINE)] public DrawHandler CircleCast2D(Ray ray, float radius, RaycastHit2D hit) => CircleCast2D(ray.origin, ray.direction, radius, hit);
+            [IN(LINE)]
+            public DrawHandler CircleCast2D(Vector2 origin, Vector2 direction, float radius, RaycastHit2D hit)
+            {
+                WireCircle(origin, Normal2D, radius);
+                if (hit.collider == null)
+                {
+                    RayFade(origin, direction * 3f);
+                }
+                else
+                {
+                    Vector2 end = origin + direction * hit.distance;
+
+                    //WidthOutLine(origin, end, radius * 2f);
+
+                    DotDiamond(hit.point);
+                    WireCircle(end, Normal2D, radius);
+                    RayArrow(hit.point, hit.normal);
+
+                    //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
+                        Line(origin, end);
+                }
+                return this;
+            }
+            #endregion
+
+            #region BoxCast2D
+            [IN(LINE)] public DrawHandler BoxCast2D(Ray ray, float angle, Vector3 size, RaycastHit2D hit) => BoxCast2D(ray.origin, ray.direction, angle, size, hit);
+            [IN(LINE)]
+            public DrawHandler BoxCast2D(Vector2 origin, Vector2 direction, float angle, Vector3 size, RaycastHit2D hit)
+            {
+                size *= 0.5f;
+                Quaternion rotation = Quaternion.Euler(0, 0, angle);
+                WireQuad(origin, rotation, size * 2f);
+                if (hit.collider == null)
+                {
+                    RayFade(origin, direction * 3f);
+                }
+                else
+                {
+                    Vector3 end = origin + direction * hit.distance;
+
+                    //WidthOutLine(origin, end, size.x * 2f);
+
+                    DotDiamond(hit.point);
+                    WireQuad(end, rotation, size * 2f);
+                    RayArrow(hit.point, hit.normal);
+
+
+                    //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
+                        Line(origin, end);
+                }
+                return this;
+            }
+            #endregion
+
+            #region CapsuleCast2D
+            [IN(LINE)] public DrawHandler CapsuleCast2D(Ray ray, float angle, Vector2 size, CapsuleDirection2D capsuleDirection, RaycastHit2D hit) => CapsuleCast2D(ray.origin, ray.direction, angle, size, capsuleDirection, hit);
+            [IN(LINE)]
+            public DrawHandler CapsuleCast2D(Vector2 origin, Vector2 direction, float angle, Vector2 size, CapsuleDirection2D capsuleDirection, RaycastHit2D hit)
+            {
+                var rotation = Quaternion.Euler(0, 0, angle);
+                var height = (capsuleDirection == CapsuleDirection2D.Vertical ? size.y : size.x);
+                var radius = (capsuleDirection == CapsuleDirection2D.Vertical ? size.x : size.y) * 0.5f;
+                WireFlatCapsule(origin, rotation, radius, height);
+                if (hit.collider == null)
+                {
+                    RayFade(origin, direction * 3f);
+                }
+                else
+                {
+                    Vector3 end = origin + direction * hit.distance;
+            
+                    //WidthOutLine(origin, end, radius * 2f);
+            
+                    DotDiamond(hit.point);
+                    WireFlatCapsule(end, rotation, radius, height);
+                    RayArrow(hit.point, hit.normal);
+            
+            
+                    //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
+                        Line(origin, end);
                 }
                 return this;
             }

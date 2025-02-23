@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DCFApixels
 {
-    public class DebugXSample_Raycasts : MonoBehaviour
+    public class DebugXSample_Raycasts3D : MonoBehaviour
     {
         public Gradient Gradient;
         public float GradientMultiplier = 5;
