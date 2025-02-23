@@ -1,6 +1,6 @@
 # Unity-DebugX
  
-v![image](https://github.com/user-attachments/assets/fb3edbce-9164-4ad7-a7a2-85748edf58e0)
+![image](https://github.com/user-attachments/assets/f75e20cd-9614-41e8-887d-943987f4855d)
 
 Многофункциональная, расширяемая и производительная утилита рисования Gizmos для Unity. Работает как в редакторе так и в билде, а рисовать можно и в Update.
 
