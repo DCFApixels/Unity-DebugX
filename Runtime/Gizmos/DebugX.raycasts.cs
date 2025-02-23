@@ -31,7 +31,27 @@ namespace DCFApixels
             }
             #endregion
 
-            #region Spherecast
+            #region Raycast2D
+            //[IN(LINE)] public DrawHandler Raycast2D(Ray ray, RaycastHit hit) => Raycast(ray.origin, ray.direction, hit);
+            [IN(LINE)]
+            public DrawHandler Raycast2D(Vector2 origin, Vector2 direction, RaycastHit2D hit)
+            {
+                if (hit.collider == null)
+                {
+                    RayFade(origin, direction * 3f);
+                }
+                else
+                {
+                    Line(origin, origin + direction * hit.distance);
+
+                    DotDiamond(hit.point);
+                    RayArrow(hit.point, hit.normal);
+                }
+                return this;
+            }
+            #endregion
+
+            #region SphereCast
             [IN(LINE)] public DrawHandler SphereCast(Ray ray, float radius, RaycastHit hit) => SphereCast(ray.origin, ray.direction, radius, hit);
             [IN(LINE)]
             public DrawHandler SphereCast(Vector3 origin, Vector3 direction, float radius, RaycastHit hit)
@@ -57,7 +77,7 @@ namespace DCFApixels
             }
             #endregion
 
-            #region Spherecast
+            #region BoxCast
             [IN(LINE)] public DrawHandler BoxCast(Ray ray, Quaternion rotation, Vector3 size, RaycastHit hit) => BoxCast(ray.origin, ray.direction, rotation, size, hit);
             [IN(LINE)]
             public DrawHandler BoxCast(Vector3 origin, Vector3 direction, Quaternion rotation, Vector3 size, RaycastHit hit)
@@ -84,7 +104,7 @@ namespace DCFApixels
             }
             #endregion
 
-            #region Spherecast
+            #region CapsuleCast
             [IN(LINE)]
             public DrawHandler CapsuleCast(Vector3 point1, Vector3 point2, Vector3 direction, float radius, RaycastHit hit)
             {

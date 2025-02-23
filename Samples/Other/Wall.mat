@@ -142,7 +142,7 @@ Material:
     - _QueueOffset: 0
     - _ReceiveShadows: 0
     - _Shininess: 0
-    - _Smoothness: 0
+    - _Smoothness: 0.5
     - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 0
@@ -157,9 +157,9 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.25627127, g: 0.148851, b: 0.333, a: 0.23529412}
+    - _BaseColor: {r: 0.3584906, g: 0.038892854, b: 0.21198066, a: 0.23529412}
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
-    - _Color: {r: 0.25627124, g: 0.14885098, b: 0.33299997, a: 0.23529412}
+    - _Color: {r: 0.35849056, g: 0.038892854, b: 0.21198061, a: 0.23529412}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}

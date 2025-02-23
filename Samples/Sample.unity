@@ -360,16 +360,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Gradient:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0.38202333, a: 1}
-    key1: {r: 1, g: 0, b: 0.03915453, a: 1}
-    key2: {r: 1, g: 0.20264319, b: 0, a: 0}
+    key0: {r: 0, g: 0.8781085, b: 1, a: 1}
+    key1: {r: 0, g: 1, b: 0.7648356, a: 1}
+    key2: {r: 0.05271268, g: 1, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 36623
+    ctime1: 20624
     ctime2: 65535
     ctime3: 0
     ctime4: 0
@@ -388,7 +388,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
-  GradientMultiplier: 3
+  GradientMultiplier: 1.5
   Points:
   - {fileID: 2035901457}
   - {fileID: 464141237}
@@ -446,16 +446,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Gradient:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0.38202333, a: 1}
-    key1: {r: 1, g: 0, b: 0.03915453, a: 1}
-    key2: {r: 1, g: 0.20264319, b: 0, a: 0}
+    key0: {r: 0, g: 0.8781085, b: 1, a: 1}
+    key1: {r: 0, g: 1, b: 0.7648356, a: 1}
+    key2: {r: 0.05271268, g: 1, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 36623
+    ctime1: 20624
     ctime2: 65535
     ctime3: 0
     ctime4: 0
@@ -474,7 +474,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
-  GradientMultiplier: 3
+  GradientMultiplier: 1.5
   Points:
   - {fileID: 307416459}
   - {fileID: 403282598}
@@ -733,16 +733,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Gradient:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0.38202333, a: 1}
-    key1: {r: 1, g: 0, b: 0.03915453, a: 1}
-    key2: {r: 1, g: 0.20264319, b: 0, a: 0}
+    key0: {r: 0, g: 0.8781085, b: 1, a: 1}
+    key1: {r: 0, g: 1, b: 0.7648356, a: 1}
+    key2: {r: 0.05271268, g: 1, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 36623
+    ctime1: 20624
     ctime2: 65535
     ctime3: 0
     ctime4: 0
@@ -1002,16 +1002,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Gradient:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0.38202333, a: 1}
-    key1: {r: 1, g: 0, b: 0.03915453, a: 1}
-    key2: {r: 1, g: 0.20264319, b: 0, a: 0}
+    key0: {r: 0, g: 0.8781085, b: 1, a: 1}
+    key1: {r: 0, g: 1, b: 0.7648356, a: 1}
+    key2: {r: 0.05271268, g: 1, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 36623
+    ctime1: 20624
     ctime2: 65535
     ctime3: 0
     ctime4: 0
@@ -1030,7 +1030,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
-  GradientMultiplier: 3
+  GradientMultiplier: 1.5
   Points:
   - {fileID: 839916827}
   - {fileID: 307094390}
@@ -1147,7 +1147,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 0.7641603, b: 0.7311321, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -1271,16 +1271,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Gradient:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0.38202333, a: 1}
-    key1: {r: 1, g: 0, b: 0.03915453, a: 1}
-    key2: {r: 1, g: 0.20264319, b: 0, a: 0}
+    key0: {r: 0, g: 0.8781085, b: 1, a: 1}
+    key1: {r: 0, g: 1, b: 0.7648356, a: 1}
+    key2: {r: 0.05271268, g: 1, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 40285
+    ctime1: 20624
     ctime2: 65535
     ctime3: 0
     ctime4: 0
@@ -1299,7 +1299,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
-  GradientMultiplier: 2.5
+  GradientMultiplier: 1.5
   StartLines:
   - {fileID: 305571596}
   - {fileID: 1228208157}
