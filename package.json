@@ -7,7 +7,7 @@
     },
     "displayName": "DebugX",
     "description": "",
-    "unity": "2020.3",
+    "unity": "2021.3",
     "version": "0.5.0",
     "repository": {
         "type": "git",
@@ -16,6 +16,7 @@
     "keywords":
     [
         "editor",
-        "utility"
+        "utility",
+        "gizmos"
     ]
 }

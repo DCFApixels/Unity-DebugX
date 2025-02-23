@@ -1,0 +1,18 @@
+{
+    "name": "DCFApixels.DebugX.Editor",
+    "rootNamespace": "DCFApixels",
+    "references": [
+        "GUID:1139531e2a3a6bd4c8ad2bc68ae00719"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
