@@ -44,7 +44,7 @@ public struct SomeMesh : IStaticMesh
 ```c#
 public readonly struct SomeGizmo : IGizmo<SomeGizmo>
 {
-    // data... 
+    // Данные. 
 
     public SomeGizmo(/*...*/)
     {
@@ -76,6 +76,17 @@ public readonly struct SomeGizmo : IGizmo<SomeGizmo>
                 //... 
             }
         }
+    }
+}
+```
+```c#
+//создание метода расширения
+public static class SomeGizmoExtensions
+{
+    public static DrawHandler SomeGizmo(this DrawHandler self, /*...*/) 
+    {
+        self.Gizmo(new SomeGizmo(	/*...*/);
+        return self;
     }
 }
 ```
