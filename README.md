@@ -80,7 +80,7 @@ public readonly struct SomeGizmo : IGizmo<SomeGizmo>
 }
 ```
 ```c#
-//создание метода расширения
+// Создание метода расширения. 
 public static class SomeGizmoExtensions
 {
     public static DrawHandler SomeGizmo(this DrawHandler self, /*...*/) 
