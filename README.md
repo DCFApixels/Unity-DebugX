@@ -40,4 +40,42 @@ public struct SomeMesh : IStaticMesh
 ```
 Утилита для загрузки мешей: //TODO
 
-Кастомная реализация Gizmo：//TODO
+Кастомная реализация Gizmo:
+```c#
+public readonly struct SomeGizmo : IGizmo<SomeGizmo>
+{
+    // data... 
+
+    public SomeGizmo(/*...*/)
+    {
+        //... 
+    } 
+    
+    public IGizmoRenderer<SomeGizmo> RegisterNewRenderer() => new Renderer();
+    private class Renderer : IGizmoRenderer<SomeGizmo>
+    {
+        // Контроль порядка выполнения рендереров. 
+        public int ExecuteOrder => //...
+        // Флаг системе о способе оптимизации. Если методы рисовки зависят от текущей камеры, то false，иначе true. Если не уверены то выбирайте false. 
+        public bool IsStaticRender => //...
+
+        // Подготовка данных перед рендером, тут можно выполнить дополнительные расчеты или запланировать Job. 
+        public void Prepare(Camera camera, GizmosList<SomeGizmo> list) 
+        {
+            foreach (var item in list)
+            {
+                //... 
+            }
+        } 
+
+        // Рендер, тут можно напрямую воспользоваться графическим API или добавить команду в CommandBuffer. 
+        public void Render(Camera camera, GizmosList<SomeGizmo> list, CommandBuffer cb)
+        {
+            foreach (var item in list)
+            {
+                //... 
+            }
+        }
+    }
+}
+```
