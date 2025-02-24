@@ -1,6 +1,6 @@
 # Unity-DebugX
  
-v![image](https://github.com/user-attachments/assets/fb3edbce-9164-4ad7-a7a2-85748edf58e0)
+![image](https://github.com/user-attachments/assets/f75e20cd-9614-41e8-887d-943987f4855d)
 
 Многофункциональная, расширяемая и производительная утилита рисования Gizmos для Unity. Работает как в редакторе так и в билде, а рисовать можно и в Update.
 
@@ -17,7 +17,7 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 ### Unity-пакет
 Поддерживается установка в виде Unity-пакета через добавление [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json` этого git-URL: 
 ```
-https://github.com/DCFApixels/DragonECS.git
+https://github.com/DCFApixels/DebugX.git
 ```
 ### В виде исходников
 Пакет так же может быть добавлен в проект в виде исходников.
