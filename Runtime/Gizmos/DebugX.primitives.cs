@@ -33,7 +33,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler WireSphere(Vector3 position, float radius)
             {
-                Mesh<WireSphereMesh, UnlitMat>(position, Quaternion.identity, new Vector3(radius, radius, radius));
+                Mesh<WireSphereMesh, GeometryUnlitMat>(position, Quaternion.identity, new Vector3(radius, radius, radius));
                 Gizmo(new WireSphereGizmo(position, radius));
                 return this;
             }
@@ -53,7 +53,7 @@ namespace DCFApixels
                 private class Renderer : InstancingMeshRendererBase, IGizmoRenderer<WireSphereGizmo>
                 {
                     private Gizmo<InstancingMeshGizmoLayout>[] _buffer = Array.Empty<Gizmo<InstancingMeshGizmoLayout>>();
-                    public Renderer() : base(default(WireCircleMesh), default(UnlitMat)) { }
+                    public Renderer() : base(default(WireCircleMesh), default(GeometryUnlitMat)) { }
                     public override bool IsStaticRender => false;
                     public void Prepare(Camera camera, GizmosList<WireSphereGizmo> list)
                     {
@@ -119,7 +119,7 @@ namespace DCFApixels
 
             #region WireCircle
             [IN(LINE)] public DrawHandler WireCircle(Vector3 position, Vector3 normal, float radius) => WireCircle(position, Quaternion.LookRotation(normal), radius);
-            [IN(LINE)] public DrawHandler WireCircle(Vector3 position, Quaternion rotation, float radius) => Mesh<WireCircleMesh, UnlitMat>(position, rotation, new Vector3(radius, radius, radius));
+            [IN(LINE)] public DrawHandler WireCircle(Vector3 position, Quaternion rotation, float radius) => Mesh<WireCircleMesh, GeometryUnlitMat>(position, rotation, new Vector3(radius, radius, radius));
             #endregion
 
             #region Dot
@@ -208,8 +208,8 @@ namespace DCFApixels
                 Vector3 start = position - normalUp * halfHeigth;
                 Vector3 end = position + normalUp * halfHeigth;
 
-                Mesh<WireArcMesh, UnlitMat>(end, rotation, new Vector3(radius, radius, radius));
-                Mesh<WireArcMesh, UnlitMat>(start, rotation * Rot180, new Vector3(radius, radius, radius));
+                Mesh<WireArcMesh, GeometryUnlitMat>(end, rotation, new Vector3(radius, radius, radius));
+                Mesh<WireArcMesh, GeometryUnlitMat>(start, rotation * Rot180, new Vector3(radius, radius, radius));
 
                 Vector3 perpendicular = from * radius;
 
@@ -239,7 +239,7 @@ namespace DCFApixels
             //[IN(LINE)] public void WireCube(Vector3 position, float size) => WireCube(position, Quaternion.identity, new Vector3(size, size, size));
             //[IN(LINE)] public void WireCube(Vector3 position, Vector3 size) => WireCube(position, Quaternion.identity, size);
             [IN(LINE)] public DrawHandler WireCube(Vector3 position, Quaternion rotation, float size) => WireCube(position, rotation, new Vector3(size, size, size));
-            [IN(LINE)] public DrawHandler WireCube(Vector3 position, Quaternion rotation, Vector3 size) => Mesh<WireCubeMesh, UnlitMat>(position, rotation, size);
+            [IN(LINE)] public DrawHandler WireCube(Vector3 position, Quaternion rotation, Vector3 size) => Mesh<WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
             #endregion
 
             #region CubePoints
@@ -337,7 +337,7 @@ namespace DCFApixels
             //[IN(LINE)] public DrawHandler WireQuad(Vector3 position, Vector3 normal, float size) => WireQuad(position, Quaternion.LookRotation(normal), new Vector2(size, size));
             //[IN(LINE)] public DrawHandler WireQuad(Vector3 position, Vector3 normal, Vector2 size) => WireQuad(position, Quaternion.LookRotation(normal), size);
             [IN(LINE)] public DrawHandler WireQuad(Vector3 position, Quaternion rotation, float size) => WireQuad(position, rotation, new Vector2(size, size));
-            [IN(LINE)] public DrawHandler WireQuad(Vector3 position, Quaternion rotation, Vector2 size) => Mesh<WireCubeMesh, UnlitMat>(position, rotation, size);
+            [IN(LINE)] public DrawHandler WireQuad(Vector3 position, Quaternion rotation, Vector2 size) => Mesh<WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
             #endregion
 
             #region QuadPoints

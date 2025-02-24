@@ -2,15 +2,15 @@
 using System.Reflection;
 using UnityEngine;
 
-namespace DCFApixels.DebugXCore.Internal
+namespace DCFApixels.DebugXCore
 {
-    internal static class MeshesListLoader
+    public static class StaticDataLoader
     {
         public static T Load<T>(T instance, string path)
         {
             object obj = instance;
             var type = obj.GetType();
-            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(o => o.FieldType == typeof(Mesh));
+            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             var prefab = Resources.Load<GameObject>(path);
 
             if (prefab == null)
@@ -25,14 +25,26 @@ namespace DCFApixels.DebugXCore.Internal
                 return (T)obj;
             }
 
-            foreach (var field in fields)
+            foreach (var field in fields.Where(o => o.FieldType == typeof(Mesh)))
             {
-                //if (prefab == null) { continue; }
                 var child = prefab.transform.Find(field.Name);
                 var meshFilter = child.GetComponent<MeshFilter>();
                 if (meshFilter != null)
                 {
                     field.SetValue(obj, meshFilter.sharedMesh);
+                }
+                else
+                {
+                    Debug.LogWarning(field.Name + " not found");
+                }
+            }
+            foreach (var field in fields.Where(o => o.FieldType == typeof(Material)))
+            {
+                var child = prefab.transform.Find(field.Name);
+                var meshFilter = child.GetComponent<Renderer>();
+                if (meshFilter != null)
+                {
+                    field.SetValue(obj, meshFilter.sharedMaterial);
                 }
                 else
                 {

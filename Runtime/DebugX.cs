@@ -144,7 +144,8 @@ namespace DCFApixels
         {
             InitGlobals();
 
-            Meshes = LoadMeshesList(new MeshesList(), $"DCFApixels.DebugX/MeshesList");
+            Meshes = StaticDataLoader.Load(new MeshesList(), $"DCFApixels.DebugX/MeshesList");
+            Materials = StaticDataLoader.Load(new MaterialsList(), $"DCFApixels.DebugX/MaterialsList");
 
             IsSRP = GraphicsSettings.currentRenderPipeline != null;
 

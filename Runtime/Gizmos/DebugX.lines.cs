@@ -203,12 +203,12 @@ namespace DCFApixels
                 #region Renderer
                 private class Renderer : IGizmoRenderer<WidthOutLineGizmo>
                 {
-                    public int ExecuteOrder => default(UnlitMat).GetExecuteOrder();
+                    public int ExecuteOrder => default(GeometryUnlitMat).GetExecuteOrder();
                     public bool IsStaticRender => false;
                     public void Prepare(Camera camera, GizmosList<WidthOutLineGizmo> list) { }
                     public void Render(Camera camera, GizmosList<WidthOutLineGizmo> list, CommandBuffer cb)
                     {
-                        default(UnlitMat).GetMaterial().SetPass(0);
+                        default(GeometryUnlitMat).GetMaterial().SetPass(0);
                         GL.Begin(GL.LINES);
                         var cameraPosition = camera.transform.position;
                         foreach (ref readonly var item in list)
@@ -264,12 +264,12 @@ namespace DCFApixels
                 private class Renderer : IGizmoRenderer<ZigzagLineGizmo>
                 {
                     public bool IsStaticRender => false;
-                    public int ExecuteOrder => default(UnlitMat).GetExecuteOrder();
+                    public int ExecuteOrder => default(GeometryUnlitMat).GetExecuteOrder();
                     public void Prepare(Camera camera, GizmosList<ZigzagLineGizmo> list) { }
                     public void Render(Camera camera, GizmosList<ZigzagLineGizmo> list, CommandBuffer cb)
                     {
                         GL.PushMatrix();
-                        default(UnlitMat).GetMaterial().SetPass(0);
+                        default(GeometryUnlitMat).GetMaterial().SetPass(0);
                         GL.Begin(GL.LINES);
                         var cameraPosition = camera.transform.position;
                         foreach (ref readonly var item in list)

@@ -1,15 +1,10 @@
-﻿using DCFApixels.DebugXCore.Internal;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace DCFApixels
 {
     public static partial class DebugX
     {
-        public static T LoadMeshesList<T>(T list, string path)
-        {
-            return MeshesListLoader.Load(list, path);
-        }
         public static MeshesList Meshes;
         public readonly struct MeshesList
         {
@@ -36,73 +31,14 @@ namespace DCFApixels
             public readonly Mesh WireSphere;
         }
 
-
-        private static Material CreateMaterial(string name)
+        public static MaterialsList Materials;
+        public readonly struct MaterialsList
         {
-            Material result = new Material(Shader.Find(name));
-            result.SetColor(ColorPropertyID, Color.white);
-            result.renderQueue = (int)RenderQueue.Transparent;
-            result.enableInstancing = true;
-            return result;
-        }
-        public static class Materials
-        {
-            private static Material _lit;
-            private static Material _unlit;
-            private static Material _wire;
-            private static Material _billboard;
-            private static Material _dot;
-
-            private static void Init()//TODO переработать на подгрузку из ассетов
-            {
-                if (_lit != null) { return; }
-                _lit = CreateMaterial("DCFApixels/DebugX/Handles Lit");
-                _unlit = CreateMaterial("DCFApixels/DebugX/Handles");
-                _wire = CreateMaterial("DCFApixels/DebugX/Handles Wire");
-                _billboard = CreateMaterial("DCFApixels/DebugX/Handles Buillboard");
-                _dot = CreateMaterial("DCFApixels/DebugX/Handles Dot");
-            }
-
-            public static Material Lit
-            {
-                get
-                {
-                    Init();
-                    return _lit;
-                }
-            }
-            public static Material Unlit
-            {
-                get
-                {
-                    Init();
-                    return _unlit;
-                }
-            }
-            public static Material Wire
-            {
-                get
-                {
-                    Init();
-                    return _wire;
-                }
-            }
-            public static Material Billboard
-            {
-                get
-                {
-                    Init();
-                    return _billboard;
-                }
-            }
-            public static Material Dot
-            {
-                get
-                {
-                    Init();
-                    return _dot;
-                }
-            }
+            public readonly Material Lit;
+            public readonly Material Unlit;
+            public readonly Material Billboard;
+            public readonly Material Dot;
+            public readonly Material Wire;
         }
     }
 }

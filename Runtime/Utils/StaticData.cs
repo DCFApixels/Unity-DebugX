@@ -26,11 +26,6 @@ namespace DCFApixels.DebugXCore
         public int GetExecuteOrder() => 100_000;
         public Material GetMaterial() => Materials.Unlit;
     }
-    public readonly struct WireMat : IStaticMaterial
-    {
-        public int GetExecuteOrder() => 1_000_000;
-        public Material GetMaterial() => Materials.Wire;
-    }
     public readonly struct BillboardMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 200_000;
@@ -40,6 +35,16 @@ namespace DCFApixels.DebugXCore
     {
         public int GetExecuteOrder() => 300_000;
         public Material GetMaterial() => Materials.Dot;
+    }
+    public readonly struct GeometryUnlitMat : IStaticMaterial
+    {
+        public int GetExecuteOrder() => 1_000_000;
+        public Material GetMaterial() => Materials.Unlit;
+    }
+    public readonly struct WireMat : IStaticMaterial
+    {
+        public int GetExecuteOrder() => 1_000_000;
+        public Material GetMaterial() => Materials.Wire;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
