@@ -12,6 +12,7 @@ using UnityEngine.LowLevel;
 using UnityEngine.PlayerLoop;
 using Unity.Collections.LowLevel.Unsafe;
 using DCFApixels.DebugXCore.Internal;
+using static DCFApixels.DebugXCore.DebugXUtility;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -200,7 +201,7 @@ namespace DCFApixels
         #region Draw/DrawHandler
         private static float GetCurrentDefaultDuration()
         {
-            if(GetCurrentContextController().Context.Camera == null)
+            if (GetCurrentContextController().Context.Camera == null)
             {
                 return DEFAULT_DURATION;
             }
@@ -407,7 +408,7 @@ namespace DCFApixels
             }
             public void Execute(CommandBuffer cb)
             {
-                if(RenderContext == default)
+                if (RenderContext == default)
                 {
                     Graphics.ExecuteCommandBuffer(cb);
                 }

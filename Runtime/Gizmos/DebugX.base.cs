@@ -4,6 +4,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static DCFApixels.DebugXCore.DebugXUtility;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

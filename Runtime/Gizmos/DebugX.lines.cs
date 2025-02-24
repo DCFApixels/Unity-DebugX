@@ -2,6 +2,7 @@
 using DCFApixels.DebugXCore;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static DCFApixels.DebugXCore.DebugXUtility;
 
 namespace DCFApixels
 {

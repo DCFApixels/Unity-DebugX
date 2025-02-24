@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DCFApixels
+namespace DCFApixels.DebugXCore.Samples
 {
     [SelectionBase]
     public class DebugXSample_Primitives2D : MonoBehaviour

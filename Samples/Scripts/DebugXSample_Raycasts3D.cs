@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DCFApixels
+namespace DCFApixels.DebugXCore.Samples
 {
     [SelectionBase]
     public class DebugXSample_Raycasts3D : MonoBehaviour

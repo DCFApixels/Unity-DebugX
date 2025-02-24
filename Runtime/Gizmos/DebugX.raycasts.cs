@@ -168,7 +168,7 @@ namespace DCFApixels
                     RayArrow(new Vector3(hit.point.x, hit.point.y, origin.z), hit.normal);
 
                     //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
-                        Line(origin, end);
+                    Line(origin, end);
                 }
                 return this;
             }
@@ -198,7 +198,7 @@ namespace DCFApixels
 
 
                     //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
-                        Line(origin, end);
+                    Line(origin, end);
                 }
                 return this;
             }
@@ -220,16 +220,16 @@ namespace DCFApixels
                 else
                 {
                     Vector3 end = origin + (Vector3)direction * hit.distance;
-            
+
                     //WidthOutLine(origin, end, radius * 2f);
-            
+
                     DotDiamond(new Vector3(hit.point.x, hit.point.y, origin.z));
                     WireFlatCapsule(end, rotation, radius, height);
                     RayArrow(new Vector3(hit.point.x, hit.point.y, origin.z), hit.normal);
-            
-            
+
+
                     //Setup(Color.SetAlpha(ShadowAlphaMultiplier)).
-                        Line(origin, end);
+                    Line(origin, end);
                 }
                 return this;
             }

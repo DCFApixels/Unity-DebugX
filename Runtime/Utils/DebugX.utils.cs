@@ -3,15 +3,12 @@
 #if DEBUG
 #define DEV_MODE
 #endif
-using UnityEngine;
+using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 using Unity.Collections.LowLevel.Unsafe;
-using System.Buffers;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 
 namespace DCFApixels
 {
@@ -19,96 +16,6 @@ namespace DCFApixels
 
     public static unsafe partial class DebugX
     {
-        #region Utils Methods
-        private static string GetGenericTypeName_Internal(Type type, int maxDepth, bool isFull)
-        {
-#if (DEBUG && !DISABLE_DEBUG) || !REFLECTION_DISABLED //в дебажных утилитах REFLECTION_DISABLED только в релизном билде работает
-            string typeName = isFull ? type.FullName : type.Name;
-            if (!type.IsGenericType || maxDepth == 0)
-            {
-                return typeName;
-            }
-            int genericInfoIndex = typeName.LastIndexOf('`');
-            if (genericInfoIndex > 0)
-            {
-                typeName = typeName.Remove(genericInfoIndex);
-            }
-
-            string genericParams = "";
-            Type[] typeParameters = type.GetGenericArguments();
-            for (int i = 0; i < typeParameters.Length; ++i)
-            {
-                //чтобы строка не была слишком длинной, используются сокращенные имена для типов аргументов
-                string paramTypeName = GetGenericTypeName_Internal(typeParameters[i], maxDepth - 1, false);
-                genericParams += (i == 0 ? paramTypeName : $", {paramTypeName}");
-            }
-            return $"{typeName}<{genericParams}>";
-#else
-            Debug.LogWarning($"Reflection is not available, the {nameof(GetGenericTypeName_Internal)} method does not work.");
-            return isFull ? type.FullName : type.Name;
-#endif
-        }
-
-        [IN(LINE)]
-        public static float FastMagnitude(Vector3 v)
-        {
-            return FastSqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-        }
-        [IN(LINE)]
-        private static unsafe float FastSqrt(float number)
-        {
-            long i;
-            float x2, y;
-            const float threehalfs = 1.5F;
-
-            x2 = number * 0.5F;
-            y = number;
-            i = *(long*)&y;                         // evil floating point bit level hacking
-            i = 0x5f3759df - (i >> 1);              // what the fuck?
-            y = *(float*)&i;
-            y = y * (threehalfs - (x2 * y * y));    // 1st iteration
-            //y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
-
-            return 1 / y;
-        }
-        [IN(LINE)]
-        private static int NextPow2(int v)
-        {
-            v--;
-            v |= v >> 1;
-            v |= v >> 2;
-            v |= v >> 4;
-            v |= v >> 8;
-            v |= v >> 16;
-            return ++v;
-        }
-        private static Color[] _setColorBuffer = new Color[64];
-        [IN(LINE)]
-        static void AddColorsToMesh(Mesh mesh, Color color)
-        {
-            int vertexCount = mesh.vertexCount;
-            if (_setColorBuffer.Length < vertexCount)
-            {
-                _setColorBuffer = new Color[NextPow2(vertexCount)];
-            }
-            for (int i = 0; i < mesh.vertexCount; i++)
-            {
-                _setColorBuffer[i] = color;
-            }
-            mesh.SetColors(_setColorBuffer, 0, vertexCount);
-        }
-
-        [IN(LINE)]
-        private static bool IsGizmosRender()
-        {
-            bool result = true;
-#if UNITY_EDITOR
-            result = Handles.ShouldRenderGizmos();
-#endif
-            return result;
-        }
-        #endregion
-
         #region private StructList
         private interface IStructListElement<T>
         {
