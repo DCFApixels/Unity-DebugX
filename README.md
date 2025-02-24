@@ -11,6 +11,13 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 
 ![image](https://github.com/user-attachments/assets/97d77716-145d-4357-bcb1-8601871d2fe0)
 
+## Оглавление
+- [Установка](#установка)
+- [API](#api)
+- [Загрузка статических ассетов](#загрузка-статических-ассетов)
+- [Настройки](#настройки)
+- [Кастомный Gizmo](#кастомный-gizmo)
+- [Define Symbols](#define-symbols)
 
 # Установка
 Семантика версионирования - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
@@ -67,8 +74,10 @@ public struct SomeMesh : IStaticMesh
 } 
 ```
 
-Утилита для загрузки статических ассетов:
-Сначала создадим хранилище для ассетов. 
+# Загрузка статических ассетов 
+Для загрузки имеется утилита `DebugXUtility.LoadStaticData(...);`. 
+
+Сначала создаем хранилище для ассетов. 
 ```c#
 public readonly struct SomeAssets
 {
@@ -76,20 +85,19 @@ public readonly struct SomeAssets
     public readonly Material SomeMaterial;
 } 
 ```
-Далее необходимо создать префаб со списком ассетов. Каждый дочерний GameObject префаба рассматривается как один ассет, а его имя должно совпадать с полем в которое будет загружатьсч ассет. Для загрузки мешей в GameObject необходимо добавить компонент MeshFilter с ссылкой на нужный меш. Для загрузки материала нужен любой компонент унаследованный от Renderer с заданным материалом. Сам префаб должен быть располоден в папке Resources. 
+Далее необходимо создать префаб со списком ассетов. Каждый дочерний GameObject префаба рассматривается как один ассет, а его имя должно совпадать с полем в которое будет загружаться ассет. Для загрузки мешей в GameObject необходимо добавить компонент MeshFilter с ссылкой на нужный меш. Для загрузки материала нужен любой компонент унаследованный от Renderer с заданным материалом. Сам префаб должен быть расположен в папке Resources. 
 
 После подготовки хранилища и префаба-списка можно загружать 
-```c＃
-SomeAssets assets = DebugXUtility.LoadStaticData(new SomeAssets());
+```c#
+SomeAssets assets = DebugXUtility.LoadStaticData(new SomeAssets(), "SomeAssets");
 // Готово. 
 ```
-
+> Пример как с этой утилитой работать можно посмотреть в исходинках в файле `DebugXAssets.cs`.
 
 # Настройки
 Окно настроек "Tools -> DebugX -> Settings":
 
 ![image](https://github.com/user-attachments/assets/7dd981c1-1e00-4b7d-9a73-376638094689)
-
 
 # Кастомный Gizmo
 
@@ -138,10 +146,14 @@ public readonly struct SomeGizmo : IGizmo<SomeGizmo>
 // Создание метода расширения. 
 public static class SomeGizmoExtensions
 {
-    public static DrawHandler SomeGizmo(this DrawHandler self, /*...*/) 
+    public static DebugX.DrawHandler SomeGizmo(this DebugX.DrawHandler self, /*...*/) 
     {
         self.Gizmo(new SomeGizmo(/*...*/);
         return self;
     }
 }
 ```
+
+
+# Define Symbols
++ DISABLE_DEBUGX_INBUILD - по умолчанию Gizmo будут рисовать в сборке проекта, этот дефайн отключает рисование. Включить или выключить можно так же в окне настроек DebugX.
