@@ -1,11 +1,12 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace DCFApixels
 {
     public static unsafe partial class DebugX
     {
-        #region Globals
         private const string GlobalTimeScalePrefName = "DCFApixels.DebugX.TimeScale";
         private static float _timeScaleCache;
         public static float GlobalTimeScale
@@ -60,13 +61,13 @@ namespace DCFApixels
             EditorPrefs.DeleteKey(GlobalTimeScalePrefName);
             EditorPrefs.DeleteKey(GlobalDotSizePrefName);
             EditorPrefs.DeleteKey(GlobalColorPrefName);
+#endif
             _dotSizeCache = default;
             _timeScaleCache = default;
             _globalColorCache = default;
             InitGlobals();
-#endif
         }
-        public static void InitGlobals()
+        private static void InitGlobals()
         {
             GlobalTimeScale = 1;
             GlobalDotSize = 1;
@@ -78,6 +79,5 @@ namespace DCFApixels
             GlobalColor = (Color)(*(Color32*)&colorCode);
 #endif
         }
-        #endregion
     }
 }
