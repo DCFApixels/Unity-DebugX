@@ -67,7 +67,7 @@ Shader "DCFApixels/DebugX/Handles Wire"
                 o.color = input[i].color;
                 lineStream.Append(o);
 
-                int next = (i + 1) % 3;
+                uint next = (i + 1) % 3;
                 o.vertex = input[next].vertex;
                 o.color = input[next].color;
                 lineStream.Append(o);

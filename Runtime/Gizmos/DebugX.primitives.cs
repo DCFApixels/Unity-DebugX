@@ -3,7 +3,6 @@ using DCFApixels.DebugXCore;
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static DCFApixels.DebugXCore.DebugXUtility;
 
 namespace DCFApixels
 {
@@ -88,7 +87,7 @@ namespace DCFApixels
                                 float x = sqrRadius * sqrRadius / sqrMagnitude;
                                 if (x / sqrRadius < 1f)
                                 {
-                                    float resultSize = FastSqrt(sqrRadius - x);
+                                    float resultSize = DebugXUtility.FastSqrt(sqrRadius - x);
 
                                     _buffer[i] = new Gizmo<InstancingMeshGizmoLayout>(
                                         new InstancingMeshGizmoLayout(

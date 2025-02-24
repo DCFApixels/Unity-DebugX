@@ -22,8 +22,14 @@ namespace DCFApixels
         private readonly static bool IsSupportsComputeShaders = SystemInfo.supportsComputeShaders;
 
         public const float IMMEDIATE_DURATION = -1;
-    }
 
+        private enum PauseStateX
+        {
+            Unpaused = 0,
+            PreUnpaused = 1, //нужно чтобы отщелкунть паузу с задержкой в один тик
+            Paused = 2,
+        }
+    }
     public enum DebugXLine
     {
         Default,

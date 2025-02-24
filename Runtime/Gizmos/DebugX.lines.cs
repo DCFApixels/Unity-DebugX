@@ -2,7 +2,6 @@
 using DCFApixels.DebugXCore;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static DCFApixels.DebugXCore.DebugXUtility;
 
 namespace DCFApixels
 {
@@ -40,7 +39,7 @@ namespace DCFApixels
                 const float MinDistance = 2.5f;
                 Vector3 direction = end - start;
 
-                float distance = FastSqrt(direction.sqrMagnitude);
+                float distance = DebugXUtility.FastSqrt(direction.sqrMagnitude);
                 Quaternion rotation = direction == default ? Quaternion.identity : Quaternion.LookRotation(direction);
 
                 var arrowSize = 0.5f;

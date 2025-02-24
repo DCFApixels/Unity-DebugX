@@ -4,9 +4,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static DCFApixels.DebugXCore.DebugXUtility;
 using DCFApixels.DebugXCore.Internal;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -346,8 +344,8 @@ namespace DCFApixels
                             _matrices.Dispose();
                             _colors.Dispose();
                         }
-                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[NextPow2(count)]);
-                        _colors = PinnedArray<Color>.Pin(new Color[NextPow2(count)]).As<Vector4>();
+                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[DebugXUtility.NextPow2(count)]);
+                        _colors = PinnedArray<Color>.Pin(new Color[DebugXUtility.NextPow2(count)]).As<Vector4>();
                         _buffersLength = count;
                     }
                     if (ReferenceEquals(_gizmos.Array, items) == false)
@@ -446,8 +444,8 @@ namespace DCFApixels
                     {
                         _matrices.Dispose();
                         _colors.Dispose();
-                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[NextPow2(count)]);
-                        _colors = PinnedArray<Vector4>.Pin(new Vector4[NextPow2(count)]);
+                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[DebugXUtility.NextPow2(count)]);
+                        _colors = PinnedArray<Vector4>.Pin(new Vector4[DebugXUtility.NextPow2(count)]);
                         _buffersLength = count;
                     }
                     if (ReferenceEquals(_gizmos.Array, items) == false)
@@ -554,8 +552,8 @@ namespace DCFApixels
                             _matrices.Dispose();
                             _colors.Dispose();
                         }
-                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[NextPow2(count)]);
-                        _colors = PinnedArray<Vector4>.Pin(new Vector4[NextPow2(count)]);
+                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[DebugXUtility.NextPow2(count)]);
+                        _colors = PinnedArray<Vector4>.Pin(new Vector4[DebugXUtility.NextPow2(count)]);
                         _buffersLength = count;
                     }
                     if (ReferenceEquals(_gizmos.Array, items) == false)

@@ -12,7 +12,6 @@ using UnityEngine.LowLevel;
 using UnityEngine.PlayerLoop;
 using Unity.Collections.LowLevel.Unsafe;
 using DCFApixels.DebugXCore.Internal;
-using static DCFApixels.DebugXCore.DebugXUtility;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -47,12 +46,6 @@ namespace DCFApixels
         {
             _isCameraContext = false;
         }
-        private enum PauseStateX
-        {
-            Unpaused = 0,
-            PreUnpaused = 1, //нужно чтобы отщелкунть паузу с задержкой в один тик
-            Paused = 2,
-        }
 #if UNITY_EDITOR
         private static void EditorApplication_pauseStateChanged(PauseState obj)
         {
@@ -66,8 +59,8 @@ namespace DCFApixels
         {
             InitGlobals();
 
-            Meshes = StaticDataLoader.Load(new MeshesList(), $"DCFApixels.DebugX/MeshesList");
-            Materials = StaticDataLoader.Load(new MaterialsList(), $"DCFApixels.DebugX/MaterialsList");
+            Meshes = DebugXUtility.LoadStaticData(new MeshesList(), $"DCFApixels.DebugX/MeshesList");
+            Materials = DebugXUtility.LoadStaticData(new MaterialsList(), $"DCFApixels.DebugX/MaterialsList");
 
             IsSRP = GraphicsSettings.currentRenderPipeline != null;
 
@@ -308,7 +301,7 @@ namespace DCFApixels
                 _lastEditorTicks = _editorTicks;
             }
 
-            if (IsGizmosRender())
+            if (DebugXUtility.IsGizmosRender())
             {
                 RenderContextController.StaicContextController.Prepare();
                 RenderContextController.StaicContextController.Render(cbExecutor);
@@ -512,7 +505,7 @@ namespace DCFApixels
             }
             private void TypeCode_OnAddNewID(int count)
             {
-                Array.Resize(ref _buffersMap, NextPow2(count));
+                Array.Resize(ref _buffersMap, DebugXUtility.NextPow2(count));
             }
 
 
@@ -642,6 +635,7 @@ namespace DCFApixels
                 public void Prepare(Camera camera, GizmosList<T> list) { }
                 public void Render(Camera camera, GizmosList<T> list, CommandBuffer cb) { }
             }
+            private static readonly bool _isUnmanaged = UnsafeUtility.IsUnmanaged(typeof(T));
 
             private StructList<GizmoInternal<T>> _gizmos = new StructList<GizmoInternal<T>>(32);
             private readonly string _debugName;
@@ -655,17 +649,20 @@ namespace DCFApixels
             private readonly bool _isStatic;
 
 #if DEV_MODE
-            private static readonly Unity.Profiling.ProfilerMarker _timerMarker = new Unity.Profiling.ProfilerMarker($"{GetGenericTypeName_Internal(typeof(T), 3, false)}.{nameof(UpdateTimer)}");
-            private static readonly Unity.Profiling.ProfilerMarker _prepareMarker = new Unity.Profiling.ProfilerMarker($"{GetGenericTypeName_Internal(typeof(T), 3, false)}.{nameof(Prepare)}");
-            private static readonly Unity.Profiling.ProfilerMarker _renderMarker = new Unity.Profiling.ProfilerMarker($"{GetGenericTypeName_Internal(typeof(T), 3, false)}.{nameof(Render)}");
+            private static readonly Unity.Profiling.ProfilerMarker _timerMarker = new Unity.Profiling.ProfilerMarker($"{DebugXUtility.GetGenericTypeName(typeof(T), 3, false)}.{nameof(UpdateTimer)}");
+            private static readonly Unity.Profiling.ProfilerMarker _prepareMarker = new Unity.Profiling.ProfilerMarker($"{DebugXUtility.GetGenericTypeName(typeof(T), 3, false)}.{nameof(Prepare)}");
+            private static readonly Unity.Profiling.ProfilerMarker _renderMarker = new Unity.Profiling.ProfilerMarker($"{DebugXUtility.GetGenericTypeName(typeof(T), 3, false)}.{nameof(Render)}");
 #endif
+
+            public override int ExecuteOrder { get { return _renderer.ExecuteOrder; } }
+
 
             public GizmosBuffer(RenderContext context, CommandBuffer cb)
             {
                 Type type = typeof(T);
                 _context = context;
                 _staticCommandBuffer = cb;
-                _debugName = GetGenericTypeName_Internal(type, 3, false);
+                _debugName = DebugXUtility.GetGenericTypeName(type, 3, false);
                 //_dynamicCommandBuffer = new CommandBuffer();
                 //_dynamicCommandBuffer.name = _debugName;
 
@@ -696,10 +693,6 @@ namespace DCFApixels
                 }
             }
 
-            public override int ExecuteOrder { get { return _renderer.ExecuteOrder; } }
-
-
-            private static readonly bool _isUnmanaged = UnsafeUtility.IsUnmanaged(typeof(T));
             public sealed override int UpdateTimer(float deltaTime)
             {
                 _staticCommandBuffer.Clear();

@@ -1,6 +1,8 @@
 ﻿using System;
 using UnityEngine;
-using static DCFApixels.DebugX;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -10,7 +12,56 @@ namespace DCFApixels.DebugXCore
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
     public static class DebugXUtility
     {
-        public static string GetGenericTypeName_Internal(Type type, int maxDepth, bool isFull)
+        private const MethodImplOptions LINE = MethodImplOptions.AggressiveInlining;
+        public static T LoadStaticData<T>(T instance, string path)
+        {
+            object obj = instance;
+            var type = obj.GetType();
+            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var prefab = Resources.Load<GameObject>(path);
+
+            if (prefab == null)
+            {
+                Debug.LogError($"{path} not found.");
+                return (T)obj;
+            }
+
+            if (fields.Count() <= 0)
+            {
+                Debug.LogError($"{typeof(T).Name} no fields.");
+                return (T)obj;
+            }
+
+            foreach (var field in fields.Where(o => o.FieldType == typeof(Mesh)))
+            {
+                var child = prefab.transform.Find(field.Name);
+                var meshFilter = child.GetComponent<MeshFilter>();
+                if (meshFilter != null)
+                {
+                    field.SetValue(obj, meshFilter.sharedMesh);
+                }
+                else
+                {
+                    Debug.LogWarning(field.Name + " not found.");
+                }
+            }
+            foreach (var field in fields.Where(o => o.FieldType == typeof(Material)))
+            {
+                var child = prefab.transform.Find(field.Name);
+                var meshFilter = child.GetComponent<Renderer>();
+                if (meshFilter != null)
+                {
+                    field.SetValue(obj, meshFilter.sharedMaterial);
+                }
+                else
+                {
+                    Debug.LogWarning(field.Name + " not found.");
+                }
+            }
+
+            return (T)obj;
+        }
+        public static string GetGenericTypeName(Type type, int maxDepth, bool isFull)
         {
 #if DEBUG || !REFLECTION_DISABLED //в дебажных утилитах REFLECTION_DISABLED только в релизном билде работает
             string typeName = isFull ? type.FullName : type.Name;
@@ -29,7 +80,7 @@ namespace DCFApixels.DebugXCore
             for (int i = 0; i < typeParameters.Length; ++i)
             {
                 //чтобы строка не была слишком длинной, используются сокращенные имена для типов аргументов
-                string paramTypeName = GetGenericTypeName_Internal(typeParameters[i], maxDepth - 1, false);
+                string paramTypeName = GetGenericTypeName(typeParameters[i], maxDepth - 1, false);
                 genericParams += (i == 0 ? paramTypeName : $", {paramTypeName}");
             }
             return $"{typeName}<{genericParams}>";
