@@ -19,7 +19,7 @@ using UnityEditor;
 namespace DCFApixels
 {
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
-
+    using static DebugXConsts;
     public static unsafe partial class DebugX
     {
         private static PauseStateX _pauseState = PauseStateX.Unpaused;
@@ -59,10 +59,6 @@ namespace DCFApixels
         {
             InitGlobals();
 
-            Meshes = DebugXUtility.LoadStaticData(new MeshesList(), $"DCFApixels.DebugX/MeshesList");
-            Materials = DebugXUtility.LoadStaticData(new MaterialsList(), $"DCFApixels.DebugX/MaterialsList");
-
-            IsSRP = GraphicsSettings.currentRenderPipeline != null;
 
             if (IsSRP)
             {

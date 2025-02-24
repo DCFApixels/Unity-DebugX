@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 
-namespace DCFApixels
+namespace DCFApixels.DebugXCore
 {
-    public static partial class DebugX
+    public static partial class DebugXAssets
     {
+        static DebugXAssets()
+        {
+            Meshes = DebugXUtility.LoadStaticData(new MeshesList(), $"DCFApixels.DebugX/MeshesList");
+            Materials = DebugXUtility.LoadStaticData(new MaterialsList(), $"DCFApixels.DebugX/MaterialsList");
+        }
         public static MeshesList Meshes;
         public readonly struct MeshesList
         {

@@ -11,7 +11,9 @@ using UnityEditor;
 
 namespace DCFApixels
 {
+    using static DebugXConsts;
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
+
     public static unsafe partial class DebugX
     {
         public readonly partial struct DrawHandler

@@ -7,7 +7,7 @@ using DCFApixels.DebugXCore;
 namespace DCFApixels
 {
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
-
+    using static DebugXConsts;
     public unsafe static partial class DebugX
     {
         public readonly partial struct DrawHandler
@@ -123,11 +123,11 @@ namespace DCFApixels
             #endregion
 
             #region Dot
-            [IN(LINE)] public DrawHandler Dot(Vector3 position) => Mesh<DotMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_RADIUS, DOT_RADIUS, DOT_RADIUS));
+            [IN(LINE)] public DrawHandler Dot(Vector3 position) => Mesh<DotMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, DOT_SIZE));
             #endregion
 
             #region WireDot
-            [IN(LINE)] public DrawHandler WireDot(Vector3 position) => Mesh<WireCircleMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_RADIUS / 2, DOT_RADIUS / 2, DOT_RADIUS / 2));
+            [IN(LINE)] public DrawHandler WireDot(Vector3 position) => Mesh<WireCircleMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE / 2, DOT_SIZE / 2, DOT_SIZE / 2));
             #endregion
 
             #region Capsule
@@ -397,11 +397,11 @@ namespace DCFApixels
             #endregion
 
             #region DotQuad
-            [IN(LINE)] public DrawHandler DotQuad(Vector3 position) => Mesh<DotQuadMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_RADIUS, DOT_RADIUS, DOT_RADIUS));
+            [IN(LINE)] public DrawHandler DotQuad(Vector3 position) => Mesh<DotQuadMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, DOT_SIZE));
             #endregion
 
             #region DotDiamond
-            [IN(LINE)] public DrawHandler DotDiamond(Vector3 position) => Mesh<DotDiamondMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_RADIUS * 0.9f, DOT_RADIUS * 0.9f, DOT_RADIUS * 0.9f));
+            [IN(LINE)] public DrawHandler DotDiamond(Vector3 position) => Mesh<DotDiamondMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE * 0.9f, DOT_SIZE * 0.9f, DOT_SIZE * 0.9f));
             #endregion
         }
     }

@@ -25,7 +25,7 @@ namespace DCFApixels.DebugXCore.Internal
 
         private static bool _isCompilation;
         private bool? _isHasDisableDebugXInBuildSymbols = false;
-        private const string DEFINE_NAME = nameof(DebugX.DISABLE_DEBUGX_INBUILD);
+        private const string DEFINE_NAME = nameof(DebugXDefines.DISABLE_DEBUGX_INBUILD);
 
         private void OnGUI()
         {
