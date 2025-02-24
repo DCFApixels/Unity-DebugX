@@ -5,6 +5,8 @@ using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static DCFApixels.DebugXCore.DebugXUtility;
+using DCFApixels.DebugXCore.Internal;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
