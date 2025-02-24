@@ -61,7 +61,7 @@ Shader "DCFApixels/DebugX/Handles Wire"
             g2f o;
 
 
-            for (int i = 0; i < 3; i++)
+            for (uint i = 0; i < 3; i++)
             {
                 o.vertex = input[i].vertex;
                 o.color = input[i].color;
