@@ -24,7 +24,7 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 ### Unity-пакет
 Поддерживается установка в виде Unity-пакета через добавление [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json` этого git-URL: 
 ```
-https://github.com/DCFApixels/DebugX.git
+https://github.com/DCFApixels/Unity-DebugX
 ```
 ### В виде исходников
 Пакет так же может быть добавлен в проект в виде исходников.
