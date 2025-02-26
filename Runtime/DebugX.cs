@@ -18,8 +18,8 @@ using UnityEditor;
 
 namespace DCFApixels
 {
-    using IN = System.Runtime.CompilerServices.MethodImplAttribute;
     using static DebugXConsts;
+    using IN = System.Runtime.CompilerServices.MethodImplAttribute;
     public static unsafe partial class DebugX
     {
         private static PauseStateX _pauseState = PauseStateX.Unpaused;
@@ -32,6 +32,16 @@ namespace DCFApixels
         private static ulong _editorTicks = 0;
         private static ulong _renderTicks = 100;
         private static ulong _timeTicks = 0;
+
+        public static ulong RenderTicks
+        {
+            get { return _renderTicks; }
+        }
+        public static ulong TimeTicks
+        {
+            get { return _timeTicks; }
+        }
+
 
         #region Other
         public static void ClearAllGizmos()
@@ -212,7 +222,7 @@ namespace DCFApixels
         }
         private static void OnPostRender_SRP(ScriptableRenderContext context, Camera camera)
         {
-            PostRender_General(new CBExecutor(context), camera);
+            PostRender_General(CommandBufferExecutorSRP.GetInstance(context), camera);
             context.Submit();
         }
         private static void OnPreRender_BRP(Camera camera)
@@ -222,18 +232,8 @@ namespace DCFApixels
         }
         private static void OnPostRender_BRP(Camera camera)
         {
-            PostRender_General(default, camera);
+            PostRender_General(CommandBufferExecutorBRP.GetInstance(), camera);
             //throw new NotImplementedException();
-        }
-
-
-        public static ulong RenderTicks
-        {
-            get { return _renderTicks; }
-        }
-        public static ulong TimeTicks
-        {
-            get { return _timeTicks; }
         }
 
         private static void PreUpdateCallback()
@@ -289,7 +289,7 @@ namespace DCFApixels
         }
 
 
-        private static void PostRender_General(CBExecutor cbExecutor, Camera camera)
+        private static void PostRender_General(ICommandBufferExecutor cbExecutor, Camera camera)
         {
             if (_lastEditorTicks != _editorTicks)
             {
@@ -308,25 +308,6 @@ namespace DCFApixels
             RenderContextController contextController = RenderContextController.GetController(new RenderContext(camera));
             contextController.Prepare();
             contextController.Render(cbExecutor);
-        }
-        private readonly struct CBExecutor
-        {
-            public readonly ScriptableRenderContext RenderContext;
-            public CBExecutor(ScriptableRenderContext renderContext)
-            {
-                RenderContext = renderContext;
-            }
-            public void Execute(CommandBuffer cb)
-            {
-                if (RenderContext == default)
-                {
-                    Graphics.ExecuteCommandBuffer(cb);
-                }
-                else
-                {
-                    RenderContext.ExecuteCommandBuffer(cb);
-                }
-            }
         }
 
 #if UNITY_EDITOR
@@ -411,7 +392,7 @@ namespace DCFApixels
             }
             return _currenRenderContextControler;
         }
-#endregion
+        #endregion
 
 
         #region RenderContextControler
@@ -567,7 +548,7 @@ namespace DCFApixels
             }
 
             [IN(LINE)]
-            public void Render(CBExecutor cbExecutor)
+            public void Render(ICommandBufferExecutor cbExecutor)
             {
 #if UNITY_EDITOR
                 using (_cameraMarker.Auto())
@@ -621,7 +602,7 @@ namespace DCFApixels
             public abstract int ExecuteOrder { get; }
             public abstract int UpdateTimer(float deltaTime);
             public abstract void Prepare();
-            public abstract void Render(CBExecutor cbExecutor);
+            public abstract void Render(ICommandBufferExecutor cbExecutor);
             public abstract void Render_UnityGizmos();
             public abstract int RunEnd();
             public abstract void Clear();
@@ -769,7 +750,7 @@ namespace DCFApixels
                 }
             }
             private ulong _renderLastRenderTicks = 0;
-            public override void Render(CBExecutor cbExecutor)
+            public override void Render(ICommandBufferExecutor cbExecutor)
             {
                 if (_gizmos.Count <= 0) { return; }
 #if DEV_MODE
