@@ -91,8 +91,9 @@ namespace DCFApixels {
                         Color defaultColor = GUI.color;
                         if (_labelStyle == null || _labelDummy == null)
                         {
-                            _labelStyle = GUI.skin.label;
-                            _labelStyle.richText = false;
+                            _labelStyle = new GUIStyle(GUI.skin.label) {
+                                richText = false
+                            };
                             _labelDummy = new GUIContent();
                         }
 
