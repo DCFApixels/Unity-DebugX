@@ -6,7 +6,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DotDiamond
+  m_Name: Triangle
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -15,10 +15,10 @@ Mesh:
     topology: 0
     baseVertex: 0
     firstVertex: 0
-    vertexCount: 4
+    vertexCount: 6
     localAABB:
-      m_Center: {x: 0, y: 0, z: 0}
-      m_Extent: {x: 0.49999952, y: 0.49999952, z: 0.00000005742529}
+      m_Center: {x: 0.000000044703484, y: 0, z: 0}
+      m_Extent: {x: 0.49999994, y: 0.5, z: 0.0000001718594}
   m_Shapes:
     vertices: []
     shapes: []
@@ -35,10 +35,10 @@ Mesh:
   m_KeepVertices: 1
   m_KeepIndices: 1
   m_IndexFormat: 0
-  m_IndexBuffer: 000001000200000002000300
+  m_IndexBuffer: 000001000200030004000500
   m_VertexData:
     serializedVersion: 3
-    m_VertexCount: 4
+    m_VertexCount: 6
     m_Channels:
     - stream: 0
       offset: 0
@@ -96,8 +96,8 @@ Mesh:
       offset: 0
       format: 0
       dimension: 0
-    m_DataSize: 160
-    _typelessdata: f0ffff3eeb04b53214064cb30000000000000000000080bff30435bff304353f00000000000080bfe904b5b2f0ffffbec6a376b30000000000000000000080bff20435bff304353f00000000000080bff0ffffbeeb04b5b214064c330000000000000000000080bff30435bff304353f00000000000080bfe904b532f0ffff3ec6a376330000000000000000000080bff30435bff304353f00000000000080bf
+    m_DataSize: 240
+    _typelessdata: fdffffbe000000bf5a8838b40000000000000000000080bf0000803f0000000000000000000080bf2ebd3bb30000003f5a8838340000000000000000000080bf0000803f0000000000000000000080bf0000003f000000bf5a8838b40000000000000000000080bf0000803f0000000000000000000080bffdffffbe000000bf4cefce3300000000000000000000803f0000803f00000000000000000000803f0000003f000000bf4cefce3300000000000000000000803f0000803f00000000000000000000803f2ebd3bb30000003f4cefceb300000000000000000000803f0000803f00000000000000000000803f
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -151,8 +151,8 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0.49999952, y: 0.49999952, z: 0.00000005742529}
+    m_Center: {x: 0.000000044703484, y: 0, z: 0}
+    m_Extent: {x: 0.49999994, y: 0.5, z: 0.0000001718594}
   m_MeshUsageFlags: 0
   m_CookingOptions: 30
   m_BakedConvexCollisionMesh: 

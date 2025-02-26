@@ -6,19 +6,19 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DotDiamond
+  m_Name: WireDotDiamond
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
     firstByte: 0
-    indexCount: 6
-    topology: 0
+    indexCount: 8
+    topology: 3
     baseVertex: 0
     firstVertex: 0
     vertexCount: 4
     localAABB:
       m_Center: {x: 0, y: 0, z: 0}
-      m_Extent: {x: 0.49999952, y: 0.49999952, z: 0.00000005742529}
+      m_Extent: {x: 0.5, y: 0.5, z: 0}
   m_Shapes:
     vertices: []
     shapes: []
@@ -35,7 +35,7 @@ Mesh:
   m_KeepVertices: 1
   m_KeepIndices: 1
   m_IndexFormat: 0
-  m_IndexBuffer: 000001000200000002000300
+  m_IndexBuffer: 00000100010002000200030003000000
   m_VertexData:
     serializedVersion: 3
     m_VertexCount: 4
@@ -45,14 +45,6 @@ Mesh:
       format: 0
       dimension: 3
     - stream: 0
-      offset: 12
-      format: 0
-      dimension: 3
-    - stream: 0
-      offset: 24
-      format: 0
-      dimension: 4
-    - stream: 0
       offset: 0
       format: 0
       dimension: 0
@@ -96,8 +88,16 @@ Mesh:
       offset: 0
       format: 0
       dimension: 0
-    m_DataSize: 160
-    _typelessdata: f0ffff3eeb04b53214064cb30000000000000000000080bff30435bff304353f00000000000080bfe904b5b2f0ffffbec6a376b30000000000000000000080bff20435bff304353f00000000000080bff0ffffbeeb04b5b214064c330000000000000000000080bff30435bff304353f00000000000080bfe904b532f0ffff3ec6a376330000000000000000000080bff30435bff304353f00000000000080bf
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    m_DataSize: 48
+    _typelessdata: 000000000000003f00000000000000bf000000000000000000000000000000bf000000000000003f0000000000000000
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -152,7 +152,7 @@ Mesh:
     m_UVInfo: 0
   m_LocalAABB:
     m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0.49999952, y: 0.49999952, z: 0.00000005742529}
+    m_Extent: {x: 0.5, y: 0.5, z: 0}
   m_MeshUsageFlags: 0
   m_CookingOptions: 30
   m_BakedConvexCollisionMesh: 

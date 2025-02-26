@@ -1,13 +1,13 @@
 ﻿//#undef DEBUG
+using DCFApixels.DebugXCore;
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
-using DCFApixels.DebugXCore;
 
 namespace DCFApixels
 {
-    using IN = System.Runtime.CompilerServices.MethodImplAttribute;
     using static DebugXConsts;
+    using IN = System.Runtime.CompilerServices.MethodImplAttribute;
     public unsafe static partial class DebugX
     {
         public readonly partial struct DrawHandler
@@ -21,7 +21,7 @@ namespace DCFApixels
             #endregion
 
             #region DotCross
-            [IN(LINE)] public DrawHandler DotCross(Vector3 position) => Mesh<DotCrossMesh, DotMat>(position, Quaternion.identity, new Vector3(0.06f, 0.06f, 0.06f));
+            [IN(LINE)] public DrawHandler DotCross(Vector3 position) => Mesh<DotCrossMesh, DotMat>(position, Quaternion.identity, new Vector3(0.06f, 0.06f, 1f));
             #endregion
 
 
@@ -123,11 +123,127 @@ namespace DCFApixels
             #endregion
 
             #region Dot
-            [IN(LINE)] public DrawHandler Dot(Vector3 position) => Mesh<DotMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, DOT_SIZE));
+            [IN(LINE)] public DrawHandler Dot(Vector3 position) => Mesh<DotMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, 1f));
             #endregion
 
             #region WireDot
-            [IN(LINE)] public DrawHandler WireDot(Vector3 position) => Mesh<WireCircleMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE / 2, DOT_SIZE / 2, DOT_SIZE / 2));
+            [IN(LINE)] public DrawHandler WireDot(Vector3 position) => Mesh<WireCircleMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE * 0.5f, DOT_SIZE * 0.5f, 1f));
+            #endregion
+
+
+            #region Cylinder
+            [IN(LINE)]
+            public DrawHandler Cylinder(Vector3 position, Quaternion rotation, float radius, float height)
+            {
+                Mesh<CylinderMesh, LitMat>(position, rotation * Quaternion.Euler(-90, 0, 0), new Vector3(radius * 2f, radius * 2f, height));
+                return this;
+            }
+            #endregion
+
+            #region WireCylinder
+            [IN(LINE)]
+            public DrawHandler WireCylinder(Vector3 position, Quaternion rotation, float radius, float height)
+            {
+                var halfHeigth = height * 0.5f;
+                var normalUp = rotation * Vector3.up;
+
+                var center = position;
+
+                Vector3 start, end;
+                start = center - normalUp * halfHeigth;
+                end = center + normalUp * halfHeigth;
+
+                WireCircle(start, rotation * Quaternion.Euler(90, 0, 0), radius);
+                WireCircle(end, rotation * Quaternion.Euler(90, 0, 0), radius);
+
+                var normalForward = rotation * Vector3.forward;
+                Vector3 from = Vector3.Cross(normalForward, normalUp).normalized;
+                Vector3 perpendicular = from * radius;
+                normalForward *= radius;
+
+                Vector3* lines = stackalloc Vector3[]
+                {
+                    start - perpendicular,
+                    end - perpendicular,
+                    start + perpendicular,
+                    end + perpendicular,
+                    start - normalForward,
+                    end - normalForward,
+                    start + normalForward,
+                    end + normalForward,
+                };
+
+                Line(lines[0], lines[1]);
+                Line(lines[2], lines[3]);
+                Line(lines[4], lines[5]);
+                Line(lines[6], lines[7]);
+
+                return this;
+            }
+            #endregion
+
+            #region Cone
+            [IN(LINE)]
+            public DrawHandler Cone(Vector3 position, Quaternion rotation, float radius, float height)
+            {
+                Mesh<ConeMesh, LitMat>(position, rotation * Quaternion.Euler(-90, 0, 0), new Vector3(radius * 2f, radius * 2f, height));
+                return this;
+            }
+            #endregion
+
+            #region WireCone
+            [IN(LINE)]
+            public DrawHandler WireCone(Vector3 position, Quaternion rotation, float radius, float height)
+            {
+                var halfHeigth = height * 0.5f;
+                var normalUp = rotation * Vector3.up;
+
+                var center = position;
+
+                Vector3 start, end;
+                start = center - normalUp * halfHeigth;
+                end = center + normalUp * halfHeigth;
+
+                WireCircle(start, rotation * Quaternion.Euler(90, 0, 0), radius);
+
+                var normalForward = rotation * Vector3.forward;
+                Vector3 from = Vector3.Cross(normalForward, normalUp).normalized;
+                Vector3 perpendicular = from * radius;
+                normalForward *= radius;
+
+                Vector3* lines = stackalloc Vector3[]
+                {
+                    start - perpendicular,
+                    start + perpendicular,
+                    start - normalForward,
+                    start + normalForward,
+                };
+
+                Line(lines[0], end);
+                Line(lines[1], end);
+                Line(lines[2], end);
+                Line(lines[3], end);
+
+                return this;
+            }
+            #endregion
+
+            #region Triangle
+            [IN(LINE)]
+            public DrawHandler Triangle(Vector3 position, Quaternion rotation, Vector2 size)
+            {
+                Mesh<TriangleMesh, LitMat>(position, rotation, new Vector3(size.x, size.y, 1f));
+                return this;
+            }
+            #endregion
+
+            #region WireTriangle
+            [IN(LINE)]
+            public DrawHandler WireTriangle(Vector3 position, Quaternion rotation, Vector2 size)
+            {
+                Mesh<TriangleMesh, WireMat>(position, rotation, new Vector3(size.x, size.y, 1f));
+                return this;
+            }
             #endregion
 
             #region Capsule
@@ -200,17 +316,17 @@ namespace DCFApixels
             {
                 height -= radius * 2f;
 
-                var normalForward = rotation * Vector3.forward;
                 var normalUp = rotation * Vector3.up;
                 var halfHeigth = height * 0.5f;
 
-                Vector3 from = Vector3.Cross(normalForward, normalUp).normalized;
                 Vector3 start = position - normalUp * halfHeigth;
                 Vector3 end = position + normalUp * halfHeigth;
 
                 Mesh<WireArcMesh, GeometryUnlitMat>(end, rotation, new Vector3(radius, radius, radius));
                 Mesh<WireArcMesh, GeometryUnlitMat>(start, rotation * Rot180, new Vector3(radius, radius, radius));
 
+                var normalForward = rotation * Vector3.forward;
+                Vector3 from = Vector3.Cross(normalForward, normalUp).normalized;
                 Vector3 perpendicular = from * radius;
 
                 Vector3* lines = stackalloc Vector3[]
@@ -227,6 +343,7 @@ namespace DCFApixels
                 return this;
             }
             #endregion
+
 
             #region Cube
             //[IN(LINE)] public void Cube(Vector3 position, float size) => Cube(position, Quaternion.identity, new Vector3(size, size, size));
@@ -329,8 +446,8 @@ namespace DCFApixels
             #region Quad
             //[IN(LINE)] public DrawHandler Quad(Vector3 position, Vector3 normal, float size) => Mesh(Meshes.Quad, position, Quaternion.LookRotation(normal), new Vector3(size, size, size));
             //[IN(LINE)] public DrawHandler Quad(Vector3 position, Vector3 normal, Vector2 size) => Mesh(Meshes.Quad, position, Quaternion.LookRotation(normal), size); 
-            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, float size) => Mesh<CubeMesh, LitMat>(position, rotation, new Vector3(size, size, 0.0000000001f)); //TODO fix quad mesh
-            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, Vector2 size) => Mesh<CubeMesh, LitMat>(position, rotation, new Vector3(size.x, size.y, 0.0000000001f)); //TODO fix quad mesh
+            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, float size) => Mesh<QuadMesh, LitMat>(position, rotation, new Vector3(size, size, 1f)); //TODO fix quad mesh
+            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, Vector2 size) => Mesh<QuadMesh, LitMat>(position, rotation, new Vector3(size.x, size.y, 1f)); //TODO fix quad mesh
             #endregion
 
             #region WireQuad
@@ -397,11 +514,19 @@ namespace DCFApixels
             #endregion
 
             #region DotQuad
-            [IN(LINE)] public DrawHandler DotQuad(Vector3 position) => Mesh<DotQuadMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, DOT_SIZE));
+            [IN(LINE)] public DrawHandler DotQuad(Vector3 position) => Mesh<DotQuadMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, 1f));
+            #endregion
+
+            #region WireDotQuad
+            [IN(LINE)] public DrawHandler WireDotQuad(Vector3 position) => Mesh<WireCubeMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, 0f));
             #endregion
 
             #region DotDiamond
-            [IN(LINE)] public DrawHandler DotDiamond(Vector3 position) => Mesh<DotDiamondMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE * 0.9f, DOT_SIZE * 0.9f, DOT_SIZE * 0.9f));
+            [IN(LINE)] public DrawHandler DotDiamond(Vector3 position) => Mesh<DotDiamondMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE * 1.16f, DOT_SIZE * 1.16f, 1f));
+            #endregion
+
+            #region WireDotDiamond
+            [IN(LINE)] public DrawHandler WireDotDiamond(Vector3 position) => Mesh<WireDotDiamondMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE * 1.16f, DOT_SIZE * 1.16f, 1f));
             #endregion
         }
     }

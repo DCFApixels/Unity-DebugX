@@ -31,6 +31,11 @@ namespace DCFApixels.DebugXCore.Samples
             i++; DebugX.Draw(GetColor(Points[i])).QuadGrid(Points[i].position, Points[i].rotation, Points[i].localScale, Vector2Int.one * 3);
             i++; DebugX.Draw(GetColor(Points[i])).QuadPoints(Points[i].position, Points[i].rotation, Points[i].localScale);
 
+            i++;
+            i++; DebugX.Draw(GetColor(Points[i])).Triangle(Points[i].position, Points[i].rotation, Points[i].localScale);
+            i++; DebugX.Draw(GetColor(Points[i])).WireTriangle(Points[i].position, Points[i].rotation, Points[i].localScale);
+            i++;
+
             i++; DebugX.Draw(GetColor(Points[i])).Circle(Points[i].position, Points[i].rotation, Points[i].localScale.x * RADIUS_M);
             i++; DebugX.Draw(GetColor(Points[i])).WireCircle(Points[i].position, Points[i].rotation, Points[i].localScale.x * RADIUS_M);
             i++; DebugX.Draw(GetColor(Points[i])).FlatCapsule(Points[i].position, Points[i].rotation, Points[i].localScale.x * RADIUS_M, Points[i].localScale.y);

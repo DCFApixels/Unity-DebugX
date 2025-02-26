@@ -32,6 +32,11 @@ namespace DCFApixels.DebugXCore.Samples
             i++; DebugX.Draw(GetColor(Points[i])).CubeGrid(Points[i].position, Points[i].rotation, Points[i].localScale, Vector3Int.one * 3);
             i++; DebugX.Draw(GetColor(Points[i])).CubePoints(Points[i].position, Points[i].rotation, Points[i].localScale);
 
+            i++; DebugX.Draw(GetColor(Points[i])).Cylinder(Points[i].position, Points[i].rotation, Points[i].localScale.x * RADIUS_M, Points[i].localScale.y);
+            i++; DebugX.Draw(GetColor(Points[i])).WireCylinder(Points[i].position, Points[i].rotation, Points[i].localScale.x * RADIUS_M, Points[i].localScale.y);
+            i++; DebugX.Draw(GetColor(Points[i])).Cone(Points[i].position, Points[i].rotation, Points[i].localScale.x * RADIUS_M, Points[i].localScale.y);
+            i++; DebugX.Draw(GetColor(Points[i])).WireCone(Points[i].position, Points[i].rotation, Points[i].localScale.x * RADIUS_M, Points[i].localScale.y);
+
             i++; DebugX.Draw(GetColor(Points[i])).Sphere(Points[i].position, Points[i].localScale.x * RADIUS_M);
             i++; DebugX.Draw(GetColor(Points[i])).WireSphere(Points[i].position, Points[i].localScale.x * RADIUS_M);
             i++; DebugX.Draw(GetColor(Points[i])).Capsule(Points[i].position, Points[i].rotation, Points[i].localScale.x * RADIUS_M, Points[i].localScale.y);
