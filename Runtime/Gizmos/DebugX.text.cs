@@ -61,7 +61,7 @@ namespace DCFApixels {
                 }
 
                 /// <summary>
-                /// Should be called once after the app domain is cleared.
+                /// Texture should be set once after the app domain is cleared.
                 /// </summary>
                 private void CheckTextureInstance() {
                     if (_backgroundTexture != null) {
@@ -141,9 +141,8 @@ namespace DCFApixels {
                         float GetCameraZoom() {
                             const float DEFAULT_ZOOM = 1f;
                         
-                            var localCamera = GetCurrentCamera();
-                            if (localCamera != null) {
-                                return localCamera.orthographicSize;
+                            if (camera != null) {
+                                return camera.orthographicSize;
                             }
                             
                             var currentDrawingSceneView = SceneView.currentDrawingSceneView;
@@ -152,7 +151,7 @@ namespace DCFApixels {
                                 return DEFAULT_ZOOM;
                             }
                             
-                            localCamera = currentDrawingSceneView.camera;
+                            var localCamera = currentDrawingSceneView.camera;
                                 
                             if (localCamera != null) {
                                 return localCamera.orthographicSize;
