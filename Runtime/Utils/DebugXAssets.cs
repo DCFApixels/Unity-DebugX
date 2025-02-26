@@ -17,6 +17,9 @@ namespace DCFApixels.DebugXCore
             public readonly Mesh Quad;
             public readonly Mesh Circle; // Circle_1
             public readonly Mesh Sphere; // Sphere_0
+            public readonly Mesh Cylinder;
+            public readonly Mesh Cone;
+            public readonly Mesh Triangle;
 
             public readonly Mesh CapsuleBody;
             public readonly Mesh CapsuleHead;
@@ -27,6 +30,7 @@ namespace DCFApixels.DebugXCore
             public readonly Mesh DotQuad;
             public readonly Mesh DotCross;
             public readonly Mesh DotDiamond;
+            public readonly Mesh WireDotDiamond;
 
             public readonly Mesh WireLine;
             public readonly Mesh WireCube;
