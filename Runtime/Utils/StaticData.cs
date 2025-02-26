@@ -62,6 +62,18 @@ namespace DCFApixels.DebugXCore
     {
         public Mesh GetMesh() => DebugXAssets.Meshes.Circle;
     }
+    public readonly struct CylinderMesh : IStaticMesh
+    {
+        public Mesh GetMesh() => DebugXAssets.Meshes.Cylinder;
+    }
+    public readonly struct ConeMesh : IStaticMesh
+    {
+        public Mesh GetMesh() => DebugXAssets.Meshes.Cone;
+    }
+    public readonly struct TriangleMesh : IStaticMesh
+    {
+        public Mesh GetMesh() => DebugXAssets.Meshes.Triangle;
+    }
     public readonly struct CapsuleBodyMesh : IStaticMesh
     {
         public Mesh GetMesh() => DebugXAssets.Meshes.CapsuleBody;
@@ -93,6 +105,10 @@ namespace DCFApixels.DebugXCore
     public readonly struct DotDiamondMesh : IStaticMesh
     {
         public Mesh GetMesh() => DebugXAssets.Meshes.DotDiamond;
+    }
+    public readonly struct WireDotDiamondMesh : IStaticMesh
+    {
+        public Mesh GetMesh() => DebugXAssets.Meshes.WireDotDiamond;
     }
     public readonly struct DotCrossMesh : IStaticMesh
     {

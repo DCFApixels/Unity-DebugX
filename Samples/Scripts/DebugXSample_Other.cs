@@ -34,7 +34,10 @@ namespace DCFApixels.DebugXCore.Samples
             i++; DebugX.Draw(GetColor(Points[i])).Dot(Points[i].position);
             i++; DebugX.Draw(GetColor(Points[i])).WireDot(Points[i].position);
             i++; DebugX.Draw(GetColor(Points[i])).DotQuad(Points[i].position);
+            i++; DebugX.Draw(GetColor(Points[i])).WireDotQuad(Points[i].position);
             i++; DebugX.Draw(GetColor(Points[i])).DotDiamond(Points[i].position);
+            i++; DebugX.Draw(GetColor(Points[i])).WireDotDiamond(Points[i].position);
+
             i++; DebugX.Draw(GetColor(Points[i])).DotCross(Points[i].position);
         }
         private Color GetColor(Transform pos1)
