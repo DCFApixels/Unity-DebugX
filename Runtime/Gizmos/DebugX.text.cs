@@ -95,35 +95,22 @@ namespace DCFApixels {
                             _labelStyle.richText = false;
                             _labelDummy = new GUIContent();
                         }
+
+                        if (list.Count == 0) {
+                            return;
+                        }
+
+                        var zoom = GetCameraZoom();
+                        
                         Handles.BeginGUI();
                         foreach (ref readonly var item in list)
                         {
                             GUI.color = item.Color * GlobalColor;
                             _labelDummy.text = item.Value.TextBuilderInstance.Text.ToString();
 
-                            if (item.Value.TextBuilderInstance.UseWorldScale) {
-                                var zoom = 1f;
-
-                                var cam = GetCurrentCamera();
-                                if (cam != null) {
-                                    zoom = cam.orthographicSize;
-                                } else {
-                                    var currentDrawingSceneView = SceneView.currentDrawingSceneView;
-                                    
-                                    if (currentDrawingSceneView != null
-                                        && SceneView.currentDrawingSceneView.camera != null) {
-                                        cam = currentDrawingSceneView.camera;
-                                    
-                                        if (camera != null) {
-                                            zoom = cam.orthographicSize;
-                                        }
-                                    }
-                                }
-                                
-                                _labelStyle.fontSize = Mathf.FloorToInt(item.Value.TextBuilderInstance.FontSize / zoom);
-                            } else {
-                                _labelStyle.fontSize = item.Value.TextBuilderInstance.FontSize;
-                            }
+                            _labelStyle.fontSize = item.Value.TextBuilderInstance.UseWorldScale 
+                                ? Mathf.FloorToInt(item.Value.TextBuilderInstance.FontSize / zoom) 
+                                : item.Value.TextBuilderInstance.FontSize;
                             
                             _labelStyle.alignment = item.Value.TextBuilderInstance.TextAnchor;
 
@@ -149,6 +136,29 @@ namespace DCFApixels {
                         }
                         Handles.EndGUI();
                         GUI.color = defaultColor;
+
+                        float GetCameraZoom() {
+                            const float DEFAULT_ZOOM = 1f;
+                        
+                            var localCamera = GetCurrentCamera();
+                            if (localCamera != null) {
+                                return localCamera.orthographicSize;
+                            }
+                            
+                            var currentDrawingSceneView = SceneView.currentDrawingSceneView;
+
+                            if (currentDrawingSceneView == null) {
+                                return DEFAULT_ZOOM;
+                            }
+                            
+                            localCamera = currentDrawingSceneView.camera;
+                                
+                            if (camera != null) {
+                                return localCamera.orthographicSize;
+                            }
+
+                            return DEFAULT_ZOOM;
+                        }
 #endif
                     }
                 }
