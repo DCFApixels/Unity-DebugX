@@ -153,7 +153,7 @@ namespace DCFApixels {
                             
                             localCamera = currentDrawingSceneView.camera;
                                 
-                            if (camera != null) {
+                            if (localCamera != null) {
                                 return localCamera.orthographicSize;
                             }
 
