@@ -305,10 +305,10 @@ namespace DCFApixels
 
             if (DebugXUtility.IsGizmosRender())
             {
-                CallDrawGizmos(camera);
-
                 RenderContextController.StaicContextController.Prepare();
                 RenderContextController.StaicContextController.Render(cbExecutor);
+
+                CallDrawGizmos(camera);
             }
 
             if (camera == null) { return; }
@@ -347,7 +347,6 @@ namespace DCFApixels
             Color handlesColor = Handles.color;
             GL.MultMatrix(Handles.matrix);
 
-            //TODO раскоментить
             RenderContextController.StaicContextController.Render_UnityGizmos();
 
             if (camera == null) { return; }
@@ -600,7 +599,7 @@ namespace DCFApixels
                         _buffers[i].Render_UnityGizmos();
                     }
 
-                    RunEnd();
+                    //RunEnd();
                 }
             }
 
@@ -800,7 +799,7 @@ namespace DCFApixels
             public override void Render_UnityGizmos()
             {
                 if (_rendererUnityGizmos == null) { return; }
-                Debug.Log(_gizmos._count);
+                //Debug.Log(_gizmos._count);
                 if (_gizmos.Count <= 0) { return; }
 #if DEV_MODE
                 using (_renderMarker.Auto())

@@ -39,9 +39,6 @@ namespace DCFApixels
                 #region Renderer
                 private class Renderer : IGizmoRenderer_UnityGizmos<TextGizmo>
                 {
-                    private static Color32[] _backgroundTexturePixels;
-                    private static Texture2D _backgroundTexture;
-
                     private static GUIStyle _labelStyle; 
                     private static GUIStyle _labelStyleWithBackground;
                     private static GUIContent _labelDummy;
@@ -58,11 +55,8 @@ namespace DCFApixels
                         Handles.BeginGUI();
                         foreach (ref readonly var item in list)
                         {
-                            GUI.contentColor = item.Color * GlobalColor;
-                            GUI.backgroundColor = item.Value.Settings.BackgroundColor * GlobalColor;
-
                             _labelDummy.text = item.Value.Text;
-                            GUIStyle style = item.Value.Settings.IsHasBackground ? _labelStyleWithBackground : _labelStyle;
+                            GUIStyle style = _labelStyle;
 
                             style.fontSize = item.Value.IsWorldSpaceScale
                                 ? Mathf.FloorToInt(item.Value.Settings.FontSize / zoom)
@@ -70,15 +64,16 @@ namespace DCFApixels
 
                             style.alignment = item.Value.Settings.TextAnchor;
 
-                            _labelStyle.normal = new GUIStyleState
-                            {
-                                textColor = item.Color * GlobalColor,
-                            };
-
-
                             if (!(HandleUtility.WorldToGUIPointWithDepth(item.Value.Position).z < 0f))
                             {
-                                GUI.Label(HandleUtility.WorldPointToSizedRect(item.Value.Position, _labelDummy, _labelStyle), _labelDummy, style);
+                                
+                                Rect rect = HandleUtility.WorldPointToSizedRect(item.Value.Position, _labelDummy, _labelStyle);
+                                Color c = item.Value.Settings.BackgroundColor * GlobalColor;
+                                GUI.color = c;
+                                EditorGUI.DrawRect(rect, c);
+
+                                GUI.color = item.Color * GlobalColor;
+                                GUI.Label(rect, _labelDummy, style);
                             }
                         }
                         Handles.EndGUI();
@@ -105,13 +100,10 @@ namespace DCFApixels
                             {
                                 backgroundTexturePixels[i] = new Color32(255, 255, 255, 255);
                             }
-                            _backgroundTexturePixels = backgroundTexturePixels;
 
                             var backgroundTexture = new Texture2D(BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
                             backgroundTexture.SetPixels32(backgroundTexturePixels);
                             backgroundTexture.Apply();
-
-                            _backgroundTexture = backgroundTexture;
 
                             _labelStyleWithBackground = new GUIStyle(_labelStyle);
                             _labelStyleWithBackground.normal.background = backgroundTexture;
