@@ -37,28 +37,30 @@ namespace DCFApixels
                 public IGizmoRenderer<TextGizmo> RegisterNewRenderer() { return new Renderer(); }
 
                 #region Renderer
-                private class Renderer : IGizmoRenderer_UnityGizmos<TextGizmo>
+                private class Renderer : IGizmoRenderer<TextGizmo>
                 {
                     private static GUIStyle _labelStyle; 
                     private static GUIContent _labelDummy;
+                    private static Texture2D _whiteTexture;
                     public int ExecuteOrder => default(UnlitMat).GetExecuteOrder();
                     public bool IsStaticRender => false;
                     public void Prepare(Camera camera, GizmosList<TextGizmo> list) { }
-                    public void Render(Camera camera, GizmosList<TextGizmo> list, CommandBuffer cb) { }
+                    public void Render(Camera camera, GizmosList<TextGizmo> list, CommandBuffer cb)
+                    {
+                        Render_UnityGizmos(camera, list);
+                    }
                     public void Render_UnityGizmos(Camera camera, GizmosList<TextGizmo> list)
                     {
-#if UNITY_EDITOR
+                        //return;
+//#if UNITY_EDITOR
                         if (Event.current.type != EventType.Repaint) { return; }
-                        //bool c = camera.name == "SceneCamera";
-                        bool ccc = camera == Camera.main;
-                        //bool x = camera == Camera.main;
-                        bool x = true;
+                        Color dfColor = GUI.color;
 
                         if (camera == null) { return; }
                         InitStatic();
                         var zoom = GetCameraZoom(camera);
 
-                        Handles.BeginGUI();
+                        //Handles.BeginGUI();
                         foreach (ref readonly var item in list)
                         {
                             _labelDummy.text = item.Value.Text;
@@ -88,9 +90,9 @@ namespace DCFApixels
 
                                 Color c = item.Value.Settings.BackgroundColor * GlobalColor;
                                 GUI.color = c;
-                                GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+                                //GUI.DrawTexture(rect, _whiteTexture);
 
-                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
+                                //Graphics.DrawTexture(rect, EditorGUIUtility.whiteTexture);
                                 //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
 
                                 GUI.color = item.Color * GlobalColor;
@@ -99,8 +101,9 @@ namespace DCFApixels
                                 GL.PopMatrix();
                             }
                         }
-                        Handles.EndGUI();
-#endif
+                        //Handles.EndGUI();
+                        GUI.color = dfColor;
+//#endif
                     }
 
 
@@ -109,15 +112,17 @@ namespace DCFApixels
                     {
 #if UNITY_EDITOR
                         world = Handles.matrix.MultiplyPoint(world);
+#endif
                         Vector3 vector = camera.WorldToScreenPoint(world);
                         vector.y = camera.pixelHeight - vector.y;
-                        Vector2 vector2 = EditorGUIUtility.PixelsToPoints(vector);
-                        return new Vector3(vector2.x, vector2.y, vector.z);
+                        Vector2 vector2 = (Vector2)(vector);
+#if UNITY_EDITOR
+                        vector2 = EditorGUIUtility.PixelsToPoints(vector);
 #endif
+                        return new Vector3(vector2.x, vector2.y, vector.z);
                     }
                     public static Rect WorldPointToSizedRect(Camera camera, Vector3 position, GUIContent content, GUIStyle style)
                     {
-#if UNITY_EDITOR
                         Vector2 vector = (Vector2)WorldToGUIPointWithDepth(camera, position);
                         Vector2 vector2 = style.CalcSize(content);
                         Rect rect = new Rect(vector.x, vector.y, vector2.x, vector2.y);
@@ -154,75 +159,52 @@ namespace DCFApixels
                         }
 
                         return style.padding.Add(rect);
-#endif
-                    }
-                    //internal static bool CalculateScaledTextureRects(Rect position, ScaleMode scaleMode, float imageAspect, ref Rect outScreenRect, ref Rect outSourceRect)
-                    internal static bool CalculateScaledTextureRects(Rect position, ScaleMode scaleMode, ref Rect outScreenRect, ref Rect outSourceRect)
-                    {
-                        const float imageAspect = 1;
-
-
-                        float num = position.width / position.height;
-                        bool result = false;
-                        switch (scaleMode)
-                        {
-                            case ScaleMode.StretchToFill:
-                                outScreenRect = position;
-                                outSourceRect = new Rect(0f, 0f, 1f, 1f);
-                                result = true;
-                                break;
-                            case ScaleMode.ScaleAndCrop:
-                                if (num > imageAspect)
-                                {
-                                    float num4 = imageAspect / num;
-                                    outScreenRect = position;
-                                    outSourceRect = new Rect(0f, (1f - num4) * 0.5f, 1f, num4);
-                                    result = true;
-                                }
-                                else
-                                {
-                                    float num5 = num / imageAspect;
-                                    outScreenRect = position;
-                                    outSourceRect = new Rect(0.5f - num5 * 0.5f, 0f, num5, 1f);
-                                    result = true;
-                                }
-
-                                break;
-                            case ScaleMode.ScaleToFit:
-                                if (num > imageAspect)
-                                {
-                                    float num2 = imageAspect / num;
-                                    outScreenRect = new Rect(position.xMin + position.width * (1f - num2) * 0.5f, position.yMin, num2 * position.width, position.height);
-                                    outSourceRect = new Rect(0f, 0f, 1f, 1f);
-                                    result = true;
-                                }
-                                else
-                                {
-                                    float num3 = num / imageAspect;
-                                    outScreenRect = new Rect(position.xMin, position.yMin + position.height * (1f - num3) * 0.5f, position.width, num3 * position.height);
-                                    outSourceRect = new Rect(0f, 0f, 1f, 1f);
-                                    result = true;
-                                }
-
-                                break;
-                        }
-
-                        return result;
                     }
                     #endregion
 
 
                     private void InitStatic()
                     {
-                        if (_labelStyle == null || _labelDummy == null)
+                        if (_labelStyle == null || _labelDummy == null || _whiteTexture == null)
                         {
-                            _labelStyle = new GUIStyle(GUI.skin.label)
+
+                            GUIStyleState GenerateGUIStyleState()
+                            {
+                                var result = new GUIStyleState();
+                                result.textColor = Color.white;
+                                result.background = null;
+                                return result;
+                            }
+
+                            GUISkin skin = (GUISkin)typeof(GUI).GetField("s_Skin", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(null);  //GUI.s_Skin
+                            //GUISkin skin = GUI.skin;
+                            _labelStyle = new GUIStyle(skin.label)
                             {
                                 richText = false,
-                                padding = new RectOffset(0, 0, 0, 0),
-                                margin = new RectOffset(0, 0, 0, 0)
+                                padding = new RectOffset(0, 0, 3, 3),
+                                margin = new RectOffset(4, 4, 4, 4),
+                                normal = GenerateGUIStyleState(),
+                                active = GenerateGUIStyleState(),
+                                hover = GenerateGUIStyleState(),
+                                focused = GenerateGUIStyleState(),
                             };
+
+
                             _labelDummy = new GUIContent();
+
+
+                            _whiteTexture = new Texture2D(2, 2);
+                            Color32[] color = new Color32[]
+                            {
+                                new Color32(255,255,255,255),
+                                new Color32(255,255,255,255),
+                                new Color32(255,255,255,255),
+                                new Color32(255,255,255,255),
+                            };
+                            for (int i = 0; i < 4; i++)
+                            {
+                                _whiteTexture.SetPixels32(color);
+                            }
                         }
                     }
                     private static float GetCameraZoom(Camera camera)

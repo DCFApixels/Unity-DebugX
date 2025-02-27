@@ -346,8 +346,8 @@ namespace DCFApixels
             Color gizmosColor = Gizmos.color;
 #if Handles
             Color handlesColor = Handles.color;
-#endif
             GL.MultMatrix(Handles.matrix);
+#endif
 
             RenderContextController.StaicContextController.Render_UnityGizmos();
 
