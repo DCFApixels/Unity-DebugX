@@ -24,19 +24,25 @@ namespace DCFApixels
     {
         private static PauseStateX _pauseState = PauseStateX.Unpaused;
         private static bool _isCameraContext = false;
-        private static ulong _lastEditorTicks = 1000;
 
         private static double _lastUnityTime;
         private static float _deltaTime = 0;
 
         private static ulong _editorTicks = 0;
+        private static ulong _lastEditorToRenderTicks = 1000;
         private static ulong _renderTicks = 100;
+        //private static ulong _lastEditorToRenderGizmosTicks = 1000;
+        //private static ulong _renderGizmosTicks = 100;
         private static ulong _timeTicks = 0;
 
         public static ulong RenderTicks
         {
             get { return _renderTicks; }
         }
+        //public static ulong RenderGizmosTicks
+        //{
+        //    get { return _renderGizmosTicks; }
+        //}
         public static ulong TimeTicks
         {
             get { return _timeTicks; }
@@ -291,16 +297,18 @@ namespace DCFApixels
 
         private static void PostRender_General(ICommandBufferExecutor cbExecutor, Camera camera)
         {
-            if (_lastEditorTicks != _editorTicks)
+            if (_lastEditorToRenderTicks != _editorTicks)
             {
                 _renderTicks++;
-                _lastEditorTicks = _editorTicks;
+                _lastEditorToRenderTicks = _editorTicks;
             }
 
             if (DebugXUtility.IsGizmosRender())
             {
                 RenderContextController.StaicContextController.Prepare();
                 RenderContextController.StaicContextController.Render(cbExecutor);
+
+                CallDrawGizmos(camera);
             }
 
             if (camera == null) { return; }
@@ -308,6 +316,7 @@ namespace DCFApixels
             RenderContextController contextController = RenderContextController.GetController(new RenderContext(camera));
             contextController.Prepare();
             contextController.Render(cbExecutor);
+
         }
 
 #if UNITY_EDITOR
@@ -317,11 +326,27 @@ namespace DCFApixels
         {
             if (obj != Camera.main) { return; }
 
-            Camera camera = Camera.current;
+            //if (_lastEditorToRenderGizmosTicks != _editorTicks)
+            //{
+            //    _renderGizmosTicks++;
+            //    _lastEditorToRenderGizmosTicks = _editorTicks;
+            //}
+
+            //Camera camera = Camera.current;
+            //CallDrawGizmos(camera);
+        }
+#endif
+
+        private static void CallDrawGizmos(Camera camera)
+        {
 
             Color guiColor = GUI.color;
+            Color guiContextColor = GUI.contentColor;
+            Color guiBackgroundColor = GUI.backgroundColor;
             Color gizmosColor = Gizmos.color;
+#if Handles
             Color handlesColor = Handles.color;
+#endif
             GL.MultMatrix(Handles.matrix);
 
             RenderContextController.StaicContextController.Render_UnityGizmos();
@@ -331,10 +356,13 @@ namespace DCFApixels
             RenderContextController.GetController(new RenderContext(camera)).Render_UnityGizmos();
 
             GUI.color = guiColor;
+            GUI.contentColor = guiContextColor;
+            GUI.backgroundColor = guiBackgroundColor;
             Gizmos.color = gizmosColor;
+#if Handles
             Handles.color = handlesColor;
-        }
 #endif
+        }
 
         #endregion
 
@@ -532,7 +560,6 @@ namespace DCFApixels
             //    //}
             //}
 
-
             [IN(LINE)]
             public void Prepare()
             {
@@ -559,7 +586,6 @@ namespace DCFApixels
                         _buffers[i].Render(cbExecutor);
                     }
 
-
                     RunEnd();
                 }
             }
@@ -576,6 +602,8 @@ namespace DCFApixels
                     {
                         _buffers[i].Render_UnityGizmos();
                     }
+
+                    //RunEnd();
                 }
             }
 
@@ -697,6 +725,7 @@ namespace DCFApixels
                 }
                 return removeCount;
             }
+
             public sealed override int RunEnd()
             {
                 int removeCount = 0;
@@ -774,6 +803,7 @@ namespace DCFApixels
             public override void Render_UnityGizmos()
             {
                 if (_rendererUnityGizmos == null) { return; }
+                //Debug.Log(_gizmos._count);
                 if (_gizmos.Count <= 0) { return; }
 #if DEV_MODE
                 using (_renderMarker.Auto())

@@ -5,81 +5,41 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace DCFApixels {
+namespace DCFApixels
+{
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
-    
-    public static partial class DebugX {
-        public readonly partial struct DrawHandler {
+
+    public static partial class DebugX
+    {
+        public readonly partial struct DrawHandler
+        {
             #region Text
+            [IN(LINE)] public DrawHandler TextWorldScale(Vector3 position, object text) => Gizmo(new TextGizmo(position, text, DebugXTextSettings.Default, true));
+            [IN(LINE)] public DrawHandler TextWorldScale(Vector3 position, object text, DebugXTextSettings settings) => Gizmo(new TextGizmo(position, text, settings, true));
+            [IN(LINE)] public DrawHandler Text(Vector3 position, object text) => Gizmo(new TextGizmo(position, text, DebugXTextSettings.Default, false));
+            [IN(LINE)] public DrawHandler Text(Vector3 position, object text, DebugXTextSettings settings) => Gizmo(new TextGizmo(position, text, settings, false));
 
-            /// <summary>
-            /// Draw text at the world position.
-            /// Can pass any object where ToString() will be called.
-            /// </summary>
-            /// <param name="position">World position.</param>
-            /// <param name="text">String or any other object.</param>
-            [IN(LINE)] public DrawHandler Text(Vector3 position, object text) => Gizmo(new TextGizmo(new TextBuilder(position, text)));
-
-            /// <summary>
-            /// Draw text at the world position.
-            /// Can pass any object where ToString() will be called.
-            /// </summary>
-            /// <param name="position">World position.</param>
-            /// <param name="text">String or any other object.</param>
-            /// <param name="fontSize">Text font size.</param>
-            [IN(LINE)] public DrawHandler Text(Vector3 position, object text, int fontSize) => Gizmo(new TextGizmo(new TextBuilder(position, text, fontSize)));
-            
-            /// <summary>
-            /// Draw text at the world position.
-            /// Can pass any object where ToString() will be called.
-            /// </summary>
-            /// <param name="position">World position.</param>
-            /// <param name="text">String or any other object.</param>
-            /// <param name="fontSize">Text font size.</param>
-            /// <param name="textAnchor">Text alignment.</param>
-            [IN(LINE)] public DrawHandler Text(Vector3 position, object text, int fontSize, TextAnchor textAnchor) => Gizmo(new TextGizmo(new TextBuilder(position, text, fontSize, textAnchor)));
-            
-            /// <summary>
-            /// Use text builder to pass more details about how text-gizmo should be drawn.
-            /// </summary>
-            /// <param name="textBuilder">Settings with a builder pattern.</param>
-            [IN(LINE)] public DrawHandler Text(TextBuilder textBuilder) => Gizmo(new TextGizmo(textBuilder));
-            
-            private readonly struct TextGizmo : IGizmo<TextGizmo> {
-                private const int BACKGROUND_TEXTURE_WIDTH = 2;
-                private const int BACKGROUND_TEXTURE_HEIGHT = 2;
-                private const int BACKGROUND_TEXTURE_PIXELS_COUNT = BACKGROUND_TEXTURE_WIDTH * BACKGROUND_TEXTURE_HEIGHT;
-                
-                // TODO: Normally Texture2D should be destroyed when not needed anymore. Though it will live through entire app lifetime. What about editor?
-                private static Texture2D _backgroundTexture;
-                private static Color32[] _backgroundTexturePixels;
-                public readonly TextBuilder TextBuilderInstance;
+            private readonly struct TextGizmo : IGizmo<TextGizmo>
+            {
+                public readonly Vector3 Position;
+                public readonly string Text;
+                public readonly DebugXTextSettings Settings;
+                public readonly bool IsWorldSpaceScale;
                 [IN(LINE)]
-                public TextGizmo(TextBuilder textBuilder) {
-                    TextBuilderInstance = textBuilder;
-                    CheckTextureInstance();
+                public TextGizmo(Vector3 position, object text, DebugXTextSettings settings, bool isWorldSpaceScale)
+                {
+                    Position = position;
+                    Text = text.ToString();
+                    Settings = settings;
+                    IsWorldSpaceScale = isWorldSpaceScale;
                 }
 
-                /// <summary>
-                /// Texture should be set once after the app domain is cleared.
-                /// </summary>
-                private void CheckTextureInstance() {
-                    if (_backgroundTexture != null) {
-                        return;
-                    }
-                    
-                    _backgroundTexture = new Texture2D(BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
-                    _backgroundTexturePixels = new Color32[BACKGROUND_TEXTURE_PIXELS_COUNT];
-                    _backgroundTexture.SetPixels32(_backgroundTexturePixels);
-                    _backgroundTexture.Apply();
-                }
-                
                 public IGizmoRenderer<TextGizmo> RegisterNewRenderer() { return new Renderer(); }
 
                 #region Renderer
                 private class Renderer : IGizmoRenderer_UnityGizmos<TextGizmo>
                 {
-                    private static GUIStyle _labelStyle;
+                    private static GUIStyle _labelStyle; 
                     private static GUIContent _labelDummy;
                     public int ExecuteOrder => default(UnlitMat).GetExecuteOrder();
                     public bool IsStaticRender => false;
@@ -88,176 +48,214 @@ namespace DCFApixels {
                     public void Render_UnityGizmos(Camera camera, GizmosList<TextGizmo> list)
                     {
 #if UNITY_EDITOR
-                        Color defaultColor = GUI.color;
-                        if (_labelStyle == null || _labelDummy == null)
-                        {
-                            _labelStyle = new GUIStyle(GUI.skin.label) {
-                                richText = false
-                            };
-                            _labelDummy = new GUIContent();
-                        }
+                        if (Event.current.type != EventType.Repaint) { return; }
+                        //bool c = camera.name == "SceneCamera";
+                        bool ccc = camera == Camera.main;
+                        //bool x = camera == Camera.main;
+                        bool x = true;
 
-                        if (list.Count == 0) {
-                            return;
-                        }
+                        if (camera == null) { return; }
+                        InitStatic();
+                        var zoom = GetCameraZoom(camera);
 
-                        var zoom = GetCameraZoom();
-                        
                         Handles.BeginGUI();
                         foreach (ref readonly var item in list)
                         {
-                            GUI.color = item.Color * GlobalColor;
-                            _labelDummy.text = item.Value.TextBuilderInstance.Text.ToString();
+                            _labelDummy.text = item.Value.Text;
+                            GUIStyle style = _labelStyle;
 
-                            _labelStyle.fontSize = item.Value.TextBuilderInstance.UseWorldScale 
-                                ? Mathf.FloorToInt(item.Value.TextBuilderInstance.FontSize / zoom) 
-                                : item.Value.TextBuilderInstance.FontSize;
-                            
-                            _labelStyle.alignment = item.Value.TextBuilderInstance.TextAnchor;
+                            style.fontSize = item.Value.IsWorldSpaceScale
+                                ? Mathf.FloorToInt(item.Value.Settings.FontSize / zoom)
+                                : item.Value.Settings.FontSize;
 
-                            _labelStyle.normal = new GUIStyleState {
-                                textColor = item.Color * GlobalColor,
-                            };
-                            
-                            if (item.Value.TextBuilderInstance.UseBackground) {
-                                for (int i = 0; i < BACKGROUND_TEXTURE_PIXELS_COUNT; i++) {
-                                    _backgroundTexturePixels[i] = item.Value.TextBuilderInstance.BackgroundColor;
-                                }
-
-                                _backgroundTexture.SetPixels32(_backgroundTexturePixels);
-                                _backgroundTexture.Apply();
-
-                                _labelStyle.normal.background = _backgroundTexture;
-                            }
-                            
-                            if (!(HandleUtility.WorldToGUIPointWithDepth(item.Value.TextBuilderInstance.Position).z < 0f))
+                            style.alignment = item.Value.Settings.TextAnchor;
+                            if (!(WorldToGUIPointWithDepth(camera, item.Value.Position).z < 0f))
                             {
-                                GUI.Label(HandleUtility.WorldPointToSizedRect(item.Value.TextBuilderInstance.Position, _labelDummy, _labelStyle), _labelDummy, _labelStyle);
+                                Rect rect = WorldPointToSizedRect(camera, item.Value.Position, _labelDummy, _labelStyle);
+                                //if (x) Debug.Log(rect);
+       
+
+                                ////GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+                                //Rect screenRect = default;
+                                //Rect originRect = default;
+                                //CalculateScaledTextureRects(rect, ScaleMode.StretchToFill, ref screenRect, ref originRect);
+
+
+                                GL.PushMatrix();
+                                GL.LoadPixelMatrix(0, Screen.width, Screen.height, 0);
+
+                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
+
+                                Color c = item.Value.Settings.BackgroundColor * GlobalColor;
+                                GUI.color = c;
+                                GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+
+                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
+                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
+
+                                GUI.color = item.Color * GlobalColor;
+                                style.Draw(rect, _labelDummy, false, false, false, false);
+
+                                GL.PopMatrix();
                             }
                         }
                         Handles.EndGUI();
-                        GUI.color = defaultColor;
-
-                        float GetCameraZoom() {
-                            const float DEFAULT_ZOOM = 1f;
-                        
-                            if (camera != null) {
-                                return camera.orthographicSize;
-                            }
-                            
-                            var currentDrawingSceneView = SceneView.currentDrawingSceneView;
-
-                            if (currentDrawingSceneView == null) {
-                                return DEFAULT_ZOOM;
-                            }
-                            
-                            var localCamera = currentDrawingSceneView.camera;
-                                
-                            if (localCamera != null) {
-                                return localCamera.orthographicSize;
-                            }
-
-                            return DEFAULT_ZOOM;
-                        }
 #endif
+                    }
+
+
+                    #region Utils
+                    public static Vector3 WorldToGUIPointWithDepth(Camera camera, Vector3 world)
+                    {
+#if UNITY_EDITOR
+                        world = Handles.matrix.MultiplyPoint(world);
+                        Vector3 vector = camera.WorldToScreenPoint(world);
+                        vector.y = camera.pixelHeight - vector.y;
+                        Vector2 vector2 = EditorGUIUtility.PixelsToPoints(vector);
+                        return new Vector3(vector2.x, vector2.y, vector.z);
+#endif
+                    }
+                    public static Rect WorldPointToSizedRect(Camera camera, Vector3 position, GUIContent content, GUIStyle style)
+                    {
+#if UNITY_EDITOR
+                        Vector2 vector = (Vector2)WorldToGUIPointWithDepth(camera, position);
+                        Vector2 vector2 = style.CalcSize(content);
+                        Rect rect = new Rect(vector.x, vector.y, vector2.x, vector2.y);
+                        switch (style.alignment)
+                        {
+                            case TextAnchor.UpperCenter:
+                                rect.x -= rect.width * 0.5f;
+                                break;
+                            case TextAnchor.UpperRight:
+                                rect.x -= rect.width;
+                                break;
+                            case TextAnchor.MiddleLeft:
+                                rect.y -= rect.height * 0.5f;
+                                break;
+                            case TextAnchor.MiddleCenter:
+                                rect.x -= rect.width * 0.5f;
+                                rect.y -= rect.height * 0.5f;
+                                break;
+                            case TextAnchor.MiddleRight:
+                                rect.x -= rect.width;
+                                rect.y -= rect.height * 0.5f;
+                                break;
+                            case TextAnchor.LowerLeft:
+                                rect.y -= rect.height;
+                                break;
+                            case TextAnchor.LowerCenter:
+                                rect.x -= rect.width * 0.5f;
+                                rect.y -= rect.height;
+                                break;
+                            case TextAnchor.LowerRight:
+                                rect.x -= rect.width;
+                                rect.y -= rect.height;
+                                break;
+                        }
+
+                        return style.padding.Add(rect);
+#endif
+                    }
+                    //internal static bool CalculateScaledTextureRects(Rect position, ScaleMode scaleMode, float imageAspect, ref Rect outScreenRect, ref Rect outSourceRect)
+                    internal static bool CalculateScaledTextureRects(Rect position, ScaleMode scaleMode, ref Rect outScreenRect, ref Rect outSourceRect)
+                    {
+                        const float imageAspect = 1;
+
+
+                        float num = position.width / position.height;
+                        bool result = false;
+                        switch (scaleMode)
+                        {
+                            case ScaleMode.StretchToFill:
+                                outScreenRect = position;
+                                outSourceRect = new Rect(0f, 0f, 1f, 1f);
+                                result = true;
+                                break;
+                            case ScaleMode.ScaleAndCrop:
+                                if (num > imageAspect)
+                                {
+                                    float num4 = imageAspect / num;
+                                    outScreenRect = position;
+                                    outSourceRect = new Rect(0f, (1f - num4) * 0.5f, 1f, num4);
+                                    result = true;
+                                }
+                                else
+                                {
+                                    float num5 = num / imageAspect;
+                                    outScreenRect = position;
+                                    outSourceRect = new Rect(0.5f - num5 * 0.5f, 0f, num5, 1f);
+                                    result = true;
+                                }
+
+                                break;
+                            case ScaleMode.ScaleToFit:
+                                if (num > imageAspect)
+                                {
+                                    float num2 = imageAspect / num;
+                                    outScreenRect = new Rect(position.xMin + position.width * (1f - num2) * 0.5f, position.yMin, num2 * position.width, position.height);
+                                    outSourceRect = new Rect(0f, 0f, 1f, 1f);
+                                    result = true;
+                                }
+                                else
+                                {
+                                    float num3 = num / imageAspect;
+                                    outScreenRect = new Rect(position.xMin, position.yMin + position.height * (1f - num3) * 0.5f, position.width, num3 * position.height);
+                                    outSourceRect = new Rect(0f, 0f, 1f, 1f);
+                                    result = true;
+                                }
+
+                                break;
+                        }
+
+                        return result;
+                    }
+                    #endregion
+
+
+                    private void InitStatic()
+                    {
+                        if (_labelStyle == null || _labelDummy == null)
+                        {
+                            _labelStyle = new GUIStyle(GUI.skin.label)
+                            {
+                                richText = false,
+                                padding = new RectOffset(0, 0, 0, 0),
+                                margin = new RectOffset(0, 0, 0, 0)
+                            };
+                            _labelDummy = new GUIContent();
+                        }
+                    }
+                    private static float GetCameraZoom(Camera camera)
+                    {
+                        const float DEFAULT_ZOOM = 1f;
+
+                        if (camera != null)
+                        {
+                            return camera.orthographicSize;
+                        }
+                        return DEFAULT_ZOOM;
+
+                        //var currentDrawingSceneView = SceneView.currentDrawingSceneView;
+                        //
+                        //if (currentDrawingSceneView == null)
+                        //{
+                        //    return DEFAULT_ZOOM;
+                        //}
+                        //
+                        //var localCamera = currentDrawingSceneView.camera;
+                        //
+                        //if (localCamera != null)
+                        //{
+                        //    return localCamera.orthographicSize;
+                        //}
+                        //
+                        //return DEFAULT_ZOOM;
                     }
                 }
                 #endregion
             }
-            #endregion
-            
-            #region TextBuilder
-            /// <summary>
-            /// Set text gizmos instance settings using a builder pattern. 
-            /// </summary>
-            public struct TextBuilder {
-                private const TextAnchor DEFAULT_TEXT_ANCHOR = TextAnchor.MiddleLeft;
-                private const int DEFAULT_FONT_SIZE = 16;
-                
-                /// <summary>
-                /// Text world position.
-                /// </summary>
-                public Vector3 Position { get; set; }
-                
-                /// <summary>
-                /// Text. Uses ToString() of the passed object. 
-                /// </summary>
-                public object Text { get; set; }
 
-                /// <summary>
-                /// Font size. Default is <see cref="DEFAULT_FONT_SIZE" />.
-                /// </summary>
-                public int FontSize { get; set; }
-                
-                /// <summary>
-                /// Text alignment. Default is <see cref="DEFAULT_TEXT_ANCHOR" />.
-                /// </summary>
-                public TextAnchor TextAnchor { get; set; }
-                
-                /// <summary>
-                /// Background texture color.
-                /// </summary>
-                public Color BackgroundColor { get; set; }
-                
-                /// <summary>
-                /// Flag to use background texture and background color when rendering text gizmo instance.
-                /// </summary>
-                public bool UseBackground { get; set; }
-                
-                /// <summary>
-                /// If set true - camera zooming will affect text scale to keep same size in the world.
-                /// </summary>
-                public bool UseWorldScale { get; set; }
-
-                public TextBuilder(Vector3 position, object text, int fontSize = DEFAULT_FONT_SIZE, TextAnchor textAnchor = DEFAULT_TEXT_ANCHOR) : this() {
-                    Position = position;
-                    Text = text;
-                    FontSize = fontSize;
-                    TextAnchor = textAnchor;
-                }
-
-                public TextBuilder SetPosition(Vector3 position) {
-                    Position = position;
-                    return this;
-                }
-                    
-                public TextBuilder SetText(object text) {
-                    Text = text;
-                    return this;
-                }
-                    
-                public TextBuilder SetFontSize(int fontSize) {
-                    FontSize = fontSize;
-                    return this;
-                }
-                    
-                public TextBuilder SetTextAnchor(TextAnchor textAnchor) {
-                    TextAnchor = textAnchor;
-                    return this;
-                }
-
-                public TextBuilder SetBackground(Color backgroundColor) {
-                    UseBackground = true;
-                    BackgroundColor = backgroundColor;
-                    return this;
-                }
-                    
-                public TextBuilder RemoveBackground() {
-                    UseBackground = false;
-                    return this;
-                }
-                
-                public TextBuilder SetWorldScaling() {
-                    UseWorldScale = true;
-                    return this;
-                }
-                    
-                public TextBuilder RemoveWorldScaling() {
-                    UseWorldScale = false;
-                    return this;
-                }
-            }
-            #endregion
+#endregion
         }
     }
 }

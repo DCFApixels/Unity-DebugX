@@ -4135,7 +4135,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1482731616}
   m_Layer: 0
-  m_Name: Hello World
+  m_Name: Hello World Hello World Hello World
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
