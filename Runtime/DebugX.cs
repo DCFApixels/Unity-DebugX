@@ -344,7 +344,9 @@ namespace DCFApixels
             Color guiContextColor = GUI.contentColor;
             Color guiBackgroundColor = GUI.backgroundColor;
             Color gizmosColor = Gizmos.color;
+#if Handles
             Color handlesColor = Handles.color;
+#endif
             GL.MultMatrix(Handles.matrix);
 
             RenderContextController.StaicContextController.Render_UnityGizmos();
@@ -357,7 +359,9 @@ namespace DCFApixels
             GUI.contentColor = guiContextColor;
             GUI.backgroundColor = guiBackgroundColor;
             Gizmos.color = gizmosColor;
+#if Handles
             Handles.color = handlesColor;
+#endif
         }
 
         #endregion
