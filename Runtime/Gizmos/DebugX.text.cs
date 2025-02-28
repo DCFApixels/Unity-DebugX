@@ -57,8 +57,23 @@ namespace DCFApixels
                         if (camera == null) { return; }
                         InitStatic();
                         var zoom = GetCameraZoom(camera);
-                        var isSceneView = camera.name == "SceneCamera";
-                        //Handles.BeginGUI();
+                        bool isSceneView = false;
+#if UNITY_EDITOR
+                        isSceneView = camera.name == "SceneCamera";
+#endif
+
+                        if (isSceneView)
+                        {
+#if UNITY_EDITOR
+                            Handles.BeginGUI();
+#endif
+                        }
+                        else
+                        {
+                            GL.PushMatrix();
+                            //GL.LoadPixelMatrix(0, Screen.width, Screen.height - (isSceneView ? 50 : 0), 0);
+                            GL.LoadPixelMatrix(0, Screen.width, Screen.height, 0);
+                        }
                         foreach (ref readonly var item in list)
                         {
                             _labelDummy.text = item.Value.Text;
@@ -73,8 +88,7 @@ namespace DCFApixels
                             {
                                 Rect rect = WorldPointToSizedRect(camera, item.Value.Position, _labelDummy, _labelStyle);
 
-                                GL.PushMatrix();
-                                GL.LoadPixelMatrix(0, Screen.width, Screen.height - (isSceneView ? 50 : 0), 0);
+                              
 
 
                                 Color c = item.Value.Settings.BackgroundColor * GlobalColor;
@@ -87,11 +101,21 @@ namespace DCFApixels
                                 style.Draw(rect, _labelDummy, false, false, false, false);
 
 
-                                GL.PopMatrix();
                             }
                         }
                         GUI.color = dfColor;
                         DebugXAssets.Materials.Unlit.SetColor(ColorPropertyID, Color.white);
+
+                        if (isSceneView)
+                        {
+#if UNITY_EDITOR
+                            Handles.EndGUI();
+#endif
+                        }
+                        else
+                        {
+                            GL.PopMatrix();
+                        }
                     }
 
 
