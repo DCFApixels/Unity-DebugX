@@ -57,7 +57,7 @@ namespace DCFApixels
                         if (camera == null) { return; }
                         InitStatic();
                         var zoom = GetCameraZoom(camera);
-
+                        var isSceneView = camera.name == "SceneCamera";
                         //Handles.BeginGUI();
                         foreach (ref readonly var item in list)
                         {
@@ -72,31 +72,20 @@ namespace DCFApixels
                             if (!(WorldToGUIPointWithDepth(camera, item.Value.Position).z < 0f))
                             {
                                 Rect rect = WorldPointToSizedRect(camera, item.Value.Position, _labelDummy, _labelStyle);
-                                //if (x) Debug.Log(rect);
-       
-
-                                ////GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
-                                //Rect screenRect = default;
-                                //Rect originRect = default;
-                                //CalculateScaledTextureRects(rect, ScaleMode.StretchToFill, ref screenRect, ref originRect);
-
 
                                 GL.PushMatrix();
-                                GL.LoadPixelMatrix(0, Screen.width, Screen.height, 0);
+                                GL.LoadPixelMatrix(0, Screen.width, Screen.height - (isSceneView ? 50 : 0), 0);
 
-                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
 
                                 Color c = item.Value.Settings.BackgroundColor * GlobalColor;
                                 GUI.color = c;
-                                //GUI.DrawTexture(rect, _whiteTexture);
-
                                 var mat = DebugXAssets.Materials.Unlit;
                                 mat.SetColor(ColorPropertyID, c);
                                 Graphics.DrawTexture(rect, _whiteTexture, mat);
-                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
 
                                 GUI.color = item.Color * GlobalColor;
                                 style.Draw(rect, _labelDummy, false, false, false, false);
+
 
                                 GL.PopMatrix();
                             }
