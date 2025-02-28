@@ -51,8 +51,6 @@ namespace DCFApixels
                     }
                     public void Render_UnityGizmos(Camera camera, GizmosList<TextGizmo> list)
                     {
-                        //return;
-//#if UNITY_EDITOR
                         if (Event.current.type != EventType.Repaint) { return; }
                         Color dfColor = GUI.color;
 
@@ -92,7 +90,9 @@ namespace DCFApixels
                                 GUI.color = c;
                                 //GUI.DrawTexture(rect, _whiteTexture);
 
-                                //Graphics.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+                                var mat = DebugXAssets.Materials.Unlit;
+                                mat.SetColor(ColorPropertyID, c);
+                                Graphics.DrawTexture(rect, _whiteTexture, mat);
                                 //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
 
                                 GUI.color = item.Color * GlobalColor;
@@ -101,9 +101,8 @@ namespace DCFApixels
                                 GL.PopMatrix();
                             }
                         }
-                        //Handles.EndGUI();
                         GUI.color = dfColor;
-//#endif
+                        DebugXAssets.Materials.Unlit.SetColor(ColorPropertyID, Color.white);
                     }
 
 
@@ -157,7 +156,6 @@ namespace DCFApixels
                                 rect.y -= rect.height;
                                 break;
                         }
-
                         return style.padding.Add(rect);
                     }
                     #endregion
@@ -167,7 +165,6 @@ namespace DCFApixels
                     {
                         if (_labelStyle == null || _labelDummy == null || _whiteTexture == null)
                         {
-
                             GUIStyleState GenerateGUIStyleState()
                             {
                                 var result = new GUIStyleState();
@@ -175,23 +172,20 @@ namespace DCFApixels
                                 result.background = null;
                                 return result;
                             }
-
                             GUISkin skin = (GUISkin)typeof(GUI).GetField("s_Skin", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(null);  //GUI.s_Skin
                             //GUISkin skin = GUI.skin;
                             _labelStyle = new GUIStyle(skin.label)
                             {
                                 richText = false,
-                                padding = new RectOffset(0, 0, 3, 3),
-                                margin = new RectOffset(4, 4, 4, 4),
+                                padding = new RectOffset(1, 1, 1, 1),
+                                margin = new RectOffset(0, 0, 0, 0),
                                 normal = GenerateGUIStyleState(),
                                 active = GenerateGUIStyleState(),
                                 hover = GenerateGUIStyleState(),
                                 focused = GenerateGUIStyleState(),
                             };
 
-
                             _labelDummy = new GUIContent();
-
 
                             _whiteTexture = new Texture2D(2, 2);
                             Color32[] color = new Color32[]
@@ -201,10 +195,8 @@ namespace DCFApixels
                                 new Color32(255,255,255,255),
                                 new Color32(255,255,255,255),
                             };
-                            for (int i = 0; i < 4; i++)
-                            {
-                                _whiteTexture.SetPixels32(color);
-                            }
+                            _whiteTexture.SetPixels32(color);
+                            _whiteTexture.Apply();
                         }
                     }
                     private static float GetCameraZoom(Camera camera)
