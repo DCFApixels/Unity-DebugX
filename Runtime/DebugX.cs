@@ -103,11 +103,11 @@ namespace DCFApixels
                     system.updateDelegate -= PreRenderCallback;
                     system.updateDelegate += PreRenderCallback;
                 }
-                if (system.type == typeof(TriggerEndOfFrameCallbacks))
-                {
-                    system.updateDelegate -= OnTriggerEndOfFrameCallbacks;
-                    system.updateDelegate += OnTriggerEndOfFrameCallbacks;
-                }
+                //if (system.type == typeof(TriggerEndOfFrameCallbacks))
+                //{
+                //    system.updateDelegate -= OnTriggerEndOfFrameCallbacks;
+                //    system.updateDelegate += OnTriggerEndOfFrameCallbacks;
+                //}
             }
             curentLoop.subSystemList = systemsList;
             PlayerLoop.SetPlayerLoop(curentLoop);
@@ -275,10 +275,6 @@ namespace DCFApixels
         }
         private static void PreRenderCallback()
         {
-            foreach (var item in RenderContextController.AllConteollers)
-            {
-                item.RunEnd();
-            }
             RenderContextController.ClearCommandBuffers();
             SetCameraContext();
             _currentCamera = null;
@@ -310,10 +306,7 @@ namespace DCFApixels
                 RenderContextController.StaicContextController.Render(cbExecutor);
                 cbExecutor.Submit();
                 RenderContextController.StaicContextController.PostRender();
-                if (IsSRP)
-                {
-                    RenderContextController.StaicContextController.RunEnd();
-                }
+                RenderContextController.StaicContextController.RunEnd();
             }
 
             if (camera == null) { return; }
@@ -323,10 +316,7 @@ namespace DCFApixels
             contextController.Render(cbExecutor);
             cbExecutor.Submit();
             contextController.PostRender();
-            if (IsSRP)
-            {
-                contextController.RunEnd();
-            }
+            contextController.RunEnd();
         }
         #endregion
 
