@@ -14,110 +14,150 @@ namespace DCFApixels
         public readonly partial struct DrawHandler
         {
             #region Text
-            [IN(LINE)] public DrawHandler TextWorldScale(Vector3 position, object text) => Gizmo(new TextGizmo(position, text, DebugXTextSettings.Default, true));
-            [IN(LINE)] public DrawHandler TextWorldScale(Vector3 position, object text, DebugXTextSettings settings) => Gizmo(new TextGizmo(position, text, settings, true));
-            [IN(LINE)] public DrawHandler Text(Vector3 position, object text) => Gizmo(new TextGizmo(position, text, DebugXTextSettings.Default, false));
-            [IN(LINE)] public DrawHandler Text(Vector3 position, object text, DebugXTextSettings settings) => Gizmo(new TextGizmo(position, text, settings, false));
+            [IN(LINE)] public DrawHandler Text(Vector3 position, object text) => Gizmo(new TextGizmo(position, text, DebugXTextSettings.Default));
+            [IN(LINE)] public DrawHandler Text(Vector3 position, object text, DebugXTextSettings settings) => Gizmo(new TextGizmo(position, text, settings));
 
             private readonly struct TextGizmo : IGizmo<TextGizmo>
             {
                 public readonly Vector3 Position;
                 public readonly string Text;
                 public readonly DebugXTextSettings Settings;
-                public readonly bool IsWorldSpaceScale;
                 [IN(LINE)]
-                public TextGizmo(Vector3 position, object text, DebugXTextSettings settings, bool isWorldSpaceScale)
+                public TextGizmo(Vector3 position, object text, DebugXTextSettings settings)
                 {
                     Position = position;
                     Text = text.ToString();
                     Settings = settings;
-                    IsWorldSpaceScale = isWorldSpaceScale;
                 }
 
                 public IGizmoRenderer<TextGizmo> RegisterNewRenderer() { return new Renderer(); }
 
                 #region Renderer
-                private class Renderer : IGizmoRenderer_UnityGizmos<TextGizmo>
+                private class Renderer : IGizmoRenderer_PostRender<TextGizmo>
                 {
-                    private static GUIStyle _labelStyle; 
+                    private static GUIStyle _labelStyle;
                     private static GUIContent _labelDummy;
+                    private static Texture2D _whiteTexture;
                     public int ExecuteOrder => default(UnlitMat).GetExecuteOrder();
                     public bool IsStaticRender => false;
                     public void Prepare(Camera camera, GizmosList<TextGizmo> list) { }
                     public void Render(Camera camera, GizmosList<TextGizmo> list, CommandBuffer cb) { }
-                    public void Render_UnityGizmos(Camera camera, GizmosList<TextGizmo> list)
+                    public void PostRender(Camera camera, GizmosList<TextGizmo> list)
                     {
-#if UNITY_EDITOR
-                        if (Event.current.type != EventType.Repaint) { return; }
-                        //bool c = camera.name == "SceneCamera";
-                        bool ccc = camera == Camera.main;
-                        //bool x = camera == Camera.main;
-                        bool x = true;
-
                         if (camera == null) { return; }
+                        if (Event.current.type != EventType.Repaint) { return; }
+                        Color dfColor = GUI.color;
                         InitStatic();
-                        var zoom = GetCameraZoom(camera);
+                        bool isSceneView = false;
+                        var backgroundMaterial = DebugXAssets.Materials.TextBackground;
 
-                        Handles.BeginGUI();
+#if UNITY_EDITOR
+                        //TODO костыльный вариант, нужно поискать более надежный способ определить рендер SceneView
+                        isSceneView = camera.name == "SceneCamera";
+#endif
+
+                        if (isSceneView)
+                        {
+#if UNITY_EDITOR
+                            Handles.BeginGUI();
+#endif
+                        }
+                        else
+                        {
+                            GL.PushMatrix();
+                            GL.LoadPixelMatrix(0, Screen.width, Screen.height, 0);
+                        }
                         foreach (ref readonly var item in list)
                         {
                             _labelDummy.text = item.Value.Text;
                             GUIStyle style = _labelStyle;
 
-                            style.fontSize = item.Value.IsWorldSpaceScale
-                                ? Mathf.FloorToInt(item.Value.Settings.FontSize / zoom)
-                                : item.Value.Settings.FontSize;
+                            var zoom = GetCameraZoom(camera, item.Value.Position);
+
+                            style.fontSize = Mathf.FloorToInt(Mathf.Lerp(item.Value.Settings.FontSize, item.Value.Settings.FontSize / zoom, item.Value.Settings.WorldSpaceScaleFactor));
 
                             style.alignment = item.Value.Settings.TextAnchor;
                             if (!(WorldToGUIPointWithDepth(camera, item.Value.Position).z < 0f))
                             {
                                 Rect rect = WorldPointToSizedRect(camera, item.Value.Position, _labelDummy, _labelStyle);
-                                //if (x) Debug.Log(rect);
-       
-
-                                ////GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
-                                //Rect screenRect = default;
-                                //Rect originRect = default;
-                                //CalculateScaledTextureRects(rect, ScaleMode.StretchToFill, ref screenRect, ref originRect);
-
-
-                                GL.PushMatrix();
-                                GL.LoadPixelMatrix(0, Screen.width, Screen.height, 0);
-
-                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
-
-                                Color c = item.Value.Settings.BackgroundColor * GlobalColor;
-                                GUI.color = c;
-                                GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
-
-                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
-                                //Graphics.DrawTexture(screenRect, EditorGUIUtility.whiteTexture, screenRect, 0, 0, 0, 0);
-
+                                Color backgroundColor = item.Value.Settings.BackgroundColor * GlobalColor;
+                                Graphics.DrawTexture(rect, _whiteTexture, new Rect(0, 0, 1, 1), 0, 0, 0, 0, backgroundColor, backgroundMaterial, -1);
                                 GUI.color = item.Color * GlobalColor;
                                 style.Draw(rect, _labelDummy, false, false, false, false);
-
-                                GL.PopMatrix();
                             }
                         }
-                        Handles.EndGUI();
+                        GUI.color = dfColor;
+                        backgroundMaterial.SetColor(ColorPropertyID, Color.white);
+
+                        if (isSceneView)
+                        {
+#if UNITY_EDITOR
+                            Handles.EndGUI();
 #endif
+                        }
+                        else
+                        {
+                            GL.PopMatrix();
+                        }
                     }
 
+                    #region Init
+                    private void InitStatic()
+                    {
+                        if (_labelStyle == null || _labelDummy == null || _whiteTexture == null)
+                        {
+                            GUIStyleState GenerateGUIStyleState()
+                            {
+                                var result = new GUIStyleState();
+                                result.textColor = Color.white;
+                                result.background = null;
+                                return result;
+                            }
+                            GUISkin skin = (GUISkin)typeof(GUI).GetField("s_Skin", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(null);  //GUI.s_Skin
+                            //GUISkin skin = GUI.skin;
+                            _labelStyle = new GUIStyle(skin.label)
+                            {
+                                richText = false,
+                                padding = new RectOffset(1, 1, 0, 0),
+                                margin = new RectOffset(0, 0, 0, 0),
+                                normal = GenerateGUIStyleState(),
+                                active = GenerateGUIStyleState(),
+                                hover = GenerateGUIStyleState(),
+                                focused = GenerateGUIStyleState(),
+                            };
+
+                            _labelDummy = new GUIContent();
+
+                            _whiteTexture = new Texture2D(2, 2);
+                            Color32[] color = new Color32[]
+                            {
+                                Color.white,
+                                Color.white,
+                                Color.white,
+                                Color.white,
+                            };
+                            _whiteTexture.SetPixels32(color);
+                            _whiteTexture.Apply();
+                        }
+                    }
+                    #endregion
 
                     #region Utils
                     public static Vector3 WorldToGUIPointWithDepth(Camera camera, Vector3 world)
                     {
 #if UNITY_EDITOR
                         world = Handles.matrix.MultiplyPoint(world);
+#endif
                         Vector3 vector = camera.WorldToScreenPoint(world);
                         vector.y = camera.pixelHeight - vector.y;
-                        Vector2 vector2 = EditorGUIUtility.PixelsToPoints(vector);
-                        return new Vector3(vector2.x, vector2.y, vector.z);
+                        Vector2 vector2 = (Vector2)(vector);
+#if UNITY_EDITOR
+                        vector2 = EditorGUIUtility.PixelsToPoints(vector);
 #endif
+                        return new Vector3(vector2.x, vector2.y, vector.z);
                     }
                     public static Rect WorldPointToSizedRect(Camera camera, Vector3 position, GUIContent content, GUIStyle style)
                     {
-#if UNITY_EDITOR
                         Vector2 vector = (Vector2)WorldToGUIPointWithDepth(camera, position);
                         Vector2 vector2 = style.CalcSize(content);
                         Rect rect = new Rect(vector.x, vector.y, vector2.x, vector2.y);
@@ -152,88 +192,27 @@ namespace DCFApixels
                                 rect.y -= rect.height;
                                 break;
                         }
-
                         return style.padding.Add(rect);
-#endif
                     }
-                    //internal static bool CalculateScaledTextureRects(Rect position, ScaleMode scaleMode, float imageAspect, ref Rect outScreenRect, ref Rect outSourceRect)
-                    internal static bool CalculateScaledTextureRects(Rect position, ScaleMode scaleMode, ref Rect outScreenRect, ref Rect outSourceRect)
+                    private static float GetCameraZoom(Camera camera, Vector3 position)
                     {
-                        const float imageAspect = 1;
+                        position = Handles.matrix.MultiplyPoint(position);
+                        Transform transform = camera.transform;
+                        Vector3 position2 = transform.position;
+                        float z = Vector3.Dot(position - position2, transform.TransformDirection(new Vector3(0f, 0f, 1f)));
+                        Vector3 vector = camera.WorldToScreenPoint(position2 + transform.TransformDirection(new Vector3(0f, 0f, z)));
+                        Vector3 vector2 = camera.WorldToScreenPoint(position2 + transform.TransformDirection(new Vector3(1f, 0f, z)));
+                        float magnitude = (vector - vector2).magnitude;
+                        return 80f / Mathf.Max(magnitude, 0.0001f) * EditorGUIUtility.pixelsPerPoint;
 
 
-                        float num = position.width / position.height;
-                        bool result = false;
-                        switch (scaleMode)
-                        {
-                            case ScaleMode.StretchToFill:
-                                outScreenRect = position;
-                                outSourceRect = new Rect(0f, 0f, 1f, 1f);
-                                result = true;
-                                break;
-                            case ScaleMode.ScaleAndCrop:
-                                if (num > imageAspect)
-                                {
-                                    float num4 = imageAspect / num;
-                                    outScreenRect = position;
-                                    outSourceRect = new Rect(0f, (1f - num4) * 0.5f, 1f, num4);
-                                    result = true;
-                                }
-                                else
-                                {
-                                    float num5 = num / imageAspect;
-                                    outScreenRect = position;
-                                    outSourceRect = new Rect(0.5f - num5 * 0.5f, 0f, num5, 1f);
-                                    result = true;
-                                }
-
-                                break;
-                            case ScaleMode.ScaleToFit:
-                                if (num > imageAspect)
-                                {
-                                    float num2 = imageAspect / num;
-                                    outScreenRect = new Rect(position.xMin + position.width * (1f - num2) * 0.5f, position.yMin, num2 * position.width, position.height);
-                                    outSourceRect = new Rect(0f, 0f, 1f, 1f);
-                                    result = true;
-                                }
-                                else
-                                {
-                                    float num3 = num / imageAspect;
-                                    outScreenRect = new Rect(position.xMin, position.yMin + position.height * (1f - num3) * 0.5f, position.width, num3 * position.height);
-                                    outSourceRect = new Rect(0f, 0f, 1f, 1f);
-                                    result = true;
-                                }
-
-                                break;
-                        }
-
-                        return result;
-                    }
-                    #endregion
-
-
-                    private void InitStatic()
-                    {
-                        if (_labelStyle == null || _labelDummy == null)
-                        {
-                            _labelStyle = new GUIStyle(GUI.skin.label)
-                            {
-                                richText = false,
-                                padding = new RectOffset(0, 0, 0, 0),
-                                margin = new RectOffset(0, 0, 0, 0)
-                            };
-                            _labelDummy = new GUIContent();
-                        }
-                    }
-                    private static float GetCameraZoom(Camera camera)
-                    {
-                        const float DEFAULT_ZOOM = 1f;
-
-                        if (camera != null)
-                        {
-                            return camera.orthographicSize;
-                        }
-                        return DEFAULT_ZOOM;
+                        //const float DEFAULT_ZOOM = 1f;
+                        //
+                        //if (camera != null)
+                        //{
+                        //    return camera.orthographicSize;
+                        //}
+                        //return DEFAULT_ZOOM;
 
                         //var currentDrawingSceneView = SceneView.currentDrawingSceneView;
                         //
@@ -251,6 +230,7 @@ namespace DCFApixels
                         //
                         //return DEFAULT_ZOOM;
                     }
+                    #endregion
                 }
                 #endregion
             }

@@ -29,7 +29,7 @@ namespace DCFApixels
 
 
 
-        private enum PauseStateX
+        private enum DebugXPauseState
         {
             Unpaused = 0,
             PreUnpaused = 1, //нужно чтобы отщелкунть паузу с задержкой в один тик
