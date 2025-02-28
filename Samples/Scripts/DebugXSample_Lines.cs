@@ -7,28 +7,21 @@ namespace DCFApixels.DebugXCore.Samples
     {
         public Gradient Gradient;
         public float GradientMultiplier = 5;
+        public float WidthMultiplier = 1f;
         public Transform[] StartLines;
         public Transform[] EndLines;
 
-        public float WidthMultiplier = 1f;
-
 #if UNITY_EDITOR
-        //private void OnDrawGizmos()
-        //{
-        //    Draw();
-        //}
+        private void OnDrawGizmos()
+        {
+            Draw();
+        }
 #else
         private void Update()
         {
             Draw();
         }
 #endif
-        [DebugXDrawGizmo(typeof(DebugXSample_Lines))]
-        private static void DrawGizmos(DebugXSample_Lines obj)
-        {
-            obj.Draw();
-        }
-
         private void Draw()
         {
             int i = -1;
