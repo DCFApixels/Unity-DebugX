@@ -3478,6 +3478,7 @@ MonoBehaviour:
   - {fileID: 1754071551}
   - {fileID: 1349340033}
   - {fileID: 1592966087}
+  TextBackgroundColor: {r: 1, g: 0, b: 0.232862, a: 0.31764707}
 --- !u!4 &1144727111
 Transform:
   m_ObjectHideFlags: 0
