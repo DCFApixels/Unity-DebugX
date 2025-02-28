@@ -14,7 +14,6 @@ using Unity.Collections.LowLevel.Unsafe;
 using DCFApixels.DebugXCore.Internal;
 #if UNITY_EDITOR
 using UnityEditor;
-using System.Reflection;
 using System.Linq;
 #endif
 
@@ -22,6 +21,53 @@ namespace DCFApixels
 {
     using static DebugXConsts;
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
+
+    public static class DebugXEvents
+    {
+        public delegate void OnDrawGizmoHandler(Camera camera);
+        private static event OnDrawGizmoHandler _onDrawGizmo = delegate { };
+        public static event OnDrawGizmoHandler OnDrawGizmo
+        {
+            add
+            {
+                _onDrawGizmo -= value;
+                _onDrawGizmo += value;
+            }
+            remove
+            {
+                _onDrawGizmo -= value;
+            }
+        }
+
+        private static void CleanupEvent(ref OnDrawGizmoHandler eventToClean)
+        {
+            var invocationList = eventToClean.GetInvocationList();
+
+            var validDelegates = invocationList
+                .Where(d => d.Target as UnityEngine.Object == null || d.Target as UnityEngine.Object != null)
+                .Where(d => !(d.Target is UnityEngine.Object targetObj) || targetObj != null)
+                .ToArray();
+
+            if (validDelegates.Length != invocationList.Length)
+            {
+                eventToClean = null;
+                foreach (var delegateItem in validDelegates)
+                {
+                    eventToClean += (OnDrawGizmoHandler)delegateItem;
+                }
+            }
+        }
+
+        internal static void CleanupOnDrawGizmo()
+        {
+            CleanupEvent(ref _onDrawGizmo);
+        }
+        internal static void InvokeOnDrawGizmo(Camera camera)
+        {
+            _onDrawGizmo(camera);
+        }
+    }
+
     public static unsafe partial class DebugX
     {
         private static DebugXPauseState _pauseState = DebugXPauseState.Unpaused;
@@ -36,7 +82,7 @@ namespace DCFApixels
         private static ulong _timeTicks = 0;
 
 #if UNITY_EDITOR
-        private static (MethodInfo method, DebugXDrawGizmoAttribute attribute)[] _drawGizmosMethods;
+        private static readonly Unity.Profiling.ProfilerMarker _onDrawGizmoCalllback = new Unity.Profiling.ProfilerMarker($"{nameof(DebugX)}.{nameof(DebugXEvents.OnDrawGizmo)}");
 #endif
 
         public static ulong RenderTicks
@@ -47,7 +93,6 @@ namespace DCFApixels
         {
             get { return _timeTicks; }
         }
-
 
         #region Other
         public static void ClearAllGizmos()
@@ -121,7 +166,6 @@ namespace DCFApixels
 
 
 #if UNITY_EDITOR
-            _drawGizmosMethods = TypeCache.GetMethodsWithAttribute<DebugXDrawGizmoAttribute>().Select(o => (o, o.GetCustomAttribute<DebugXDrawGizmoAttribute>())).ToArray();
             EditorApplication.pauseStateChanged -= EditorApplication_pauseStateChanged;
             EditorApplication.pauseStateChanged += EditorApplication_pauseStateChanged;
             EditorApplication.update -= EditorApplication_update;
@@ -304,26 +348,19 @@ namespace DCFApixels
             {
                 _renderTicks++;
                 _lastEditorToRenderTicks = _editorTicks;
+
+
+                DebugXEvents.CleanupOnDrawGizmo();
             }
 
             if (DebugXUtility.IsGizmosRender())
             {
-                if(_drawGizmosMethods.Length > 0)
+#if UNITY_EDITOR
+                using (_onDrawGizmoCalllback.Auto())
+#endif
                 {
-                    object[] oneObjParams = new object[1];
-                    for (int i = 0; i < _drawGizmosMethods.Length; i++)
-                    {
-                        var pair = _drawGizmosMethods[i];
-                        var objects = UnityEngine.Object.FindObjectsByType(pair.attribute.Type, FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-                        for (int j = 0; j < objects.Length; j++)
-                        {
-                            oneObjParams[0] = objects[j];
-                            pair.method.Invoke(null, oneObjParams);
-                        }
-                    }
+                    DebugXEvents.InvokeOnDrawGizmo(camera);
                 }
-
-
 
 
                 RenderContextController.StaicContextController.Prepare();
