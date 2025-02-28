@@ -17,9 +17,9 @@ namespace DCFApixels.DebugXCore
         void Prepare(Camera camera, GizmosList<T> list);
         void Render(Camera camera, GizmosList<T> list, CommandBuffer cb);
     }
-    public interface IGizmoRenderer_UnityGizmos<T> : IGizmoRenderer<T> where T : IGizmo<T>
+    public interface IGizmoRenderer_PostRender<T> : IGizmoRenderer<T> where T : IGizmo<T>
     {
-        void Render_UnityGizmos(Camera camera, GizmosList<T> list);
+        void PostRender(Camera camera, GizmosList<T> list);
     }
 
 

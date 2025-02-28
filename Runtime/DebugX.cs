@@ -307,8 +307,9 @@ namespace DCFApixels
             {
                 RenderContextController.StaicContextController.Prepare();
                 RenderContextController.StaicContextController.Render(cbExecutor);
-
-                CallDrawGizmos(camera);
+                cbExecutor.Submit();
+                RenderContextController.StaicContextController.PostRender();
+                RenderContextController.StaicContextController.RunEnd();
             }
 
             if (camera == null) { return; }
@@ -316,54 +317,10 @@ namespace DCFApixels
             RenderContextController contextController = RenderContextController.GetController(new RenderContext(camera));
             contextController.Prepare();
             contextController.Render(cbExecutor);
-
+            cbExecutor.Submit();
+            contextController.PostRender();
+            contextController.RunEnd();
         }
-
-#if UNITY_EDITOR
-
-        [DrawGizmo(GizmoType.NonSelected | GizmoType.Selected)]
-        private static void DrawGizmos(Camera obj, GizmoType gizmoType)
-        {
-            if (obj != Camera.main) { return; }
-
-            //if (_lastEditorToRenderGizmosTicks != _editorTicks)
-            //{
-            //    _renderGizmosTicks++;
-            //    _lastEditorToRenderGizmosTicks = _editorTicks;
-            //}
-
-            //Camera camera = Camera.current;
-            //CallDrawGizmos(camera);
-        }
-#endif
-
-        private static void CallDrawGizmos(Camera camera)
-        {
-
-            Color guiColor = GUI.color;
-            Color guiContextColor = GUI.contentColor;
-            Color guiBackgroundColor = GUI.backgroundColor;
-            Color gizmosColor = Gizmos.color;
-#if Handles
-            Color handlesColor = Handles.color;
-            GL.MultMatrix(Handles.matrix);
-#endif
-
-            RenderContextController.StaicContextController.Render_UnityGizmos();
-
-            if (camera == null) { return; }
-            _currentCamera = camera;
-            RenderContextController.GetController(new RenderContext(camera)).Render_UnityGizmos();
-
-            GUI.color = guiColor;
-            GUI.contentColor = guiContextColor;
-            GUI.backgroundColor = guiBackgroundColor;
-            Gizmos.color = gizmosColor;
-#if Handles
-            Handles.color = handlesColor;
-#endif
-        }
-
         #endregion
 
 
@@ -586,13 +543,13 @@ namespace DCFApixels
                         _buffers[i].Render(cbExecutor);
                     }
 
-                    RunEnd();
+                    //RunEnd();
                 }
             }
 
 
             [IN(LINE)]
-            public void Render_UnityGizmos()
+            public void PostRender()
             {
 #if UNITY_EDITOR
                 using (_cameraMarker.Auto())
@@ -600,7 +557,7 @@ namespace DCFApixels
                 {
                     for (int i = 0, iMax = _buffers.Count; i < iMax; i++)
                     {
-                        _buffers[i].Render_UnityGizmos();
+                        _buffers[i].PostRender();
                     }
 
                     //RunEnd();
@@ -631,7 +588,7 @@ namespace DCFApixels
             public abstract int UpdateTimer(float deltaTime);
             public abstract void Prepare();
             public abstract void Render(ICommandBufferExecutor cbExecutor);
-            public abstract void Render_UnityGizmos();
+            public abstract void PostRender();
             public abstract int RunEnd();
             public abstract void Clear();
         }
@@ -654,7 +611,7 @@ namespace DCFApixels
             //private readonly CommandBuffer _dynamicCommandBuffer;
 
             private readonly IGizmoRenderer<T> _renderer;
-            private readonly IGizmoRenderer_UnityGizmos<T> _rendererUnityGizmos;
+            private readonly IGizmoRenderer_PostRender<T> _rendererUnityGizmos;
             private readonly bool _isStatic;
 
 #if DEV_MODE
@@ -681,7 +638,7 @@ namespace DCFApixels
                     _renderer = new DummyRenderer();
                 }
                 _isStatic = _renderer.IsStaticRender;
-                _rendererUnityGizmos = _renderer as IGizmoRenderer_UnityGizmos<T>;
+                _rendererUnityGizmos = _renderer as IGizmoRenderer_PostRender<T>;
 
                 All.Add(this);
                 All.Sort((a, b) => a.ExecuteOrder - b.ExecuteOrder);
@@ -800,7 +757,7 @@ namespace DCFApixels
                     cbExecutor.Execute(_staticCommandBuffer);
                 }
             }
-            public override void Render_UnityGizmos()
+            public override void PostRender()
             {
                 if (_rendererUnityGizmos == null) { return; }
                 //Debug.Log(_gizmos._count);
@@ -812,7 +769,7 @@ namespace DCFApixels
                     GizmosList<T> list = GizmosList.From(_gizmos._items, _gizmos._count);
                     try
                     {
-                        _rendererUnityGizmos.Render_UnityGizmos(GetCurrentCamera(), list);
+                        _rendererUnityGizmos.PostRender(GetCurrentCamera(), list);
                     }
                     catch (Exception e) { throw new Exception($"[{_debugName}] [Render] ", e); }
                 }

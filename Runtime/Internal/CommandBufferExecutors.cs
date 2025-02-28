@@ -7,6 +7,7 @@ namespace DCFApixels.DebugXCore.Internal
     internal interface ICommandBufferExecutor
     {
         void Execute(CommandBuffer cb);
+        void Submit();
     }
     internal class CommandBufferExecutorSRP : ICommandBufferExecutor
     {
@@ -24,6 +25,10 @@ namespace DCFApixels.DebugXCore.Internal
         {
             RenderContext.ExecuteCommandBuffer(cb);
         }
+        public void Submit()
+        {
+            RenderContext.Submit();
+        }
     }
     internal class CommandBufferExecutorBRP : ICommandBufferExecutor
     {
@@ -39,5 +44,6 @@ namespace DCFApixels.DebugXCore.Internal
         {
             Graphics.ExecuteCommandBuffer(cb);
         }
+        public void Submit() { }
     }
 }

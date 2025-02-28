@@ -37,7 +37,7 @@ namespace DCFApixels
                 public IGizmoRenderer<TextGizmo> RegisterNewRenderer() { return new Renderer(); }
 
                 #region Renderer
-                private class Renderer : IGizmoRenderer<TextGizmo>
+                private class Renderer : IGizmoRenderer_PostRender<TextGizmo>
                 {
                     private static GUIStyle _labelStyle; 
                     private static GUIContent _labelDummy;
@@ -45,11 +45,8 @@ namespace DCFApixels
                     public int ExecuteOrder => default(UnlitMat).GetExecuteOrder();
                     public bool IsStaticRender => false;
                     public void Prepare(Camera camera, GizmosList<TextGizmo> list) { }
-                    public void Render(Camera camera, GizmosList<TextGizmo> list, CommandBuffer cb)
-                    {
-                        Render_UnityGizmos(camera, list);
-                    }
-                    public void Render_UnityGizmos(Camera camera, GizmosList<TextGizmo> list)
+                    public void Render(Camera camera, GizmosList<TextGizmo> list, CommandBuffer cb) { }
+                    public void PostRender(Camera camera, GizmosList<TextGizmo> list)
                     {
                         if (Event.current.type != EventType.Repaint) { return; }
                         Color dfColor = GUI.color;
@@ -88,19 +85,13 @@ namespace DCFApixels
                             {
                                 Rect rect = WorldPointToSizedRect(camera, item.Value.Position, _labelDummy, _labelStyle);
 
-                              
-
-
                                 Color c = item.Value.Settings.BackgroundColor * GlobalColor;
-                                GUI.color = c;
                                 var mat = DebugXAssets.Materials.Unlit;
                                 mat.SetColor(ColorPropertyID, c);
                                 Graphics.DrawTexture(rect, _whiteTexture, mat);
 
                                 GUI.color = item.Color * GlobalColor;
                                 style.Draw(rect, _labelDummy, false, false, false, false);
-
-
                             }
                         }
                         GUI.color = dfColor;
