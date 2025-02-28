@@ -19,6 +19,7 @@ using UnityEditor;
 namespace DCFApixels
 {
     using static DebugXConsts;
+    using static UnityEngine.PlayerLoop.PostLateUpdate;
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
     public static unsafe partial class DebugX
     {
@@ -101,6 +102,11 @@ namespace DCFApixels
                 {
                     system.updateDelegate -= PreRenderCallback;
                     system.updateDelegate += PreRenderCallback;
+                }
+                if (system.type == typeof(TriggerEndOfFrameCallbacks))
+                {
+                    system.updateDelegate -= OnTriggerEndOfFrameCallbacks;
+                    system.updateDelegate += OnTriggerEndOfFrameCallbacks;
                 }
             }
             curentLoop.subSystemList = systemsList;
@@ -273,6 +279,13 @@ namespace DCFApixels
             SetCameraContext();
             _currentCamera = null;
         }
+        private static void OnTriggerEndOfFrameCallbacks()
+        {
+            foreach (var item in RenderContextController.AllConteollers)
+            {
+                item.RunEnd();
+            }
+        }
 
 
         private static void EditorApplication_update()
@@ -300,7 +313,10 @@ namespace DCFApixels
                 RenderContextController.StaicContextController.Render(cbExecutor);
                 cbExecutor.Submit();
                 RenderContextController.StaicContextController.PostRender();
-                RenderContextController.StaicContextController.RunEnd();
+                if(IsSRP)
+                {
+                    RenderContextController.StaicContextController.RunEnd();
+                }
             }
 
             if (camera == null) { return; }
@@ -310,7 +326,10 @@ namespace DCFApixels
             contextController.Render(cbExecutor);
             cbExecutor.Submit();
             contextController.PostRender();
-            contextController.RunEnd();
+            if (IsSRP)
+            {
+                contextController.RunEnd();
+            }
         }
         #endregion
 
