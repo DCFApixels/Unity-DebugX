@@ -41,7 +41,7 @@ namespace DCFApixels.DebugXCore
                     field.SetValue(obj, meshFilter.sharedMesh);
                 }
                 else
-                { 
+                {
                     Debug.LogWarning(field.Name + " not found.");
                 }
             }

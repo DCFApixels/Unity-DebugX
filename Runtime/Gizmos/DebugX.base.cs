@@ -1,13 +1,10 @@
 ﻿//#undef DEBUG
-using UnityEngine;
-using UnityEngine.Rendering;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Jobs;
 using DCFApixels.DebugXCore;
 using DCFApixels.DebugXCore.Internal;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DCFApixels
 {
