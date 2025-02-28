@@ -275,16 +275,13 @@ namespace DCFApixels
         }
         private static void PreRenderCallback()
         {
-            RenderContextController.ClearCommandBuffers();
-            SetCameraContext();
-            _currentCamera = null;
-        }
-        private static void OnTriggerEndOfFrameCallbacks()
-        {
             foreach (var item in RenderContextController.AllConteollers)
             {
                 item.RunEnd();
             }
+            RenderContextController.ClearCommandBuffers();
+            SetCameraContext();
+            _currentCamera = null;
         }
 
 
@@ -313,7 +310,7 @@ namespace DCFApixels
                 RenderContextController.StaicContextController.Render(cbExecutor);
                 cbExecutor.Submit();
                 RenderContextController.StaicContextController.PostRender();
-                if(IsSRP)
+                if (IsSRP)
                 {
                     RenderContextController.StaicContextController.RunEnd();
                 }
