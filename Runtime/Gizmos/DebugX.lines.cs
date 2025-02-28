@@ -209,6 +209,7 @@ namespace DCFApixels
                     public void Prepare(Camera camera, GizmosList<WidthOutLineGizmo> list) { }
                     public void Render(Camera camera, GizmosList<WidthOutLineGizmo> list, CommandBuffer cb)
                     {
+                        if (camera == null) { return; }
                         default(GeometryUnlitMat).GetMaterial().SetPass(0);
                         GL.Begin(GL.LINES);
                         var cameraPosition = camera.transform.position;
@@ -269,6 +270,7 @@ namespace DCFApixels
                     public void Prepare(Camera camera, GizmosList<ZigzagLineGizmo> list) { }
                     public void Render(Camera camera, GizmosList<ZigzagLineGizmo> list, CommandBuffer cb)
                     {
+                        if (camera == null) { return; }
                         GL.PushMatrix();
                         default(GeometryUnlitMat).GetMaterial().SetPass(0);
                         GL.Begin(GL.LINES);
