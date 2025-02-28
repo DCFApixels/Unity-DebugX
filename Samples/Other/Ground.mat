@@ -135,14 +135,14 @@ Material:
     - _GlossinessSource: 0
     - _GlossyReflections: 1
     - _LightingEnabled: 1
-    - _Metallic: 0
+    - _Metallic: 0.046
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadows: 0
     - _Shininess: 0
-    - _Smoothness: 0
+    - _Smoothness: 0.047
     - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 0
