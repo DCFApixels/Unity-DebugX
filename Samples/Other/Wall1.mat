@@ -30,7 +30,7 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _Color: {r: 0.034042355, g: 0.059328694, b: 0.14150941, a: 1}
+    - _Color: {r: 0.033745002, g: 0.045134984, b: 0.085, a: 1}
     - _FakeAmbientColor: {r: 1, g: 0, b: 0, a: 1}
     - _FakeLightColor: {r: 1, g: 1, b: 1, a: 1}
     - _FakeLightDir: {r: 0.9, g: 1.61, b: -0.58, a: 0}
