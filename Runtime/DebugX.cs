@@ -14,12 +14,13 @@ using Unity.Collections.LowLevel.Unsafe;
 using DCFApixels.DebugXCore.Internal;
 #if UNITY_EDITOR
 using UnityEditor;
+using System.Reflection;
+using System.Linq;
 #endif
 
 namespace DCFApixels
 {
     using static DebugXConsts;
-    using static UnityEngine.PlayerLoop.PostLateUpdate;
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
     public static unsafe partial class DebugX
     {
@@ -33,6 +34,10 @@ namespace DCFApixels
         private static ulong _lastEditorToRenderTicks = 1000;
         private static ulong _renderTicks = 100;
         private static ulong _timeTicks = 0;
+
+#if UNITY_EDITOR
+        private static (MethodInfo method, DebugXDrawGizmoAttribute attribute)[] _drawGizmosMethods;
+#endif
 
         public static ulong RenderTicks
         {
@@ -69,7 +74,6 @@ namespace DCFApixels
         static DebugX()
         {
             InitGlobals();
-
 
             if (IsSRP)
             {
@@ -115,7 +119,9 @@ namespace DCFApixels
             //Application.onBeforeRender -= Application_onBeforeRender;
             //Application.onBeforeRender += Application_onBeforeRender;
 
+
 #if UNITY_EDITOR
+            _drawGizmosMethods = TypeCache.GetMethodsWithAttribute<DebugXDrawGizmoAttribute>().Select(o => (o, o.GetCustomAttribute<DebugXDrawGizmoAttribute>())).ToArray();
             EditorApplication.pauseStateChanged -= EditorApplication_pauseStateChanged;
             EditorApplication.pauseStateChanged += EditorApplication_pauseStateChanged;
             EditorApplication.update -= EditorApplication_update;
@@ -302,6 +308,24 @@ namespace DCFApixels
 
             if (DebugXUtility.IsGizmosRender())
             {
+                if(_drawGizmosMethods.Length > 0)
+                {
+                    object[] oneObjParams = new object[1];
+                    for (int i = 0; i < _drawGizmosMethods.Length; i++)
+                    {
+                        var pair = _drawGizmosMethods[i];
+                        var objects = UnityEngine.Object.FindObjectsByType(pair.attribute.Type, FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+                        for (int j = 0; j < objects.Length; j++)
+                        {
+                            oneObjParams[0] = objects[j];
+                            pair.method.Invoke(null, oneObjParams);
+                        }
+                    }
+                }
+
+
+
+
                 RenderContextController.StaicContextController.Prepare();
                 RenderContextController.StaicContextController.Render(cbExecutor);
                 cbExecutor.Submit();
