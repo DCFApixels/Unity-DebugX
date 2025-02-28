@@ -22,7 +22,7 @@ namespace DCFApixels
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
     public static unsafe partial class DebugX
     {
-        private static PauseStateX _pauseState = PauseStateX.Unpaused;
+        private static DebugXPauseState _pauseState = DebugXPauseState.Unpaused;
         private static bool _isCameraContext = false;
 
         private static double _lastUnityTime;
@@ -31,18 +31,12 @@ namespace DCFApixels
         private static ulong _editorTicks = 0;
         private static ulong _lastEditorToRenderTicks = 1000;
         private static ulong _renderTicks = 100;
-        //private static ulong _lastEditorToRenderGizmosTicks = 1000;
-        //private static ulong _renderGizmosTicks = 100;
         private static ulong _timeTicks = 0;
 
         public static ulong RenderTicks
         {
             get { return _renderTicks; }
         }
-        //public static ulong RenderGizmosTicks
-        //{
-        //    get { return _renderGizmosTicks; }
-        //}
         public static ulong TimeTicks
         {
             get { return _timeTicks; }
@@ -65,7 +59,7 @@ namespace DCFApixels
 #if UNITY_EDITOR
         private static void EditorApplication_pauseStateChanged(PauseState obj)
         {
-            _pauseState = obj == PauseState.Paused ? PauseStateX.Paused : PauseStateX.PreUnpaused;
+            _pauseState = obj == PauseState.Paused ? DebugXPauseState.Paused : DebugXPauseState.PreUnpaused;
         }
 #endif
         #endregion
@@ -234,12 +228,10 @@ namespace DCFApixels
         private static void OnPreRender_BRP(Camera camera)
         {
             PreRender_General(camera);
-            //throw new NotImplementedException();
         }
         private static void OnPostRender_BRP(Camera camera)
         {
             PostRender_General(CommandBufferExecutorBRP.GetInstance(), camera);
-            //throw new NotImplementedException();
         }
 
         private static void PreUpdateCallback()
@@ -250,7 +242,7 @@ namespace DCFApixels
             if (_lastUnityTime < Time.unscaledTimeAsDouble)
             {
                 _timeTicks++;
-                if (_pauseState == PauseStateX.Unpaused)
+                if (_pauseState == DebugXPauseState.Unpaused)
                 {
                     _deltaTime = Time.unscaledDeltaTime * _timeScaleCache;
                 }
@@ -269,9 +261,9 @@ namespace DCFApixels
                 }
             }
             _lastUnityTime = Time.unscaledTimeAsDouble;
-            if (_pauseState == PauseStateX.PreUnpaused)
+            if (_pauseState == DebugXPauseState.PreUnpaused)
             {
-                _pauseState = PauseStateX.Unpaused;
+                _pauseState = DebugXPauseState.Unpaused;
             }
             SetGameSceneContext();
         }
@@ -293,7 +285,6 @@ namespace DCFApixels
             if (camera == null) { return; }
             _currentCamera = camera;
         }
-
 
         private static void PostRender_General(ICommandBufferExecutor cbExecutor, Camera camera)
         {
@@ -542,8 +533,6 @@ namespace DCFApixels
                     {
                         _buffers[i].Render(cbExecutor);
                     }
-
-                    //RunEnd();
                 }
             }
 
@@ -559,8 +548,6 @@ namespace DCFApixels
                     {
                         _buffers[i].PostRender();
                     }
-
-                    //RunEnd();
                 }
             }
 
