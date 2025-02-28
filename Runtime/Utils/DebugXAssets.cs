@@ -47,6 +47,8 @@ namespace DCFApixels.DebugXCore
             public readonly Material Billboard;
             public readonly Material Dot;
             public readonly Material Wire;
+
+            internal readonly Material TextBackground;
         }
     }
 }

@@ -222,58 +222,6 @@ namespace DCFApixels
             }
             #endregion
 
-            #region Text
-            [IN(LINE)] public DrawHandler Text(Vector3 position, object text) => Gizmo(new TextGizmo(position, text));
-            private readonly struct TextGizmo : IGizmo<TextGizmo>
-            {
-                public readonly Vector3 Position;
-                public readonly string Text;
-                [IN(LINE)]
-                public TextGizmo(Vector3 position, object text)
-                {
-                    Position = position;
-                    Text = text.ToString();
-                }
-                public IGizmoRenderer<TextGizmo> RegisterNewRenderer() { return new Renderer(); }
-
-                #region Renderer
-                private class Renderer : IGizmoRenderer_UnityGizmos<TextGizmo>
-                {
-                    private static GUIStyle _labelStyle;
-                    private static GUIContent _labelDummy;
-                    public int ExecuteOrder => default(UnlitMat).GetExecuteOrder();
-                    public bool IsStaticRender => false;
-                    public void Prepare(Camera camera, GizmosList<TextGizmo> list) { }
-                    public void Render(Camera camera, GizmosList<TextGizmo> list, CommandBuffer cb) { }
-                    public void Render_UnityGizmos(Camera camera, GizmosList<TextGizmo> list)
-                    {
-#if UNITY_EDITOR
-                        Color defaultColor = GUI.color;
-                        if (_labelStyle == null || _labelDummy == null)
-                        {
-                            _labelStyle = GUI.skin.label;
-                            _labelStyle.richText = false;
-                            _labelDummy = new GUIContent();
-                        }
-                        Handles.BeginGUI();
-                        foreach (ref readonly var item in list)
-                        {
-                            GUI.color = item.Color * GlobalColor;
-                            _labelDummy.text = item.Value.Text;
-                            if (!(HandleUtility.WorldToGUIPointWithDepth(item.Value.Position).z < 0f))
-                            {
-                                GUI.Label(HandleUtility.WorldPointToSizedRect(item.Value.Position, _labelDummy, _labelStyle), _labelDummy, _labelStyle);
-                            }
-                        }
-                        Handles.EndGUI();
-                        GUI.color = defaultColor;
-#endif
-                    }
-                }
-                #endregion
-            }
-            #endregion
-
             // Base Renderers
 
             #region MeshRendererBase
