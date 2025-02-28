@@ -161,4 +161,4 @@ public static class SomeGizmoExtensions
 
 
 # Define Symbols
-+ DISABLE_DEBUGX_INBUILD - по умолчанию Gizmo будут рисовать в сборке проекта, этот дефайн отключает рисование. Включить или выключить можно так же в окне настроек DebugX.
++ `DISABLE_DEBUGX_INBUILD` - по умолчанию Gizmo будут рисовать в сборке проекта, этот дефайн отключает рисование. Включить или выключить можно так же в окне настроек DebugX.
