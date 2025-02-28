@@ -80,11 +80,8 @@ namespace DCFApixels
                             if (!(WorldToGUIPointWithDepth(camera, item.Value.Position).z < 0f))
                             {
                                 Rect rect = WorldPointToSizedRect(camera, item.Value.Position, _labelDummy, _labelStyle);
-
                                 Color backgroundColor = item.Value.Settings.BackgroundColor * GlobalColor;
-                                backgroundMaterial.SetColor(ColorPropertyID, backgroundColor);
-                                Graphics.DrawTexture(rect, _whiteTexture, backgroundMaterial);
-
+                                Graphics.DrawTexture(rect, _whiteTexture, new Rect(0, 0, 1, 1), 0, 0, 0, 0, backgroundColor, backgroundMaterial, -1);
                                 GUI.color = item.Color * GlobalColor;
                                 style.Draw(rect, _labelDummy, false, false, false, false);
                             }
