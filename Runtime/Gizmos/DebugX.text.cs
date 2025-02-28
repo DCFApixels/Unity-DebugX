@@ -196,14 +196,17 @@ namespace DCFApixels
                     }
                     private static float GetCameraZoom(Camera camera, Vector3 position)
                     {
+#if UNITY_EDITOR
                         position = Handles.matrix.MultiplyPoint(position);
+#endif
                         Transform transform = camera.transform;
                         Vector3 position2 = transform.position;
                         float z = Vector3.Dot(position - position2, transform.TransformDirection(new Vector3(0f, 0f, 1f)));
                         Vector3 vector = camera.WorldToScreenPoint(position2 + transform.TransformDirection(new Vector3(0f, 0f, z)));
                         Vector3 vector2 = camera.WorldToScreenPoint(position2 + transform.TransformDirection(new Vector3(1f, 0f, z)));
                         float magnitude = (vector - vector2).magnitude;
-                        return 80f / Mathf.Max(magnitude, 0.0001f) * EditorGUIUtility.pixelsPerPoint;
+                        //return 80f / Mathf.Max(magnitude, 0.0001f) * EditorGUIUtility.pixelsPerPoint;
+                        return 80f / Mathf.Max(magnitude, 0.0001f);
 
 
                         //const float DEFAULT_ZOOM = 1f;
