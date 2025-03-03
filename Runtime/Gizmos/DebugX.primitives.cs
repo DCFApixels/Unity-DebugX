@@ -6,8 +6,140 @@ using UnityEngine.Rendering;
 
 namespace DCFApixels
 {
+    using static DCFApixels.DebugX;
     using static DebugXConsts;
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
+
+    public readonly struct MeshHandler : IDrawHandler, IDrawPositionHandler, IDrawRotationHandler, IDrawScaleHandler
+    {
+        public readonly Color Color;
+        public readonly float Duration;
+        public readonly Vector3 Position;
+        public readonly Quaternion Rotation;
+        public readonly Vector3 Scale;
+        [IN(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public MeshHandler(Color color, float duration, Vector3 position, Quaternion rotation, Vector3 scale)
+        {
+            Color = color;
+            Duration = duration;
+            Position = position;
+            Rotation = rotation;
+            Scale = scale;
+        }
+        Color IDrawHandler.Color => Color;
+        float IDrawHandler.Duration => Duration;
+        Vector3 IDrawPositionHandler.Position => Position;
+        Quaternion IDrawRotationHandler.Rotation => Rotation;
+        Vector3 IDrawScaleHandler.Scale => Scale;
+    }
+    public unsafe static class ExtsХ
+    {
+        #region Cube
+        [IN(LINE)] public static MeshHandler Cube(this DrawHandler h, Vector3 position, Quaternion rotation, float size) => h.Cube(position, rotation, new Vector3(size, size, size));
+        [IN(LINE)] public static MeshHandler Cube(this DrawHandler h, Vector3 position, Quaternion rotation, Vector3 size)
+        {
+            h.Mesh<CubeMesh, LitMat>(position, rotation, size);
+            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+        }
+        #endregion
+
+        #region WireCube
+        [IN(LINE)] public static MeshHandler WireCube(this DrawHandler h, Vector3 position, Quaternion rotation, float size) => h.WireCube(position, rotation, new Vector3(size, size, size));
+        [IN(LINE)] public static MeshHandler WireCube(this DrawHandler h, Vector3 position, Quaternion rotation, Vector3 size)
+        {
+            h.Mesh<WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
+            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+        }
+        #endregion
+
+        #region CubePoints
+        [IN(LINE)] public static MeshHandler CubePoints(this DrawHandler h, Vector3 position, Quaternion rotation, float size) => h.CubePoints(position, rotation, new Vector3(size, size, size));
+        [IN(LINE)]
+        public static MeshHandler CubePoints(this DrawHandler h, Vector3 position, Quaternion rotation, Vector3 size)
+        {
+            Vector3 halfSize = size / 2f;
+
+            Vector3* vertices = stackalloc Vector3[]
+            {
+                    new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), // 0
+                    new Vector3(halfSize.x, -halfSize.y, -halfSize.z),  // 1
+                    new Vector3(halfSize.x, -halfSize.y, halfSize.z),   // 2
+                    new Vector3(-halfSize.x, -halfSize.y, halfSize.z),  // 3
+                    new Vector3(-halfSize.x, halfSize.y, -halfSize.z),  // 4
+                    new Vector3(halfSize.x, halfSize.y, -halfSize.z),   // 5
+                    new Vector3(halfSize.x, halfSize.y, halfSize.z),    // 6
+                    new Vector3(-halfSize.x, halfSize.y, halfSize.z),   // 7
+                };
+
+            for (int i = 0; i < 8; i++)
+            {
+                h.Dot(rotation * vertices[i] + position);
+            }
+
+            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+        }
+        #endregion
+
+        #region CubeGrid
+        [IN(LINE)] public static MeshHandler CubeGrid(this DrawHandler h, Vector3 position, Quaternion rotation, float size, Vector3Int cells) => h.CubeGrid(position, rotation, new Vector3(size, size, size), cells);
+        [IN(LINE)]
+        public unsafe static MeshHandler CubeGrid(this DrawHandler h, Vector3 position, Quaternion rotation, Vector3 size, Vector3Int cells)
+        {
+            Vector3 halfSize = size / 2f;
+
+            Vector3* vertices = stackalloc Vector3[]
+            {
+                    new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), // 0
+                    new Vector3(halfSize.x, -halfSize.y, -halfSize.z),  // 1
+                    new Vector3(halfSize.x, -halfSize.y, halfSize.z),   // 2
+                    new Vector3(-halfSize.x, -halfSize.y, halfSize.z),  // 3
+                    new Vector3(-halfSize.x, halfSize.y, -halfSize.z),  // 4
+                    new Vector3(halfSize.x, halfSize.y, -halfSize.z),   // 5
+                    new Vector3(halfSize.x, halfSize.y, halfSize.z),    // 6
+                    new Vector3(-halfSize.x, halfSize.y, halfSize.z),   // 7
+                };
+
+            for (int i = 0; i < 8; i++)
+            {
+                vertices[i] = rotation * vertices[i] + position;
+            }
+
+            Vector3 up = rotation * Vector3.up * (size.y / cells.y);
+            for (int i = 0; i <= cells.y; i++)
+            {
+                Vector3 pos = up * i;
+                h.Line(vertices[0] + pos, vertices[1] + pos);
+                h.Line(vertices[1] + pos, vertices[2] + pos);
+                h.Line(vertices[2] + pos, vertices[3] + pos);
+                h.Line(vertices[3] + pos, vertices[0] + pos);
+            }
+            Vector3 right = rotation * Vector3.right * (size.x / cells.x);
+            for (int i = 0; i <= cells.x; i++)
+            {
+                Vector3 pos = right * i;
+                h.Line(vertices[0] + pos, vertices[3] + pos);
+                h.Line(vertices[3] + pos, vertices[7] + pos);
+                h.Line(vertices[4] + pos, vertices[0] + pos);
+                h.Line(vertices[7] + pos, vertices[4] + pos);
+            }
+            Vector3 forward = rotation * Vector3.forward * (size.z / cells.z);
+            for (int i = 0; i <= cells.z; i++)
+            {
+                Vector3 pos = forward * i;
+                h.Line(vertices[4] + pos, vertices[5] + pos);
+                h.Line(vertices[5] + pos, vertices[1] + pos);
+                h.Line(vertices[1] + pos, vertices[0] + pos);
+                h.Line(vertices[0] + pos, vertices[4] + pos);
+            }
+
+            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+        }
+        #endregion
+
+    }
+
+
+
     public unsafe static partial class DebugX
     {
         public readonly partial struct DrawHandler
@@ -345,103 +477,7 @@ namespace DCFApixels
             #endregion
 
 
-            #region Cube
-            //[IN(LINE)] public void Cube(Vector3 position, float size) => Cube(position, Quaternion.identity, new Vector3(size, size, size));
-            //[IN(LINE)] public void Cube(Vector3 position, Vector3 size) => Cube(position, Quaternion.identity, size);
-            [IN(LINE)] public DrawHandler Cube(Vector3 position, Quaternion rotation, float size) => Mesh<CubeMesh, LitMat>(position, rotation, new Vector3(size, size, size));
-            [IN(LINE)] public DrawHandler Cube(Vector3 position, Quaternion rotation, Vector3 size) => Mesh<CubeMesh, LitMat>(position, rotation, size);
-            #endregion
 
-            #region WireCube
-            //[IN(LINE)] public void WireCube(Vector3 position, float size) => WireCube(position, Quaternion.identity, new Vector3(size, size, size));
-            //[IN(LINE)] public void WireCube(Vector3 position, Vector3 size) => WireCube(position, Quaternion.identity, size);
-            [IN(LINE)] public DrawHandler WireCube(Vector3 position, Quaternion rotation, float size) => WireCube(position, rotation, new Vector3(size, size, size));
-            [IN(LINE)] public DrawHandler WireCube(Vector3 position, Quaternion rotation, Vector3 size) => Mesh<WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
-            #endregion
-
-            #region CubePoints
-            [IN(LINE)] public DrawHandler CubePoints(Vector3 position, Quaternion rotation, float size) => CubePoints(position, rotation, new Vector3(size, size, size));
-            [IN(LINE)]
-            public DrawHandler CubePoints(Vector3 position, Quaternion rotation, Vector3 size)
-            {
-                Vector3 halfSize = size / 2f;
-
-                Vector3* vertices = stackalloc Vector3[]
-                {
-                    new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), // 0
-                    new Vector3(halfSize.x, -halfSize.y, -halfSize.z),  // 1
-                    new Vector3(halfSize.x, -halfSize.y, halfSize.z),   // 2
-                    new Vector3(-halfSize.x, -halfSize.y, halfSize.z),  // 3
-                    new Vector3(-halfSize.x, halfSize.y, -halfSize.z),  // 4
-                    new Vector3(halfSize.x, halfSize.y, -halfSize.z),   // 5
-                    new Vector3(halfSize.x, halfSize.y, halfSize.z),    // 6
-                    new Vector3(-halfSize.x, halfSize.y, halfSize.z),   // 7
-                };
-
-                for (int i = 0; i < 8; i++)
-                {
-                    Dot(rotation * vertices[i] + position);
-                }
-
-                return this;
-            }
-            #endregion
-
-            #region CubeGrid
-            [IN(LINE)] public DrawHandler CubeGrid(Vector3 position, Quaternion rotation, float size, Vector3Int cells) => CubeGrid(position, rotation, new Vector3(size, size, size), cells);
-            [IN(LINE)]
-            public unsafe DrawHandler CubeGrid(Vector3 position, Quaternion rotation, Vector3 size, Vector3Int cells)
-            {
-                Vector3 halfSize = size / 2f;
-
-                Vector3* vertices = stackalloc Vector3[]
-                {
-                    new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), // 0
-                    new Vector3(halfSize.x, -halfSize.y, -halfSize.z),  // 1
-                    new Vector3(halfSize.x, -halfSize.y, halfSize.z),   // 2
-                    new Vector3(-halfSize.x, -halfSize.y, halfSize.z),  // 3
-                    new Vector3(-halfSize.x, halfSize.y, -halfSize.z),  // 4
-                    new Vector3(halfSize.x, halfSize.y, -halfSize.z),   // 5
-                    new Vector3(halfSize.x, halfSize.y, halfSize.z),    // 6
-                    new Vector3(-halfSize.x, halfSize.y, halfSize.z),   // 7
-                };
-
-                for (int i = 0; i < 8; i++)
-                {
-                    vertices[i] = rotation * vertices[i] + position;
-                }
-
-                Vector3 up = rotation * Vector3.up * (size.y / cells.y);
-                for (int i = 0; i <= cells.y; i++)
-                {
-                    Vector3 pos = up * i;
-                    Line(vertices[0] + pos, vertices[1] + pos);
-                    Line(vertices[1] + pos, vertices[2] + pos);
-                    Line(vertices[2] + pos, vertices[3] + pos);
-                    Line(vertices[3] + pos, vertices[0] + pos);
-                }
-                Vector3 right = rotation * Vector3.right * (size.x / cells.x);
-                for (int i = 0; i <= cells.x; i++)
-                {
-                    Vector3 pos = right * i;
-                    Line(vertices[0] + pos, vertices[3] + pos);
-                    Line(vertices[3] + pos, vertices[7] + pos);
-                    Line(vertices[4] + pos, vertices[0] + pos);
-                    Line(vertices[7] + pos, vertices[4] + pos);
-                }
-                Vector3 forward = rotation * Vector3.forward * (size.z / cells.z);
-                for (int i = 0; i <= cells.z; i++)
-                {
-                    Vector3 pos = forward * i;
-                    Line(vertices[4] + pos, vertices[5] + pos);
-                    Line(vertices[5] + pos, vertices[1] + pos);
-                    Line(vertices[1] + pos, vertices[0] + pos);
-                    Line(vertices[0] + pos, vertices[4] + pos);
-                }
-
-                return this;
-            }
-            #endregion
 
             #region Quad
             //[IN(LINE)] public DrawHandler Quad(Vector3 position, Vector3 normal, float size) => Mesh(Meshes.Quad, position, Quaternion.LookRotation(normal), new Vector3(size, size, size));
