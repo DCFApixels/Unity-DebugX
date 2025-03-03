@@ -12,12 +12,14 @@ namespace DCFApixels
 
     public readonly struct MeshHandler : IDrawHandler, IDrawPositionHandler, IDrawRotationHandler, IDrawScaleHandler
     {
+        internal const System.Runtime.CompilerServices.MethodImplOptions LINE = System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining;
+
         public readonly Color Color;
         public readonly float Duration;
         public readonly Vector3 Position;
         public readonly Quaternion Rotation;
         public readonly Vector3 Scale;
-        [IN(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [IN(LINE)]
         public MeshHandler(Color color, float duration, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             Color = color;
@@ -26,36 +28,56 @@ namespace DCFApixels
             Rotation = rotation;
             Scale = scale;
         }
-        Color IDrawHandler.Color => Color;
-        float IDrawHandler.Duration => Duration;
-        Vector3 IDrawPositionHandler.Position => Position;
-        Quaternion IDrawRotationHandler.Rotation => Rotation;
-        Vector3 IDrawScaleHandler.Scale => Scale;
+        Color IDrawHandler.Color
+        {
+            [IN(LINE)]
+            get => Color;
+        }
+        float IDrawHandler.Duration
+        {
+            [IN(LINE)]
+            get => Duration;
+        }
+        Vector3 IDrawPositionHandler.Position
+        {
+            [IN(LINE)]
+            get => Position;
+        }
+        Quaternion IDrawRotationHandler.Rotation
+        {
+            [IN(LINE)]
+            get => Rotation;
+        }
+        Vector3 IDrawScaleHandler.Scale
+        {
+            [IN(LINE)]
+            get => Scale;
+        }
     }
-    public unsafe static class ExtsХ
+    public unsafe static partial class ExtsХ
     {
         #region Cube
-        [IN(LINE)] public static MeshHandler Cube(this DrawHandler h, Vector3 position, Quaternion rotation, float size) => h.Cube(position, rotation, new Vector3(size, size, size));
-        [IN(LINE)] public static MeshHandler Cube(this DrawHandler h, Vector3 position, Quaternion rotation, Vector3 size)
+        [IN(LINE)] public static MeshHandler Cube<T>(this T h, Vector3 position, Quaternion rotation, float size) where T : struct, IDrawHandler => h.Cube(position, rotation, new Vector3(size, size, size));
+        [IN(LINE)] public static MeshHandler Cube<T>(this T h, Vector3 position, Quaternion rotation, Vector3 size) where T : struct, IDrawHandler
         {
-            h.Mesh<CubeMesh, LitMat>(position, rotation, size);
+            h.Mesh<T, CubeMesh, LitMat>(position, rotation, size);
             return new MeshHandler(h.Color, h.Duration, position, rotation, size);
         }
         #endregion
 
         #region WireCube
-        [IN(LINE)] public static MeshHandler WireCube(this DrawHandler h, Vector3 position, Quaternion rotation, float size) => h.WireCube(position, rotation, new Vector3(size, size, size));
-        [IN(LINE)] public static MeshHandler WireCube(this DrawHandler h, Vector3 position, Quaternion rotation, Vector3 size)
+        [IN(LINE)] public static MeshHandler WireCube<T>(this T h, Vector3 position, Quaternion rotation, float size) where T : struct, IDrawHandler => h.WireCube(position, rotation, new Vector3(size, size, size));
+        [IN(LINE)] public static MeshHandler WireCube<T>(this T h, Vector3 position, Quaternion rotation, Vector3 size) where T : struct, IDrawHandler
         {
-            h.Mesh<WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
+            h.Mesh<T, WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
             return new MeshHandler(h.Color, h.Duration, position, rotation, size);
         }
         #endregion
 
         #region CubePoints
-        [IN(LINE)] public static MeshHandler CubePoints(this DrawHandler h, Vector3 position, Quaternion rotation, float size) => h.CubePoints(position, rotation, new Vector3(size, size, size));
+        [IN(LINE)] public static MeshHandler CubePoints<T>(this T h, Vector3 position, Quaternion rotation, float size) where T : struct, IDrawHandler => h.CubePoints(position, rotation, new Vector3(size, size, size));
         [IN(LINE)]
-        public static MeshHandler CubePoints(this DrawHandler h, Vector3 position, Quaternion rotation, Vector3 size)
+        public static MeshHandler CubePoints<T>(this T h, Vector3 position, Quaternion rotation, Vector3 size) where T : struct, IDrawHandler
         {
             Vector3 halfSize = size / 2f;
 
@@ -73,7 +95,7 @@ namespace DCFApixels
 
             for (int i = 0; i < 8; i++)
             {
-                h.Dot(rotation * vertices[i] + position);
+                new DrawHandler(h.Duration, h.Color).Dot(rotation * vertices[i] + position);
             }
 
             return new MeshHandler(h.Color, h.Duration, position, rotation, size);
@@ -81,9 +103,9 @@ namespace DCFApixels
         #endregion
 
         #region CubeGrid
-        [IN(LINE)] public static MeshHandler CubeGrid(this DrawHandler h, Vector3 position, Quaternion rotation, float size, Vector3Int cells) => h.CubeGrid(position, rotation, new Vector3(size, size, size), cells);
+        [IN(LINE)] public static MeshHandler CubeGrid<T>(this T h, Vector3 position, Quaternion rotation, float size, Vector3Int cells) where T : IDrawHandler => h.CubeGrid(position, rotation, new Vector3(size, size, size), cells);
         [IN(LINE)]
-        public unsafe static MeshHandler CubeGrid(this DrawHandler h, Vector3 position, Quaternion rotation, Vector3 size, Vector3Int cells)
+        public unsafe static MeshHandler CubeGrid<T>(this T h, Vector3 position, Quaternion rotation, Vector3 size, Vector3Int cells) where T : IDrawHandler
         {
             Vector3 halfSize = size / 2f;
 
@@ -108,28 +130,28 @@ namespace DCFApixels
             for (int i = 0; i <= cells.y; i++)
             {
                 Vector3 pos = up * i;
-                h.Line(vertices[0] + pos, vertices[1] + pos);
-                h.Line(vertices[1] + pos, vertices[2] + pos);
-                h.Line(vertices[2] + pos, vertices[3] + pos);
-                h.Line(vertices[3] + pos, vertices[0] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[0] + pos, vertices[1] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[1] + pos, vertices[2] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[2] + pos, vertices[3] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[3] + pos, vertices[0] + pos);
             }
             Vector3 right = rotation * Vector3.right * (size.x / cells.x);
             for (int i = 0; i <= cells.x; i++)
             {
                 Vector3 pos = right * i;
-                h.Line(vertices[0] + pos, vertices[3] + pos);
-                h.Line(vertices[3] + pos, vertices[7] + pos);
-                h.Line(vertices[4] + pos, vertices[0] + pos);
-                h.Line(vertices[7] + pos, vertices[4] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[0] + pos, vertices[3] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[3] + pos, vertices[7] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[4] + pos, vertices[0] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[7] + pos, vertices[4] + pos);
             }
             Vector3 forward = rotation * Vector3.forward * (size.z / cells.z);
             for (int i = 0; i <= cells.z; i++)
             {
                 Vector3 pos = forward * i;
-                h.Line(vertices[4] + pos, vertices[5] + pos);
-                h.Line(vertices[5] + pos, vertices[1] + pos);
-                h.Line(vertices[1] + pos, vertices[0] + pos);
-                h.Line(vertices[0] + pos, vertices[4] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[4] + pos, vertices[5] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[5] + pos, vertices[1] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[1] + pos, vertices[0] + pos);
+                new DrawHandler(h.Duration, h.Color).Line(vertices[0] + pos, vertices[4] + pos);
             }
 
             return new MeshHandler(h.Color, h.Duration, position, rotation, size);

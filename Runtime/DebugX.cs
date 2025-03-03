@@ -202,7 +202,7 @@ namespace DCFApixels
         {
             return new DrawHandler(duration, color);
         }
-        public readonly partial struct DrawHandler
+        public readonly partial struct DrawHandler : IDrawHandler
         {
             public readonly Color Color;
             public readonly float Duration;
@@ -218,6 +218,18 @@ namespace DCFApixels
                 Duration = time;
                 //ContextController = GetCurrenRenderContextController();
             }
+
+            Color IDrawHandler.Color
+            {
+                [IN(LINE)]
+                get => Color;
+            }
+            float IDrawHandler.Duration
+            {
+                [IN(LINE)]
+                get => Duration;
+            }
+
             [IN(LINE)] public DrawHandler Setup(float duration, Color color) => new DrawHandler(duration, color);
             [IN(LINE)] public DrawHandler Setup(float duration) => new DrawHandler(duration, Color);
             [IN(LINE)] public DrawHandler Setup(Color color) => new DrawHandler(Duration, color);
