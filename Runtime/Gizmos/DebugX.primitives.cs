@@ -60,17 +60,25 @@ namespace DCFApixels
         [IN(LINE)] public static MeshHandler Cube<T>(this T h, Vector3 position, Quaternion rotation, float size) where T : struct, IDrawHandler => h.Cube(position, rotation, new Vector3(size, size, size));
         [IN(LINE)] public static MeshHandler Cube<T>(this T h, Vector3 position, Quaternion rotation, Vector3 size) where T : struct, IDrawHandler
         {
-            h.Mesh<T, CubeMesh, LitMat>(position, rotation, size);
-            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+            return new DrawHandler(h.Duration, h.Color).MeshX<CubeMesh, LitMat>(position, rotation, size);
         }
-        #endregion
+        [IN(LINE)]
+        public static MeshHandler Cube<T>(this T h) where T : struct, IDrawHandler, IDrawPositionHandler, IDrawRotationHandler, IDrawScaleHandler
+        {
+            return new DrawHandler(h.Duration, h.Color).MeshX<CubeMesh, LitMat>(h.Position, h.Rotation, h.Scale);
+        }
+            #endregion
 
-        #region WireCube
+            #region WireCube
         [IN(LINE)] public static MeshHandler WireCube<T>(this T h, Vector3 position, Quaternion rotation, float size) where T : struct, IDrawHandler => h.WireCube(position, rotation, new Vector3(size, size, size));
         [IN(LINE)] public static MeshHandler WireCube<T>(this T h, Vector3 position, Quaternion rotation, Vector3 size) where T : struct, IDrawHandler
         {
-            h.Mesh<T, WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
-            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+            return new DrawHandler(h.Duration, h.Color).MeshX<WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
+        }
+        [IN(LINE)]
+        public static MeshHandler WireCube<T>(this T h) where T : struct, IDrawHandler, IDrawPositionHandler, IDrawRotationHandler, IDrawScaleHandler
+        {
+            return new DrawHandler(h.Duration, h.Color).MeshX<WireCubeMesh, GeometryUnlitMat>(h.Position, h.Rotation, h.Scale);
         }
         #endregion
 

@@ -12,190 +12,190 @@ namespace DCFApixels
     using static DebugXConsts;
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
 
-    public unsafe static partial class ExtsХ
-    {
-        #region InstancingMeshGizmo
-        [IN(LINE)]
-        public static MeshHandler Mesh<T, TMesh, TMat>(this T h, Vector3 position, Quaternion rotation, Vector3 size)
-                where T : struct, IDrawHandler
-                where TMesh : struct, IStaticMesh
-                where TMat : struct, IStaticMaterial
-        {
-            new DrawHandler(h.Duration, h.Color).Gizmo(new InstancingMeshGizmo<TMesh, TMat>(position, rotation, size));
-            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
-        }
-        [IN(LINE)]
-        public static MeshHandler Mesh<T, TMesh>(this T h, Vector3 position, Quaternion rotation, Vector3 size)
-                where T : struct, IDrawHandler
-                where TMesh : struct, IStaticMesh
-        {
-            new DrawHandler(h.Duration, h.Color).Gizmo(new InstancingMeshGizmo<TMesh, LitMat>(position, rotation, size));
-            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
-        }
-        [IN(LINE)]
-        public static MeshHandler UnlitMesh<T, TMesh>(this T h, Vector3 position, Quaternion rotation, Vector3 size)
-                where T : struct, IDrawHandler
-                where TMesh : struct, IStaticMesh
-        {
-            new DrawHandler(h.Duration, h.Color).Gizmo(new InstancingMeshGizmo<TMesh, UnlitMat>(position, rotation, size));
-            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
-        }
-        [IN(LINE)]
-        public static MeshHandler WireMesh<T, TMesh>(this T h, Vector3 position, Quaternion rotation, Vector3 size)
-                where T : struct, IDrawHandler
-                where TMesh : struct, IStaticMesh
-        {
-            new DrawHandler(h.Duration, h.Color).Gizmo(new InstancingMeshGizmo<TMesh, WireMat>(position, rotation, size));
-            return new MeshHandler(h.Color, h.Duration, position, rotation, size);
-        }
-
-        private readonly struct InstancingMeshGizmoLayout
-        {
-            public readonly Quaternion Rotation;
-            public readonly Vector3 Position;
-            public readonly Vector3 Size;
-            public InstancingMeshGizmoLayout(Vector3 position, Quaternion rotation, Vector3 size)
-            {
-                Rotation = rotation;
-                Position = position;
-                Size = size;
-            }
-        }
-        private readonly struct InstancingMeshGizmo<TMesh, TMat> : IGizmo<InstancingMeshGizmo<TMesh, TMat>>
-            where TMesh : struct, IStaticMesh
-            where TMat : struct, IStaticMaterial
-        {
-            public readonly Quaternion Rotation;
-            public readonly Vector3 Position;
-            public readonly Vector3 Size;
-            [IN(LINE)]
-            public InstancingMeshGizmo(Vector3 position, Quaternion rotation, Vector3 size)
-            {
-                Rotation = rotation;
-                Position = position;
-                Size = size;
-            }
-            public IGizmoRenderer<InstancingMeshGizmo<TMesh, TMat>> RegisterNewRenderer() { return new Renderer(); }
-            private class Renderer : InstancingMeshRendererBase, IGizmoRenderer<InstancingMeshGizmo<TMesh, TMat>>
-            {
-                public Renderer() : base(default(TMesh), default(TMat)) { }
-                public void Prepare(Camera camera, GizmosList<InstancingMeshGizmo<TMesh, TMat>> list)
-                {
-                    Prepare(list);
-                }
-                public void Render(Camera camera, GizmosList<InstancingMeshGizmo<TMesh, TMat>> list, CommandBuffer cb)
-                {
-                    Render(cb);
-                }
-            }
-        }
-        #endregion
-
-        #region InstancingMeshRendererBase
-        private class InstancingMeshRendererBase
-        {
-            private readonly struct GizmoData
-            {
-                public readonly Quaternion Rotation;
-                public readonly Vector3 Position;
-                public readonly Vector3 Size;
-            }
-            private struct PrepareJob : IJobParallelFor
-            {
-                [NativeDisableUnsafePtrRestriction]
-                public Gizmo<GizmoData>* Items;
-                [NativeDisableUnsafePtrRestriction]
-                public Matrix4x4* ResultMatrices;
-                [NativeDisableUnsafePtrRestriction]
-                public Vector4* ResultColors;
-                public void Execute(int index)
-                {
-                    ref readonly var item = ref Items[index];
-                    //if (item.IsSwaped == 0) { return; }
-                    ResultMatrices[index] = Matrix4x4.TRS(item.Value.Position, item.Value.Rotation, item.Value.Size);
-                    ResultColors[index] = item.Color;
-                }
-            }
-
-            private readonly IStaticMesh _mesh;
-            private readonly IStaticMaterial _material;
-
-            private readonly MaterialPropertyBlock _materialPropertyBlock;
-
-            private int _buffersLength = 0;
-            private PinnedArray<Matrix4x4> _matrices;
-            private PinnedArray<Vector4> _colors;
-            private PinnedArray<Gizmo<GizmoData>> _gizmos;
-
-            private JobHandle _jobHandle;
-            private int _prepareCount = 0;
-
-            public InstancingMeshRendererBase(IStaticMesh mesh, IStaticMaterial material)
-            {
-                _mesh = mesh;
-                _material = material;
-                _materialPropertyBlock = new MaterialPropertyBlock();
-
-                _matrices = PinnedArray<Matrix4x4>.Pin(DummyArray<Matrix4x4>.Get());
-                _colors = PinnedArray<Vector4>.Pin(DummyArray<Vector4>.Get());
-            }
-            public virtual int ExecuteOrder => _material.GetExecuteOrder();
-            public virtual bool IsStaticRender => true;
-            protected void Prepare(GizmosList rawList)
-            {
-                var list = rawList.As<GizmoData>();
-                _prepareCount = list.Count;
-                var items = list.Items;
-                var count = list.Count;
-
-                if (_buffersLength < count)
-                {
-                    _matrices.Dispose();
-                    _colors.Dispose();
-                    _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[DebugXUtility.NextPow2(count)]);
-                    _colors = PinnedArray<Vector4>.Pin(new Vector4[DebugXUtility.NextPow2(count)]);
-                    _buffersLength = count;
-                }
-                if (ReferenceEquals(_gizmos.Array, items) == false)
-                {
-                    if (_gizmos.Array != null)
-                    {
-                        _gizmos.Dispose();
-                    }
-                    _gizmos = PinnedArray<Gizmo<GizmoData>>.Pin(items);
-                }
-
-                var job = new PrepareJob
-                {
-                    Items = _gizmos.Ptr,
-                    ResultMatrices = _matrices.Ptr,
-                    ResultColors = _colors.Ptr,
-                };
-                _jobHandle = job.Schedule(count, 64);
-            }
-            protected void Render(CommandBuffer cb)
-            {
-                Material material = _material.GetMaterial();
-                Mesh mesh = _mesh.GetMesh();
-                _materialPropertyBlock.Clear();
-                _jobHandle.Complete();
-                if (IsSupportsComputeShaders)
-                {
-                    _materialPropertyBlock.SetVectorArray(ColorPropertyID, _colors.Array);
-                    cb.DrawMeshInstanced(mesh, 0, material, -1, _matrices.Array, _prepareCount, _materialPropertyBlock);
-                }
-                else
-                {
-                    for (int i = 0; i < _prepareCount; i++)
-                    {
-                        _materialPropertyBlock.SetColor(ColorPropertyID, _colors.Ptr[i]);
-                        cb.DrawMesh(mesh, _matrices.Ptr[i], material, 0, -1, _materialPropertyBlock);
-                    }
-                }
-            }
-        }
-        #endregion
-    }
+    //public unsafe static partial class ExtsХ
+    //{
+    //    #region InstancingMeshGizmo
+    //    [IN(LINE)]
+    //    public static MeshHandler Mesh<T, TMesh, TMat>(this T h, Vector3 position, Quaternion rotation, Vector3 size)
+    //            where T : struct, IDrawHandler
+    //            where TMesh : struct, IStaticMesh
+    //            where TMat : struct, IStaticMaterial
+    //    {
+    //        new DrawHandler(h.Duration, h.Color).Gizmo(new InstancingMeshGizmo<TMesh, TMat>(position, rotation, size));
+    //        return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+    //    }
+    //    [IN(LINE)]
+    //    public static MeshHandler Mesh<T, TMesh>(this T h, Vector3 position, Quaternion rotation, Vector3 size)
+    //            where T : struct, IDrawHandler
+    //            where TMesh : struct, IStaticMesh
+    //    {
+    //        new DrawHandler(h.Duration, h.Color).Gizmo(new InstancingMeshGizmo<TMesh, LitMat>(position, rotation, size));
+    //        return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+    //    }
+    //    [IN(LINE)]
+    //    public static MeshHandler UnlitMesh<T, TMesh>(this T h, Vector3 position, Quaternion rotation, Vector3 size)
+    //            where T : struct, IDrawHandler
+    //            where TMesh : struct, IStaticMesh
+    //    {
+    //        new DrawHandler(h.Duration, h.Color).Gizmo(new InstancingMeshGizmo<TMesh, UnlitMat>(position, rotation, size));
+    //        return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+    //    }
+    //    [IN(LINE)]
+    //    public static MeshHandler WireMesh<T, TMesh>(this T h, Vector3 position, Quaternion rotation, Vector3 size)
+    //            where T : struct, IDrawHandler
+    //            where TMesh : struct, IStaticMesh
+    //    {
+    //        new DrawHandler(h.Duration, h.Color).Gizmo(new InstancingMeshGizmo<TMesh, WireMat>(position, rotation, size));
+    //        return new MeshHandler(h.Color, h.Duration, position, rotation, size);
+    //    }
+    //
+    //    private readonly struct InstancingMeshGizmoLayout
+    //    {
+    //        public readonly Quaternion Rotation;
+    //        public readonly Vector3 Position;
+    //        public readonly Vector3 Size;
+    //        public InstancingMeshGizmoLayout(Vector3 position, Quaternion rotation, Vector3 size)
+    //        {
+    //            Rotation = rotation;
+    //            Position = position;
+    //            Size = size;
+    //        }
+    //    }
+    //    private readonly struct InstancingMeshGizmo<TMesh, TMat> : IGizmo<InstancingMeshGizmo<TMesh, TMat>>
+    //        where TMesh : struct, IStaticMesh
+    //        where TMat : struct, IStaticMaterial
+    //    {
+    //        public readonly Quaternion Rotation;
+    //        public readonly Vector3 Position;
+    //        public readonly Vector3 Size;
+    //        [IN(LINE)]
+    //        public InstancingMeshGizmo(Vector3 position, Quaternion rotation, Vector3 size)
+    //        {
+    //            Rotation = rotation;
+    //            Position = position;
+    //            Size = size;
+    //        }
+    //        public IGizmoRenderer<InstancingMeshGizmo<TMesh, TMat>> RegisterNewRenderer() { return new Renderer(); }
+    //        private class Renderer : InstancingMeshRendererBase, IGizmoRenderer<InstancingMeshGizmo<TMesh, TMat>>
+    //        {
+    //            public Renderer() : base(default(TMesh), default(TMat)) { }
+    //            public void Prepare(Camera camera, GizmosList<InstancingMeshGizmo<TMesh, TMat>> list)
+    //            {
+    //                Prepare(list);
+    //            }
+    //            public void Render(Camera camera, GizmosList<InstancingMeshGizmo<TMesh, TMat>> list, CommandBuffer cb)
+    //            {
+    //                Render(cb);
+    //            }
+    //        }
+    //    }
+    //    #endregion
+    //
+    //    #region InstancingMeshRendererBase
+    //    private class InstancingMeshRendererBase
+    //    {
+    //        private readonly struct GizmoData
+    //        {
+    //            public readonly Quaternion Rotation;
+    //            public readonly Vector3 Position;
+    //            public readonly Vector3 Size;
+    //        }
+    //        private struct PrepareJob : IJobParallelFor
+    //        {
+    //            [NativeDisableUnsafePtrRestriction]
+    //            public Gizmo<GizmoData>* Items;
+    //            [NativeDisableUnsafePtrRestriction]
+    //            public Matrix4x4* ResultMatrices;
+    //            [NativeDisableUnsafePtrRestriction]
+    //            public Vector4* ResultColors;
+    //            public void Execute(int index)
+    //            {
+    //                ref readonly var item = ref Items[index];
+    //                //if (item.IsSwaped == 0) { return; }
+    //                ResultMatrices[index] = Matrix4x4.TRS(item.Value.Position, item.Value.Rotation, item.Value.Size);
+    //                ResultColors[index] = item.Color;
+    //            }
+    //        }
+    //
+    //        private readonly IStaticMesh _mesh;
+    //        private readonly IStaticMaterial _material;
+    //
+    //        private readonly MaterialPropertyBlock _materialPropertyBlock;
+    //
+    //        private int _buffersLength = 0;
+    //        private PinnedArray<Matrix4x4> _matrices;
+    //        private PinnedArray<Vector4> _colors;
+    //        private PinnedArray<Gizmo<GizmoData>> _gizmos;
+    //
+    //        private JobHandle _jobHandle;
+    //        private int _prepareCount = 0;
+    //
+    //        public InstancingMeshRendererBase(IStaticMesh mesh, IStaticMaterial material)
+    //        {
+    //            _mesh = mesh;
+    //            _material = material;
+    //            _materialPropertyBlock = new MaterialPropertyBlock();
+    //
+    //            _matrices = PinnedArray<Matrix4x4>.Pin(DummyArray<Matrix4x4>.Get());
+    //            _colors = PinnedArray<Vector4>.Pin(DummyArray<Vector4>.Get());
+    //        }
+    //        public virtual int ExecuteOrder => _material.GetExecuteOrder();
+    //        public virtual bool IsStaticRender => true;
+    //        protected void Prepare(GizmosList rawList)
+    //        {
+    //            var list = rawList.As<GizmoData>();
+    //            _prepareCount = list.Count;
+    //            var items = list.Items;
+    //            var count = list.Count;
+    //
+    //            if (_buffersLength < count)
+    //            {
+    //                _matrices.Dispose();
+    //                _colors.Dispose();
+    //                _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[DebugXUtility.NextPow2(count)]);
+    //                _colors = PinnedArray<Vector4>.Pin(new Vector4[DebugXUtility.NextPow2(count)]);
+    //                _buffersLength = count;
+    //            }
+    //            if (ReferenceEquals(_gizmos.Array, items) == false)
+    //            {
+    //                if (_gizmos.Array != null)
+    //                {
+    //                    _gizmos.Dispose();
+    //                }
+    //                _gizmos = PinnedArray<Gizmo<GizmoData>>.Pin(items);
+    //            }
+    //
+    //            var job = new PrepareJob
+    //            {
+    //                Items = _gizmos.Ptr,
+    //                ResultMatrices = _matrices.Ptr,
+    //                ResultColors = _colors.Ptr,
+    //            };
+    //            _jobHandle = job.Schedule(count, 64);
+    //        }
+    //        protected void Render(CommandBuffer cb)
+    //        {
+    //            Material material = _material.GetMaterial();
+    //            Mesh mesh = _mesh.GetMesh();
+    //            _materialPropertyBlock.Clear();
+    //            _jobHandle.Complete();
+    //            if (IsSupportsComputeShaders)
+    //            {
+    //                _materialPropertyBlock.SetVectorArray(ColorPropertyID, _colors.Array);
+    //                cb.DrawMeshInstanced(mesh, 0, material, -1, _matrices.Array, _prepareCount, _materialPropertyBlock);
+    //            }
+    //            else
+    //            {
+    //                for (int i = 0; i < _prepareCount; i++)
+    //                {
+    //                    _materialPropertyBlock.SetColor(ColorPropertyID, _colors.Ptr[i]);
+    //                    cb.DrawMesh(mesh, _matrices.Ptr[i], material, 0, -1, _materialPropertyBlock);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    #endregion
+    //}
 
 
     public static unsafe partial class DebugX
@@ -299,6 +299,17 @@ namespace DCFApixels
             #endregion
 
             #region InstancingMesh
+            [IN(LINE)]
+            public MeshHandler MeshX<TMesh, TMat>(Vector3 position, Quaternion rotation, Vector3 size)
+                where TMesh : struct, IStaticMesh
+                where TMat : struct, IStaticMaterial
+            {
+                //return Gizmo(new InstancingMeshGizmo<TMesh, TMat>(position, rotation, size));
+                Gizmo(new InstancingMeshGizmo<TMesh, TMat>(position, rotation, size));
+                return new MeshHandler(Color, Duration, position, rotation, size);
+            }
+
+
             [IN(LINE)]
             public DrawHandler Mesh<TMesh, TMat>(Vector3 position, Quaternion rotation, Vector3 size)
                 where TMesh : struct, IStaticMesh
