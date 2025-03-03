@@ -6,11 +6,12 @@ Shader "DCFApixels/DebugX/Handles Wire"
     }
     SubShader
     {
-        Tags { "ForceSupported" = "True" "Queue" = "Transparent" }
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" "IgnoreProjector"="True" "ForceNoShadowCasting"="True" }
         Blend SrcAlpha OneMinusSrcAlpha
-        ZWrite Off Cull Off Fog { Mode Off }
-        Offset -1, -1
+        ZWrite Off 
+        Fog { Mode Off }
 	    Lighting Off 
+        Offset -1, -1
 
         ZTest Off
 

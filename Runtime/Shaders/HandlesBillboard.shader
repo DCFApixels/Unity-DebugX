@@ -6,10 +6,12 @@ Shader "DCFApixels/DebugX/Handles Buillboard"
     }
     SubShader
     {
-        Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" "PreviewType"="Plane" }
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" "IgnoreProjector"="True" "ForceNoShadowCasting"="True" }
         Blend SrcAlpha OneMinusSrcAlpha
-        ZWrite Off Fog { Mode Off }
+        ZWrite Off
+        Fog { Mode Off }
 	    Lighting Off 
+        Offset -1, -1
 
         ZTest On
 

@@ -202,7 +202,7 @@ namespace DCFApixels
                     public void Render(Camera camera, GizmosList<WidthLineGizmo> list, CommandBuffer cb)
                     {
                         if (camera == null) { return; }
-                        default(UnlitMat).GetMaterial().SetPass(0);
+                        default(UnlitOverwriteMat).GetMaterial().SetPass(0);
                         GL.Begin(GL.QUADS);
                         Vector3 cameraPosition = camera.transform.position;
                         foreach (ref readonly var item in list)
@@ -256,7 +256,7 @@ namespace DCFApixels
                     public void Render(Camera camera, GizmosList<WidthOutLineGizmo> list, CommandBuffer cb)
                     {
                         if (camera == null) { return; }
-                        default(GeometryUnlitMat).GetMaterial().SetPass(0);
+                        default(UnlitOverwriteMat).GetMaterial().SetPass(0);
                         GL.Begin(GL.LINES);
                         var cameraPosition = camera.transform.position;
                         foreach (ref readonly var item in list)
@@ -318,7 +318,7 @@ namespace DCFApixels
                     {
                         if (camera == null) { return; }
                         GL.PushMatrix();
-                        default(GeometryUnlitMat).GetMaterial().SetPass(0);
+                        default(UnlitOverwriteMat).GetMaterial().SetPass(0);
                         GL.Begin(GL.LINES);
                         var cameraPosition = camera.transform.position;
                         foreach (ref readonly var item in list)

@@ -39,6 +39,11 @@ namespace DCFApixels.DebugXCore
         public int GetExecuteOrder() => 1_000_000;
         public Material GetMaterial() => DebugXAssets.Materials.Unlit;
     }
+    public readonly struct UnlitOverwriteMat : IStaticMaterial
+    {
+        public int GetExecuteOrder() => 1_000_000;
+        public Material GetMaterial() => DebugXAssets.Materials.UnlitOverwrite;
+    }
     public readonly struct WireMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 1_000_000;

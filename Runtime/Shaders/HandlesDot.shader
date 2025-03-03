@@ -6,10 +6,12 @@ Shader "DCFApixels/DebugX/Handles Dot"
     }
     SubShader
     {
-        Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" "PreviewType"="Plane" }
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" "IgnoreProjector"="True" "ForceNoShadowCasting"="True" }
         Blend SrcAlpha OneMinusSrcAlpha
-        ZWrite Off Fog { Mode Off }
+        ZWrite Off
+        Fog { Mode Off }
 	    Lighting Off 
+        Offset -1, -1
 
         ZTest On
 
@@ -77,6 +79,7 @@ Shader "DCFApixels/DebugX/Handles Dot"
 
             //o.vertex = UnityObjectToClipPos(v.vertex);
             o.color = v.color * UNITY_ACCESS_INSTANCED_PROP(Props, _Color) * _DebugX_GlobalColor;
+
             return o;
         }
         ENDCG
