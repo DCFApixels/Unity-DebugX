@@ -1,5 +1,7 @@
 ﻿//#undef DEBUG
 using DCFApixels.DebugXCore;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -10,6 +12,41 @@ namespace DCFApixels
     {
         public readonly partial struct DrawHandler
         {
+            #region Lines
+            public DrawHandler Lines(ReadOnlySpan<Vector3> lines)
+            {
+                for (int i = 0, iMax = lines.Length & ~1; i < iMax;)
+                {
+                    Line(lines[i++], lines[i++]);
+                }
+                return this;
+            }
+            public DrawHandler LinesStrip(ReadOnlySpan<Vector3> lines)
+            {
+                for (int i = 0, iMax = lines.Length; i < iMax;)
+                {
+                    Line(lines[i], lines[i++]);
+                }
+                return this;
+            }
+            public DrawHandler Lines(List<Vector3> lines)
+            {
+                for (int i = 0, iMax = lines.Count & ~1; i < iMax;)
+                {
+                    Line(lines[i++], lines[i++]);
+                }
+                return this;
+            }
+            public DrawHandler LinesStrip(List<Vector3> lines)
+            {
+                for (int i = 0, iMax = lines.Count; i < iMax;)
+                {
+                    Line(lines[i], lines[i++]);
+                }
+                return this;
+            }
+            #endregion
+
             //TODO часть функционала рейкастс перенести сюда, типа рисование линий примитивами
             #region LineFade
             [IN(LINE)]
@@ -107,18 +144,21 @@ namespace DCFApixels
 
 
             #region Ray
+            [IN(LINE)] public DrawHandler Ray(Transform origin, Vector3 localVector) => Ray(origin.position, origin.rotation * localVector);
             [IN(LINE)] public DrawHandler Ray(Vector3 origin, Quaternion rotation) => Ray(origin, rotation * Vector3.forward);
             [IN(LINE)] public DrawHandler Ray(Ray ray) => Ray(ray.origin, ray.direction);
             [IN(LINE)] public DrawHandler Ray(Vector3 origin, Vector3 direction) => Line(origin, origin + direction);
             #endregion
 
             #region RayFade
-            [IN(LINE)] public DrawHandler RayFade(Vector3 origin, Quaternion rotation) => Ray(origin, rotation * Vector3.forward);
+            [IN(LINE)] public DrawHandler RayFade(Transform origin, Vector3 localVector) => RayFade(origin.position, origin.rotation * localVector);
+            [IN(LINE)] public DrawHandler RayFade(Vector3 origin, Quaternion rotation) => RayFade(origin, rotation * Vector3.forward);
             [IN(LINE)] public DrawHandler RayFade(Ray ray) => RayFade(ray.origin, ray.direction);
             [IN(LINE)] public DrawHandler RayFade(Vector3 origin, Vector3 direction) => LineFade(origin, origin + direction);
             #endregion
 
             #region RayArrow
+            [IN(LINE)] public DrawHandler RayArrow(Transform origin, Vector3 localVector) => RayArrow(origin.position, origin.rotation * localVector);
             [IN(LINE)] public DrawHandler RayArrow(Vector3 origin, Quaternion rotation) => RayArrow(origin, rotation * Vector3.forward);
             [IN(LINE)] public DrawHandler RayArrow(Ray ray) => RayArrow(ray.origin, ray.direction);
             [IN(LINE)] public DrawHandler RayArrow(Vector3 origin, Vector3 direction) => LineArrow(origin, origin + direction);
@@ -126,8 +166,14 @@ namespace DCFApixels
 
             #region Ray custom
             [IN(LINE)]
-            public DrawHandler Ray(Vector3 start, Vector3 direction, DebugXLine endType) => Line(start, start + direction, DebugXLine.Default, endType);
-            public DrawHandler Ray(Vector3 start, Vector3 direction, DebugXLine startType, DebugXLine endType) => Line(start, start + direction, startType, endType);
+            public DrawHandler Ray(Transform origin, Vector3 localVector, DebugXLine endType) => Ray(origin.position, origin.rotation * localVector, endType);
+            public DrawHandler Ray(Vector3 origin, Quaternion rotation, DebugXLine endType) => Ray(origin, rotation * Vector3.forward, endType);
+            public DrawHandler Ray(Ray ray, DebugXLine endType) => Ray(ray.origin, ray.direction, endType);
+            public DrawHandler Ray(Vector3 origin, Vector3 direction, DebugXLine endType) => Line(origin, origin + direction, DebugXLine.Default, endType);
+            public DrawHandler Ray(Transform origin, Vector3 localVector, DebugXLine startType, DebugXLine endType) => Ray(origin.position, origin.rotation * localVector, startType, endType);
+            public DrawHandler Ray(Vector3 origin, Quaternion rotation, DebugXLine startType, DebugXLine endType) => Ray(origin, rotation * Vector3.forward, startType, endType);
+            public DrawHandler Ray(Ray ray, DebugXLine startType, DebugXLine endType) => Ray(ray.origin, ray.direction, startType, endType);
+            public DrawHandler Ray(Vector3 origin, Vector3 direction, DebugXLine startType, DebugXLine endType) => Line(origin, origin + direction, startType, endType);
             #endregion
 
 
