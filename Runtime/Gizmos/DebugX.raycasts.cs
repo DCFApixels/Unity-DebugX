@@ -82,7 +82,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler BoxCast(Vector3 origin, Vector3 direction, Quaternion rotation, Vector3 size, RaycastHit hit)
             {
-                WireCube(origin, rotation, size * 2f);
+                this.WireCube(origin, rotation, size * 2f);
                 if (hit.collider == null)
                 {
                     RayFade(origin, direction * 3f);
@@ -93,7 +93,7 @@ namespace DCFApixels
 
                     WidthOutLine(origin, end, size.x * 2f);
                     Setup(Color.SetAlpha(ShadowAlphaMultiplier)).Line(origin, end);
-                    WireCube(end, rotation, size * 2f);
+                    this.WireCube(end, rotation, size * 2f);
 
                     RaycastHit(hit);
                 }
