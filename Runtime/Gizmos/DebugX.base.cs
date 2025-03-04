@@ -444,15 +444,10 @@ namespace DCFApixels
                     public readonly Vector3 Start;
                     public readonly Vector3 End;
                 }
-                private readonly struct DrawData
+                private struct DrawData
                 {
-                    public readonly Matrix4x4 Matrix;
-                    public readonly Color Color;
-                    public DrawData(Matrix4x4 matrix, Color color)
-                    {
-                        Matrix = matrix;
-                        Color = color;
-                    }
+                    public Matrix4x4 Matrix;
+                    public Color Color;
                 }
                 private struct PrepareJob : IJobParallelFor
                 {
@@ -464,21 +459,21 @@ namespace DCFApixels
                     {
                         ref readonly var item = ref Items[index];
 
-                        Vector3 halfDiff = (item.Value.End - item.Value.Start) * 0.5f;
-                        Vector3 position = item.Value.Start + halfDiff;
+                        Vector3 halfDiff = new Vector3(
+                            (item.Value.End.x - item.Value.Start.x) * 0.5f,
+                            (item.Value.End.y - item.Value.Start.y) * 0.5f,
+                            (item.Value.End.z - item.Value.Start.z) * 0.5f);
 
-                        ResultData[index] = new DrawData(Matrix4x4.TRS(position, Quaternion.identity, halfDiff), item.Color);
+                        (ResultData + index)->Matrix = Matrix4x4.TRS(item.Value.Start + halfDiff, Quaternion.identity, halfDiff);
+                        (ResultData + index)->Color = item.Color;
                     }
                 }
                 private readonly IStaticMesh _mesh = default(WireLineMesh);
                 private readonly IStaticMaterial _material;
                 private readonly MaterialPropertyBlock _materialPropertyBlock;
-                private readonly uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
-                private readonly GraphicsBuffer _argsBuffer;
                 private GraphicsBuffer _graphicsBuffer;
 
                 private int _buffersLength = 0;
-
                 private PinnedArray<DrawData> _drawDatas;
                 private PinnedArray<Gizmo<GizmoData>> _gizmos;
 
@@ -491,34 +486,27 @@ namespace DCFApixels
                     _materialPropertyBlock = new MaterialPropertyBlock();
 
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
-
-                    _argsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, 1, _args.Length * sizeof(uint));
                 }
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
                 public void Prepare(GizmosList rawList)
                 {
                     var list = rawList.As<GizmoData>();
-                    _prepareCount = list.Count;
                     var items = list.Items;
                     var count = list.Count;
+                    _prepareCount = count;
 
                     if (_buffersLength < count)
                     {
-                        if (_drawDatas.Array != null)
-                        {
-                            _drawDatas.Dispose();
-                        }
-                        _drawDatas = PinnedArray<DrawData>.Pin(new DrawData[DebugXUtility.NextPow2(count)]);
-                        AllocateGraphicsBuffer(DebugXUtility.NextPow2(count));
+                        int capacity = DebugXUtility.NextPow2(count);
+                        _drawDatas.Dispose();
+                        _drawDatas = PinnedArray<DrawData>.Pin(new DrawData[capacity]);
+                        AllocateGraphicsBuffer(capacity);
                         _buffersLength = count;
                     }
                     if (ReferenceEquals(_gizmos.Array, items) == false)
                     {
-                        if (_gizmos.Array != null)
-                        {
-                            _gizmos.Dispose();
-                        }
+                        _gizmos.Dispose();
                         _gizmos = PinnedArray<Gizmo<GizmoData>>.Pin(items);
                     }
 
@@ -536,25 +524,14 @@ namespace DCFApixels
                 {
                     Mesh mesh = _mesh.GetMesh();
                     _materialPropertyBlock.Clear();
+
                     _jobHandle.Complete();
 
                     if (IsSupportsComputeShaders)
                     {
                         Material material = _material.GetMaterial_SupportCumputeShaders();
-                        //_materialPropertyBlock.SetVectorArray(ColorPropertyID, _colors.Array);
-                        //cb.DrawMeshInstanced(mesh, 0, material, -1, _matrices.Array, _prepareCount, _materialPropertyBlock);
-
-                        //uint[] args = new uint[5] { mesh.GetIndexCount(0), (uint)_prepareCount, 0, 0, 0 };
-                        //_argsBuffer.SetData(args);
-
                         _graphicsBuffer.SetData(_drawDatas.Array);
                         _materialPropertyBlock.SetBuffer(_BufferPropertyID, _graphicsBuffer);
-
-                        //cb.DrawMeshInstancedIndirect(mesh, 0, material, -1, _argsBuffer, _prepareCount, _materialPropertyBlock);
-                        // _prepareCount, _materialPropertyBlock
-                        //cb.DrawMeshInstancedIndirect(mesh, 0, material, new Bounds(Vector3.zero, new Vector3(100.0f, 100.0f, 100.0f)), _argsBuffer);
-
-
                         cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
                     }
                     else
@@ -567,13 +544,10 @@ namespace DCFApixels
                         }
                     }
                 }
-
-
                 private void AllocateGraphicsBuffer(int capacity)
                 {
                     _graphicsBuffer?.Dispose();
                     _graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, capacity, Marshal.SizeOf<DrawData>());
-
                 }
             }
             #endregion
