@@ -484,7 +484,6 @@ namespace DCFApixels
                 {
                     _material = material;
                     _materialPropertyBlock = new MaterialPropertyBlock();
-
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
                 }
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
@@ -523,20 +522,17 @@ namespace DCFApixels
                 public void Render(CommandBuffer cb)
                 {
                     Mesh mesh = _mesh.GetMesh();
-                    _materialPropertyBlock.Clear();
-
-                    _jobHandle.Complete();
-
                     if (IsSupportsComputeShaders)
                     {
                         Material material = _material.GetMaterial_SupportCumputeShaders();
+                        _jobHandle.Complete();
                         _graphicsBuffer.SetData(_drawDatas.Array);
-                        _materialPropertyBlock.SetBuffer(_BufferPropertyID, _graphicsBuffer);
                         cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
                     }
                     else
                     {
                         Material material = _material.GetMaterial_Default();
+                        _jobHandle.Complete();
                         for (int i = 0; i < _prepareCount; i++)
                         {
                             _materialPropertyBlock.SetColor(ColorPropertyID, _drawDatas.Ptr[i].Color);
@@ -547,7 +543,9 @@ namespace DCFApixels
                 private void AllocateGraphicsBuffer(int capacity)
                 {
                     _graphicsBuffer?.Dispose();
+                    _materialPropertyBlock.Clear();
                     _graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, capacity, Marshal.SizeOf<DrawData>());
+                    _materialPropertyBlock.SetBuffer(_BufferPropertyID, _graphicsBuffer);
                 }
             }
             #endregion
