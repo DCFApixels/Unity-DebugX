@@ -44,6 +44,7 @@ namespace DCFApixels.DebugXCore
         {
             public readonly Material Lit;
             public readonly Material Unlit;
+            public readonly Material Line;
             public readonly Material UnlitOverwrite;
             public readonly Material Billboard;
             public readonly Material Dot;

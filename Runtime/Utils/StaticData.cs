@@ -5,11 +5,13 @@ namespace DCFApixels.DebugXCore
     public interface IStaticMaterial : IStaticData
     {
         int GetExecuteOrder();
-        Material GetMaterial();
+        Material GetMaterial_SupportCumputeShaders();
+        Material GetMaterial_Default();
     }
     public interface IStaticMesh : IStaticData
     {
         Mesh GetMesh();
+        // int GetBufferWarmupSize();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,37 +19,50 @@ namespace DCFApixels.DebugXCore
     public readonly struct LitMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 0;
-        public Material GetMaterial() => DebugXAssets.Materials.Lit;
+        public Material GetMaterial_SupportCumputeShaders() => DebugXAssets.Materials.Lit;
+        public Material GetMaterial_Default() => DebugXAssets.Materials.Lit;
     }
     public readonly struct UnlitMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 100_000;
-        public Material GetMaterial() => DebugXAssets.Materials.Unlit;
+        public Material GetMaterial_SupportCumputeShaders() => DebugXAssets.Materials.Unlit;
+        public Material GetMaterial_Default() => DebugXAssets.Materials.Unlit;
+    }
+    public readonly struct LineMat : IStaticMaterial
+    {
+        public int GetExecuteOrder() => 100_000;
+        public Material GetMaterial_SupportCumputeShaders() => DebugXAssets.Materials.Line;
+        public Material GetMaterial_Default() => DebugXAssets.Materials.Unlit;
     }
     public readonly struct BillboardMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 200_000;
-        public Material GetMaterial() => DebugXAssets.Materials.Billboard;
+        public Material GetMaterial_SupportCumputeShaders() => DebugXAssets.Materials.Billboard;
+        public Material GetMaterial_Default() => DebugXAssets.Materials.Billboard;
     }
     public readonly struct DotMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 300_000;
-        public Material GetMaterial() => DebugXAssets.Materials.Dot;
+        public Material GetMaterial_SupportCumputeShaders() => DebugXAssets.Materials.Dot;
+        public Material GetMaterial_Default() => DebugXAssets.Materials.Dot;
     }
     public readonly struct GeometryUnlitMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 1_000_000;
-        public Material GetMaterial() => DebugXAssets.Materials.Unlit;
+        public Material GetMaterial_SupportCumputeShaders() => DebugXAssets.Materials.Unlit;
+        public Material GetMaterial_Default() => DebugXAssets.Materials.Unlit;
     }
     public readonly struct UnlitOverwriteMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 1_000_000;
-        public Material GetMaterial() => DebugXAssets.Materials.UnlitOverwrite;
+        public Material GetMaterial_SupportCumputeShaders() => DebugXAssets.Materials.UnlitOverwrite;
+        public Material GetMaterial_Default() => DebugXAssets.Materials.UnlitOverwrite;
     }
     public readonly struct WireMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 1_000_000;
-        public Material GetMaterial() => DebugXAssets.Materials.Wire;
+        public Material GetMaterial_SupportCumputeShaders() => DebugXAssets.Materials.Wire;
+        public Material GetMaterial_Default() => DebugXAssets.Materials.Wire;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

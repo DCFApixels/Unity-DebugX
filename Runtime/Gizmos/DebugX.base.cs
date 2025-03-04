@@ -1,6 +1,7 @@
 ﻿//#undef DEBUG
 using DCFApixels.DebugXCore;
 using DCFApixels.DebugXCore.Internal;
+using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
@@ -190,7 +191,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler Line(Vector3 start, Vector3 end)
             {
-                return Gizmo(new WireLineGizmo<UnlitMat>(start, end));
+                return Gizmo(new WireLineGizmo<LineMat>(start, end));
             }
             private readonly struct WireLineGizmo<TMat> : IGizmo<WireLineGizmo<TMat>>
                 where TMat : struct, IStaticMaterial
@@ -315,7 +316,7 @@ namespace DCFApixels
                 }
                 public void Render(CommandBuffer cb)
                 {
-                    Material material = _material.GetMaterial();
+                    Material material = _material.GetMaterial_SupportCumputeShaders();
                     var items = new GizmosList<UnmanagedGizmoData>(_gizmos.Array, _prepareCount).As<GizmoData>().Items;
                     _materialPropertyBlock.Clear();
                     _jobHandle.Complete();
@@ -414,7 +415,7 @@ namespace DCFApixels
                 }
                 protected void Render(CommandBuffer cb)
                 {
-                    Material material = _material.GetMaterial();
+                    Material material = _material.GetMaterial_SupportCumputeShaders();
                     Mesh mesh = _mesh.GetMesh();
                     _materialPropertyBlock.Clear();
                     _jobHandle.Complete();
@@ -443,14 +444,22 @@ namespace DCFApixels
                     public readonly Vector3 Start;
                     public readonly Vector3 End;
                 }
+                private readonly struct DrawData
+                {
+                    public readonly Matrix4x4 Matrix;
+                    public readonly Color Color;
+                    public DrawData(Matrix4x4 matrix, Color color)
+                    {
+                        Matrix = matrix;
+                        Color = color;
+                    }
+                }
                 private struct PrepareJob : IJobParallelFor
                 {
                     [NativeDisableUnsafePtrRestriction]
                     public Gizmo<GizmoData>* Items;
                     [NativeDisableUnsafePtrRestriction]
-                    public Matrix4x4* ResultMatrices;
-                    [NativeDisableUnsafePtrRestriction]
-                    public Vector4* ResultColors;
+                    public DrawData* ResultData;
                     public void Execute(int index)
                     {
                         ref readonly var item = ref Items[index];
@@ -458,18 +467,19 @@ namespace DCFApixels
                         Vector3 halfDiff = (item.Value.End - item.Value.Start) * 0.5f;
                         Vector3 position = item.Value.Start + halfDiff;
 
-                        ResultMatrices[index] = Matrix4x4.TRS(position, Quaternion.identity, halfDiff);
-                        ResultColors[index] = item.Color;
+                        ResultData[index] = new DrawData(Matrix4x4.TRS(position, Quaternion.identity, halfDiff), item.Color);
                     }
                 }
                 private readonly IStaticMesh _mesh = default(WireLineMesh);
                 private readonly IStaticMaterial _material;
                 private readonly MaterialPropertyBlock _materialPropertyBlock;
+                private readonly uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
+                private readonly GraphicsBuffer _argsBuffer;
+                private GraphicsBuffer _graphicsBuffer;
 
                 private int _buffersLength = 0;
 
-                private PinnedArray<Matrix4x4> _matrices;
-                private PinnedArray<Vector4> _colors;
+                private PinnedArray<DrawData> _drawDatas;
                 private PinnedArray<Gizmo<GizmoData>> _gizmos;
 
                 private JobHandle _jobHandle;
@@ -480,8 +490,9 @@ namespace DCFApixels
                     _material = material;
                     _materialPropertyBlock = new MaterialPropertyBlock();
 
-                    _matrices = PinnedArray<Matrix4x4>.Pin(DummyArray<Matrix4x4>.Get());
-                    _colors = PinnedArray<Vector4>.Pin(DummyArray<Vector4>.Get());
+                    _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
+
+                    _argsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, 1, _args.Length * sizeof(uint));
                 }
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
@@ -494,13 +505,12 @@ namespace DCFApixels
 
                     if (_buffersLength < count)
                     {
-                        if (_matrices.Array != null)
+                        if (_drawDatas.Array != null)
                         {
-                            _matrices.Dispose();
-                            _colors.Dispose();
+                            _drawDatas.Dispose();
                         }
-                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[DebugXUtility.NextPow2(count)]);
-                        _colors = PinnedArray<Vector4>.Pin(new Vector4[DebugXUtility.NextPow2(count)]);
+                        _drawDatas = PinnedArray<DrawData>.Pin(new DrawData[DebugXUtility.NextPow2(count)]);
+                        AllocateGraphicsBuffer(DebugXUtility.NextPow2(count));
                         _buffersLength = count;
                     }
                     if (ReferenceEquals(_gizmos.Array, items) == false)
@@ -515,31 +525,55 @@ namespace DCFApixels
                     var job = new PrepareJob
                     {
                         Items = _gizmos.Ptr,
-                        ResultMatrices = _matrices.Ptr,
-                        ResultColors = _colors.Ptr,
+                        ResultData = _drawDatas.Ptr,
                     };
-                    _jobHandle = job.Schedule(count, 16);
+                    _jobHandle = job.Schedule(count, 64);
                 }
+
+
+                private readonly static int _BufferPropertyID = Shader.PropertyToID("_DataBuffer");
                 public void Render(CommandBuffer cb)
                 {
-                    Material material = _material.GetMaterial();
                     Mesh mesh = _mesh.GetMesh();
                     _materialPropertyBlock.Clear();
                     _jobHandle.Complete();
 
                     if (IsSupportsComputeShaders)
                     {
-                        _materialPropertyBlock.SetVectorArray(ColorPropertyID, _colors.Array);
-                        cb.DrawMeshInstanced(mesh, 0, material, -1, _matrices.Array, _prepareCount, _materialPropertyBlock);
+                        Material material = _material.GetMaterial_SupportCumputeShaders();
+                        //_materialPropertyBlock.SetVectorArray(ColorPropertyID, _colors.Array);
+                        //cb.DrawMeshInstanced(mesh, 0, material, -1, _matrices.Array, _prepareCount, _materialPropertyBlock);
+
+                        //uint[] args = new uint[5] { mesh.GetIndexCount(0), (uint)_prepareCount, 0, 0, 0 };
+                        //_argsBuffer.SetData(args);
+
+                        _graphicsBuffer.SetData(_drawDatas.Array);
+                        _materialPropertyBlock.SetBuffer(_BufferPropertyID, _graphicsBuffer);
+
+                        //cb.DrawMeshInstancedIndirect(mesh, 0, material, -1, _argsBuffer, _prepareCount, _materialPropertyBlock);
+                        // _prepareCount, _materialPropertyBlock
+                        //cb.DrawMeshInstancedIndirect(mesh, 0, material, new Bounds(Vector3.zero, new Vector3(100.0f, 100.0f, 100.0f)), _argsBuffer);
+
+
+                        cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
                     }
                     else
                     {
+                        Material material = _material.GetMaterial_Default();
                         for (int i = 0; i < _prepareCount; i++)
                         {
-                            _materialPropertyBlock.SetColor(ColorPropertyID, _colors.Ptr[i]);
-                            cb.DrawMesh(mesh, _matrices.Ptr[i], material, 0, -1, _materialPropertyBlock);
+                            _materialPropertyBlock.SetColor(ColorPropertyID, _drawDatas.Ptr[i].Color);
+                            cb.DrawMesh(mesh, _drawDatas.Ptr[i].Matrix, material, 0, -1, _materialPropertyBlock);
                         }
                     }
+                }
+
+
+                private void AllocateGraphicsBuffer(int capacity)
+                {
+                    _graphicsBuffer?.Dispose();
+                    _graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, capacity, Marshal.SizeOf<DrawData>());
+
                 }
             }
             #endregion

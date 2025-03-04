@@ -392,8 +392,35 @@ namespace DCFApixels
             [IN(LINE)]
             public unsafe DrawHandler CubeGrid(Vector3 position, Quaternion rotation, Vector3 size, Vector3Int cells)
             {
-                Vector3 halfSize = size / 2f;
+                //float m, add;
+                //int iMax;
+                //
+                //iMax = (cells.x + 1) / 2;
+                //m = size.x / iMax;
+                //add = (cells.x & 1) == 0 ? m * 0.5f : 0;
+                //for (int i = 0; i < iMax; i++)
+                //{
+                //    WireCube(position, rotation, new Vector3(add + i * m, size.y, size.z));
+                //}
+                //
+                //iMax = (cells.y + 1) / 2;
+                //m = size.y / iMax;
+                //add = (cells.y & 1) == 0 ? 0 : m * 0.5f;
+                //for (int i = 0; i < iMax; i++)
+                //{
+                //    WireCube(position, rotation, new Vector3(size.x, add + i * m, size.z));
+                //}
+                //
+                //iMax = (cells.z + 1) / 2;
+                //m = size.z / iMax;
+                //add = (cells.z & 1) == 0 ? 0 : m * 0.5f;
+                //for (int i = 0; i < iMax; i++)
+                //{
+                //    WireCube(position, rotation, new Vector3(size.x, size.y, add + i * m));
+                //}
 
+                Vector3 halfSize = size / 2f;
+                
                 Vector3* vertices = stackalloc Vector3[]
                 {
                     new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), // 0
@@ -405,12 +432,12 @@ namespace DCFApixels
                     new Vector3(halfSize.x, halfSize.y, halfSize.z),    // 6
                     new Vector3(-halfSize.x, halfSize.y, halfSize.z),   // 7
                 };
-
+                
                 for (int i = 0; i < 8; i++)
                 {
                     vertices[i] = rotation * vertices[i] + position;
                 }
-
+                
                 Vector3 up = rotation * Vector3.up * (size.y / cells.y);
                 for (int i = 0; i <= cells.y; i++)
                 {
@@ -438,7 +465,7 @@ namespace DCFApixels
                     Line(vertices[1] + pos, vertices[0] + pos);
                     Line(vertices[0] + pos, vertices[4] + pos);
                 }
-
+                
                 return this;
             }
             #endregion
