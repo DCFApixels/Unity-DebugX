@@ -499,7 +499,7 @@ namespace DCFApixels
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
                     _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial().enableInstancing;
                 }
-                public virtual int ExecuteOrder => _material.GetExecuteOrder();
+                public virtual int ExecuteOrder => _material.GetExecuteOrder() - 1;
                 public virtual bool IsStaticRender => true;
                 public void Prepare(GizmosList rawList)
                 {

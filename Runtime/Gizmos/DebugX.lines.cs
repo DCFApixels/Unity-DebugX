@@ -13,35 +13,78 @@ namespace DCFApixels
         public readonly partial struct DrawHandler
         {
             #region Lines
-            public DrawHandler Lines(ReadOnlySpan<Vector3> lines)
+            [IN(LINE)] public DrawHandler Lines(Vector3[] points) => Lines(new ReadOnlySpan<Vector3>(points));
+            [IN(LINE)] public DrawHandler Lines(Vector3[] points, int length) => Lines(new ReadOnlySpan<Vector3>(points, 0, length));
+            [IN(LINE)] public DrawHandler Lines(Vector3[] points, int startIndex, int length) => Lines(new ReadOnlySpan<Vector3>(points, startIndex, length));
+            [IN(LINE)]
+            public DrawHandler Lines(ReadOnlySpan<Vector3> points)
             {
-                for (int i = 0, iMax = lines.Length & ~1; i < iMax;)
+                for (int i = 0, iMax = points.Length & ~1; i < iMax;)
                 {
-                    Line(lines[i++], lines[i++]);
+                    Line(points[i++], points[i++]);
                 }
                 return this;
             }
-            public DrawHandler LinesStrip(ReadOnlySpan<Vector3> lines)
+            [IN(LINE)] public DrawHandler Lines(List<Vector3> points) => Lines(points, 0, points.Count);
+            [IN(LINE)] public DrawHandler Lines(List<Vector3> points, int length) => Lines(points, 0, length);
+            [IN(LINE)] 
+            public DrawHandler Lines(List<Vector3> points, int startIndex, int length)
             {
-                for (int i = 0, iMax = lines.Length; i < iMax;)
+                for (int i = startIndex, iMax = startIndex + (length & ~1); i < iMax;)
                 {
-                    Line(lines[i], lines[i++]);
+                    Line(points[i++], points[i++]);
                 }
                 return this;
             }
-            public DrawHandler Lines(List<Vector3> lines)
+            public DrawHandler Lines(IEnumerable<Vector3> points)
             {
-                for (int i = 0, iMax = lines.Count & ~1; i < iMax;)
+                var enumerator = points.GetEnumerator();
+                while (true)
                 {
-                    Line(lines[i++], lines[i++]);
+                    if (enumerator.MoveNext() == false) { break; }
+                    Vector3 startPoint = enumerator.Current;
+                    if (enumerator.MoveNext() == false) { break; }
+                    Vector3 endPoint = enumerator.Current;
+                    Line(startPoint, endPoint);
                 }
                 return this;
             }
-            public DrawHandler LinesStrip(List<Vector3> lines)
+            #endregion
+
+            #region LineStrip
+            [IN(LINE)] public DrawHandler LineStrip(Vector3[] points) => LineStrip(new ReadOnlySpan<Vector3>(points));
+            [IN(LINE)] public DrawHandler LineStrip(Vector3[] points, int length) => LineStrip(new ReadOnlySpan<Vector3>(points, 0, length));
+            [IN(LINE)] public DrawHandler LineStrip(Vector3[] points, int startIndex, int length) => LineStrip(new ReadOnlySpan<Vector3>(points, startIndex, length));
+            [IN(LINE)]
+            public DrawHandler LineStrip(ReadOnlySpan<Vector3> points)
             {
-                for (int i = 0, iMax = lines.Count; i < iMax;)
+                for (int i = 0, iMax = points.Length - 1; i < iMax;)
                 {
-                    Line(lines[i], lines[i++]);
+                    Line(points[i], points[++i]);
+                }
+                return this;
+            }
+            [IN(LINE)] public DrawHandler LineStrip(List<Vector3> points) => LineStrip(points, 0, points.Count);
+            [IN(LINE)] public DrawHandler LineStrip(List<Vector3> points, int length) => LineStrip(points, 0, length);
+            [IN(LINE)]
+            public DrawHandler LineStrip(List<Vector3> points, int startIndex, int length)
+            {
+                for (int i = startIndex, iMax = startIndex + length; i < iMax;)
+                {
+                    Line(points[i], points[++i]);
+                }
+                return this;
+            }
+            public DrawHandler LineStrip(IEnumerable<Vector3> points)
+            {
+                var enumerator = points.GetEnumerator();
+                enumerator.MoveNext();
+                Vector3 startPoint = enumerator.Current;
+                while (enumerator.MoveNext())
+                {
+                    Vector3 endPoint = enumerator.Current;
+                    Line(startPoint, endPoint);
+                    startPoint = endPoint;
                 }
                 return this;
             }
