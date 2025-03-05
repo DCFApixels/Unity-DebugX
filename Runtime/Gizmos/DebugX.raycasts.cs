@@ -32,6 +32,12 @@ namespace DCFApixels
                 }
                 return this;
             }
+            [IN(LINE)]
+            private void RaycastHit_Internal(float offsetZ, RaycastHit2D hit)
+            {
+                DotDiamond(new Vector3(hit.point.x, hit.point.y, offsetZ));
+                RayArrow(new Vector3(hit.point.x, hit.point.y, offsetZ), hit.normal);
+            }
             #endregion
 
 
@@ -153,7 +159,7 @@ namespace DCFApixels
                 {
                     Line(origin, origin + (Vector3)direction * hit.distance);
 
-                    RaycastHit(hit);
+                    RaycastHit_Internal(origin.z, hit);
                 }
                 return this;
             }
@@ -177,7 +183,7 @@ namespace DCFApixels
                     Line(origin, end);
                     WireCircle(end, Normal2D, radius);
 
-                    RaycastHit(hit);
+                    RaycastHit_Internal(origin.z, hit);
                 }
                 return this;
             }
@@ -202,7 +208,7 @@ namespace DCFApixels
                     Line(origin, end);
                     WireQuad(end, rotation, size * 2f);
 
-                    RaycastHit(hit);
+                    RaycastHit_Internal(origin.z, hit);
                 }
                 return this;
             }
@@ -228,7 +234,7 @@ namespace DCFApixels
                     Line(origin, end);
                     WireFlatCapsule(end, rotation, radius, height);
 
-                    RaycastHit(hit);
+                    RaycastHit_Internal(origin.z, hit);
                 }
                 return this;
             }
