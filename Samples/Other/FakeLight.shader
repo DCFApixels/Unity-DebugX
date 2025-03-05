@@ -7,7 +7,7 @@ Shader "Unlit/FakeLighth"
     SubShader
     {
         Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" "PreviewType"="Plane" }
-        Blend SrcAlpha One, One One
+        Blend One One
         ZWrite Off Fog { Mode Off }
 	    Lighting Off 
         ZTest On
@@ -54,7 +54,7 @@ Shader "Unlit/FakeLighth"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                return _Color * (1.0 - Unity_PolarCoordinates_float(i.uv, 0.5, 1, 1).x);
+                return _Color * (1.0 - Unity_PolarCoordinates_float(i.uv, float2(0.5, 0.5), 1, 1).r);
             }
             ENDCG
         }
