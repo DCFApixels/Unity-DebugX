@@ -12,7 +12,7 @@ namespace DCFApixels
 
         public const float SCREEN_SPACE_SCALE_FACTOR = 0f;
         public const float WORLD_SPACE_SCALE_FACTOR = 1f;
-        
+
         public static readonly DebugXTextSettings Default = new DebugXTextSettings(DEFAULT_FONT_SIZE, DEFAULT_TEXT_ANCHOR, default, 0);
         public static readonly DebugXTextSettings WorldSpaceScale = Default.SetWorldSpaceScaleFactor();
 
@@ -20,15 +20,15 @@ namespace DCFApixels
         /// Font size. Default is <see cref="DEFAULT_FONT_SIZE" />.
         /// </summary>
         public readonly int FontSize;
-        
+
         /// <summary>
         /// Text alignment. Default is <see cref="DEFAULT_TEXT_ANCHOR" />.
         /// </summary>
         public readonly TextAnchor TextAnchor;
-        
+
         public readonly Color BackgroundColor;
         public readonly float WorldSpaceScaleFactor;
-        
+
         // ReSharper disable once UnusedMember.Global
         public bool IsHasBackground => BackgroundColor.a > 0;
 
@@ -47,7 +47,7 @@ namespace DCFApixels
         {
             return new DebugXTextSettings(fontSize, TextAnchor, BackgroundColor, WorldSpaceScaleFactor);
         }
-        
+
         /// <summary>
         /// Sets text alignment. Default is <see cref="DEFAULT_TEXT_ANCHOR" />.
         /// </summary>
@@ -55,7 +55,7 @@ namespace DCFApixels
         {
             return new DebugXTextSettings(FontSize, textAnchor, BackgroundColor, WorldSpaceScaleFactor);
         }
-        
+
         /// <summary>
         /// Sets background image color behind text. Ignored if transparent.
         /// </summary>
@@ -63,7 +63,7 @@ namespace DCFApixels
         {
             return new DebugXTextSettings(FontSize, TextAnchor, backgroundColor, WorldSpaceScaleFactor);
         }
-        
+
         /// <summary>
         /// Synchronizes the text scale in screen space. The text will remain the same size on the screen.
         /// </summary>
@@ -72,7 +72,7 @@ namespace DCFApixels
         {
             return SetCustomSpaceScaleFactor(SCREEN_SPACE_SCALE_FACTOR);
         }
-        
+
         /// <summary>
         /// Synchronizes the text scale in world space. The text will remain the same size on the scene.
         /// </summary>
@@ -80,7 +80,7 @@ namespace DCFApixels
         {
             return SetCustomSpaceScaleFactor(WORLD_SPACE_SCALE_FACTOR);
         }
-        
+
         /// <summary>
         /// Allows you to control the text scale depending on the camera zoom.
         /// </summary>
