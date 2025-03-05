@@ -90,6 +90,85 @@ namespace DCFApixels
             }
             #endregion
 
+            #region Lines2D
+            [IN(LINE)] public DrawHandler Lines(Vector2[] points) => Lines(new ReadOnlySpan<Vector2>(points));
+            [IN(LINE)] public DrawHandler Lines(Vector2[] points, int length) => Lines(new ReadOnlySpan<Vector2>(points, 0, length));
+            [IN(LINE)] public DrawHandler Lines(Vector2[] points, int startIndex, int length) => Lines(new ReadOnlySpan<Vector2>(points, startIndex, length));
+            [IN(LINE)]
+            public DrawHandler Lines(ReadOnlySpan<Vector2> points)
+            {
+                for (int i = 0, iMax = points.Length & ~1; i < iMax;)
+                {
+                    Line(points[i++], points[i++]);
+                }
+                return this;
+            }
+            [IN(LINE)] public DrawHandler Lines(List<Vector2> points) => Lines(points, 0, points.Count);
+            [IN(LINE)] public DrawHandler Lines(List<Vector2> points, int length) => Lines(points, 0, length);
+            [IN(LINE)]
+            public DrawHandler Lines(List<Vector2> points, int startIndex, int length)
+            {
+                for (int i = startIndex, iMax = startIndex + (length & ~1); i < iMax;)
+                {
+                    Line(points[i++], points[i++]);
+                }
+                return this;
+            }
+            public DrawHandler Lines(IEnumerable<Vector2> points)
+            {
+                var enumerator = points.GetEnumerator();
+                while (true)
+                {
+                    if (enumerator.MoveNext() == false) { break; }
+                    Vector3 startPoint = enumerator.Current;
+                    if (enumerator.MoveNext() == false) { break; }
+                    Vector3 endPoint = enumerator.Current;
+                    Line(startPoint, endPoint);
+                }
+                return this;
+            }
+            #endregion
+
+            #region LineStrip2D
+            [IN(LINE)] public DrawHandler LineStrip(Vector2[] points) => LineStrip(new ReadOnlySpan<Vector2>(points));
+            [IN(LINE)] public DrawHandler LineStrip(Vector2[] points, int length) => LineStrip(new ReadOnlySpan<Vector2>(points, 0, length));
+            [IN(LINE)] public DrawHandler LineStrip(Vector2[] points, int startIndex, int length) => LineStrip(new ReadOnlySpan<Vector2>(points, startIndex, length));
+            [IN(LINE)]
+            public DrawHandler LineStrip(ReadOnlySpan<Vector2> points)
+            {
+                for (int i = 0, iMax = points.Length - 1; i < iMax;)
+                {
+                    Line(points[i], points[++i]);
+                }
+                return this;
+            }
+            [IN(LINE)] public DrawHandler LineStrip(List<Vector2> points) => LineStrip(points, 0, points.Count);
+            [IN(LINE)] public DrawHandler LineStrip(List<Vector2> points, int length) => LineStrip(points, 0, length);
+            [IN(LINE)]
+            public DrawHandler LineStrip(List<Vector2> points, int startIndex, int length)
+            {
+                for (int i = startIndex, iMax = startIndex + length; i < iMax;)
+                {
+                    Line(points[i], points[++i]);
+                }
+                return this;
+            }
+            public DrawHandler LineStrip(IEnumerable<Vector2> points)
+            {
+                var enumerator = points.GetEnumerator();
+                enumerator.MoveNext();
+                Vector3 startPoint = enumerator.Current;
+                while (enumerator.MoveNext())
+                {
+                    Vector3 endPoint = enumerator.Current;
+                    Line(startPoint, endPoint);
+                    startPoint = endPoint;
+                }
+                return this;
+            }
+            #endregion
+
+
             //TODO часть функционала рейкастс перенести сюда, типа рисование линий примитивами
             #region LineFade
             [IN(LINE)]
