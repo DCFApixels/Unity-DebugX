@@ -4,6 +4,7 @@ using DCFApixels.DebugXCore.Internal;
 using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -277,6 +278,16 @@ namespace DCFApixels
                     _material = material;
                     _matrices = PinnedArray<Matrix4x4>.Pin(DummyArray<Matrix4x4>.Get());
                     _colors = PinnedArray<Vector4>.Pin(DummyArray<Vector4>.Get());
+
+                    AssemblyReloadEvents.beforeAssemblyReload += AssemblyReloadEvents_beforeAssemblyReload;
+                }
+                private void AssemblyReloadEvents_beforeAssemblyReload()
+                {
+                    AssemblyReloadEvents.beforeAssemblyReload -= AssemblyReloadEvents_beforeAssemblyReload;
+                    _materialPropertyBlock.Clear();
+                    _matrices.Dispose();
+                    _colors.Dispose();
+                    _gizmos.Dispose();
                 }
                 public void Prepare(GizmosList rawList)
                 {
@@ -380,7 +391,19 @@ namespace DCFApixels
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
                     _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial().enableInstancing;
+
+                    AssemblyReloadEvents.beforeAssemblyReload += AssemblyReloadEvents_beforeAssemblyReload;
                 }
+                private void AssemblyReloadEvents_beforeAssemblyReload()
+                {
+                    AssemblyReloadEvents.beforeAssemblyReload -= AssemblyReloadEvents_beforeAssemblyReload;
+                    _graphicsBuffer?.Release();
+                    _graphicsBuffer?.Dispose();
+                    _materialPropertyBlock.Clear();
+                    _drawDatas.Dispose();
+                    _gizmos.Dispose();
+                }
+
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
                 protected void Prepare(GizmosList rawList)
@@ -400,10 +423,7 @@ namespace DCFApixels
                     }
                     if (ReferenceEquals(_gizmos.Array, items) == false)
                     {
-                        if (_gizmos.Array != null)
-                        {
-                            _gizmos.Dispose();
-                        }
+                        _gizmos.Dispose();
                         _gizmos = PinnedArray<Gizmo<GizmoData>>.Pin(items);
                     }
 
@@ -438,9 +458,11 @@ namespace DCFApixels
                 private readonly static int _BufferPropertyID = Shader.PropertyToID("_DataBuffer");
                 private void AllocateGraphicsBuffer(int capacity)
                 {
+                    _graphicsBuffer?.Release();
                     _graphicsBuffer?.Dispose();
-                    _materialPropertyBlock.Clear();
                     _graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, capacity, Marshal.SizeOf<DrawData>());
+
+                    _materialPropertyBlock.Clear();
                     _materialPropertyBlock.SetBuffer(_BufferPropertyID, _graphicsBuffer);
                 }
             }
@@ -498,6 +520,17 @@ namespace DCFApixels
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
                     _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial().enableInstancing;
+
+                    AssemblyReloadEvents.beforeAssemblyReload += AssemblyReloadEvents_beforeAssemblyReload;
+                }
+                private void AssemblyReloadEvents_beforeAssemblyReload()
+                {
+                    AssemblyReloadEvents.beforeAssemblyReload -= AssemblyReloadEvents_beforeAssemblyReload;
+                    _graphicsBuffer?.Release();
+                    _graphicsBuffer?.Dispose();
+                    _materialPropertyBlock.Clear();
+                    _drawDatas.Dispose();
+                    _gizmos.Dispose();
                 }
                 public virtual int ExecuteOrder => _material.GetExecuteOrder() - 1;
                 public virtual bool IsStaticRender => true;
@@ -553,9 +586,11 @@ namespace DCFApixels
                 private readonly static int _BufferPropertyID = Shader.PropertyToID("_DataBuffer");
                 private void AllocateGraphicsBuffer(int capacity)
                 {
+                    _graphicsBuffer?.Release();
                     _graphicsBuffer?.Dispose();
-                    _materialPropertyBlock.Clear();
                     _graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, capacity, Marshal.SizeOf<DrawData>());
+
+                    _materialPropertyBlock.Clear();
                     _materialPropertyBlock.SetBuffer(_BufferPropertyID, _graphicsBuffer);
                 }
             }

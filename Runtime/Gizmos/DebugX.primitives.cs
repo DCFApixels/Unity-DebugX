@@ -20,10 +20,6 @@ namespace DCFApixels
             [IN(LINE)] public DrawHandler Cross(Vector3 position, float size) => Mesh<DotCrossMesh, BillboardMat>(position, Quaternion.identity, new Vector3(size, size, size));
             #endregion
 
-            #region DotCross
-            [IN(LINE)] public DrawHandler DotCross(Vector3 position) => Mesh<DotCrossMesh, DotMat>(position, Quaternion.identity, new Vector3(0.06f, 0.06f, 1f));
-            #endregion
-
 
             #region Sphere
             [IN(LINE)] public DrawHandler Sphere(Vector3 position, float radius) => Mesh<SphereMesh, LitMat>(position, Quaternion.identity, new Vector3(radius, radius, radius));
@@ -120,14 +116,6 @@ namespace DCFApixels
             #region WireCircle
             [IN(LINE)] public DrawHandler WireCircle(Vector3 position, Vector3 normal, float radius) => WireCircle(position, Quaternion.LookRotation(normal), radius);
             [IN(LINE)] public DrawHandler WireCircle(Vector3 position, Quaternion rotation, float radius) => Mesh<WireCircleMesh, GeometryUnlitMat>(position, rotation, new Vector3(radius, radius, radius));
-            #endregion
-
-            #region Dot
-            [IN(LINE)] public DrawHandler Dot(Vector3 position) => Mesh<DotMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, 1f));
-            #endregion
-
-            #region WireDot
-            [IN(LINE)] public DrawHandler WireDot(Vector3 position) => Mesh<WireCircleMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE * 0.5f, DOT_SIZE * 0.5f, 1f));
             #endregion
 
 
@@ -245,6 +233,7 @@ namespace DCFApixels
                 return this;
             }
             #endregion
+
 
             #region Capsule
             [IN(LINE)]
@@ -538,22 +527,6 @@ namespace DCFApixels
 
                 return this;
             }
-            #endregion
-
-            #region DotQuad
-            [IN(LINE)] public DrawHandler DotQuad(Vector3 position) => Mesh<DotQuadMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, 1f));
-            #endregion
-
-            #region WireDotQuad
-            [IN(LINE)] public DrawHandler WireDotQuad(Vector3 position) => Mesh<WireCubeMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE, DOT_SIZE, 0f));
-            #endregion
-
-            #region DotDiamond
-            [IN(LINE)] public DrawHandler DotDiamond(Vector3 position) => Mesh<DotDiamondMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE * 1.16f, DOT_SIZE * 1.16f, 1f));
-            #endregion
-
-            #region WireDotDiamond
-            [IN(LINE)] public DrawHandler WireDotDiamond(Vector3 position) => Mesh<WireDotDiamondMesh, DotMat>(position, Quaternion.identity, new Vector3(DOT_SIZE * 1.16f, DOT_SIZE * 1.16f, 1f));
             #endregion
         }
     }
