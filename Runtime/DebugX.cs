@@ -53,7 +53,7 @@ namespace DCFApixels
                 eventToClean = null;
                 foreach (var delegateItem in validDelegates)
                 {
-                    eventToClean += (OnDrawGizmoHandler)delegateItem;
+                    eventToClean += (OnDrawGizmoHandler)delegateItem; 
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace DCFApixels
             CleanupEvent(ref _onDrawGizmo);
         }
         internal static void InvokeOnDrawGizmo(Camera camera)
-        {
+        { 
             _onDrawGizmo(camera);
         }
     }

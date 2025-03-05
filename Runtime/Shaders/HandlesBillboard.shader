@@ -45,7 +45,6 @@ Shader "DCFApixels/DebugX/Handles Buillboard"
             v2f o;
             UNITY_SETUP_INSTANCE_ID(v);
 
-
             float4 worldOrigin = mul(UNITY_MATRIX_M, float4(0, 0, 0, 1));
             float4 viewOrigin = float4(UnityObjectToViewPos(float3(0, 0, 0)), 1);
             float4 worldPos = mul(UNITY_MATRIX_M, v.vertex);
@@ -56,7 +55,6 @@ Shader "DCFApixels/DebugX/Handles Buillboard"
             o.vertex = clipsPos;
 
 
-            //o.vertex = UnityObjectToClipPos(v.vertex);
             o.color = v.color * UNITY_ACCESS_INSTANCED_PROP(Props, _Color) * _DebugX_GlobalColor;
             return o;
         }

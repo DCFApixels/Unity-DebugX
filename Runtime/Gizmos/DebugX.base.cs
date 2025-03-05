@@ -46,7 +46,7 @@ namespace DCFApixels
             #region Mesh //TODO потестить
             [IN(LINE)]
             public DrawHandler Mesh<TMat>(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 size)
-                where TMat : struct, IStaticMaterial
+                where TMat : struct, IStaticMaterial_InstancedProcedural
             {
                 return Gizmo(new MeshGizmo<TMat>(mesh, position, rotation, size));
             }
@@ -81,7 +81,7 @@ namespace DCFApixels
                 }
             }
             private readonly struct MeshGizmo<TMat> : IGizmo<MeshGizmo<TMat>>
-                where TMat : struct, IStaticMaterial
+                where TMat : struct, IStaticMaterial_InstancedProcedural
             {
                 public readonly Mesh Mesh;
                 public readonly Quaternion Rotation;
@@ -116,7 +116,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler Mesh<TMesh, TMat>(Vector3 position, Quaternion rotation, Vector3 size)
                 where TMesh : struct, IStaticMesh
-                where TMat : struct, IStaticMaterial
+                where TMat : struct, IStaticMaterial_InstancedProcedural
             {
                 return Gizmo(new InstancingMeshGizmo<TMesh, TMat>(position, rotation, size));
             }
@@ -153,7 +153,7 @@ namespace DCFApixels
             }
             private readonly struct InstancingMeshGizmo<TMesh, TMat> : IGizmo<InstancingMeshGizmo<TMesh, TMat>>
                 where TMesh : struct, IStaticMesh
-                where TMat : struct, IStaticMaterial
+                where TMat : struct, IStaticMaterial_InstancedProcedural
             {
                 public readonly Quaternion Rotation;
                 public readonly Vector3 Position;
@@ -184,17 +184,17 @@ namespace DCFApixels
             #region Line
             [IN(LINE)]
             public DrawHandler Line<TMat>(Vector3 start, Vector3 end)
-                where TMat : struct, IStaticMaterial
+                where TMat : struct, IStaticMaterial_InstancedProcedural
             {
                 return Gizmo(new WireLineGizmo<TMat>(start, end));
             }
             [IN(LINE)]
             public DrawHandler Line(Vector3 start, Vector3 end)
             {
-                return Gizmo(new WireLineGizmo<LineMat>(start, end));
+                return Gizmo(new WireLineGizmo<UnlitMat>(start, end));
             }
             private readonly struct WireLineGizmo<TMat> : IGizmo<WireLineGizmo<TMat>>
-                where TMat : struct, IStaticMaterial
+                where TMat : struct, IStaticMaterial_InstancedProcedural
             {
                 public readonly Vector3 Start;
                 public readonly Vector3 End;
@@ -256,7 +256,7 @@ namespace DCFApixels
                     }
                 }
 
-                private readonly IStaticMaterial _material;
+                private readonly IStaticMaterial_InstancedProcedural _material;
 
                 private int _buffersLength = 0;
                 private PinnedArray<Matrix4x4> _matrices;
@@ -271,7 +271,7 @@ namespace DCFApixels
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
 
-                public MeshRendererBase(IStaticMaterial material)
+                public MeshRendererBase(IStaticMaterial_InstancedProcedural material)
                 {
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _material = material;
@@ -316,7 +316,7 @@ namespace DCFApixels
                 }
                 public void Render(CommandBuffer cb)
                 {
-                    Material material = _material.GetMaterial_SupportCumputeShaders();
+                    Material material = _material.GetMaterial_InstancedProcedural();
                     var items = new GizmosList<UnmanagedGizmoData>(_gizmos.Array, _prepareCount).As<GizmoData>().Items;
                     _materialPropertyBlock.Clear();
                     _jobHandle.Complete();
@@ -340,44 +340,46 @@ namespace DCFApixels
                     public readonly Vector3 Position;
                     public readonly Vector3 Size;
                 }
+                private struct DrawData
+                {
+                    public Matrix4x4 Matrix;
+                    public Color Color;
+                }
                 private struct PrepareJob : IJobParallelFor
                 {
                     [NativeDisableUnsafePtrRestriction]
                     public Gizmo<GizmoData>* Items;
                     [NativeDisableUnsafePtrRestriction]
-                    public Matrix4x4* ResultMatrices;
-                    [NativeDisableUnsafePtrRestriction]
-                    public Vector4* ResultColors;
+                    public DrawData* ResultData;
                     public void Execute(int index)
                     {
                         ref readonly var item = ref Items[index];
-                        //if (item.IsSwaped == 0) { return; }
-                        ResultMatrices[index] = Matrix4x4.TRS(item.Value.Position, item.Value.Rotation, item.Value.Size);
-                        ResultColors[index] = item.Color;
+                        (ResultData + index)->Matrix = Matrix4x4.TRS(item.Value.Position, item.Value.Rotation, item.Value.Size);
+                        (ResultData + index)->Color = item.Color;
                     }
                 }
 
                 private readonly IStaticMesh _mesh;
-                private readonly IStaticMaterial _material;
-
+                private readonly IStaticMaterial_InstancedProcedural _material;
                 private readonly MaterialPropertyBlock _materialPropertyBlock;
+                private GraphicsBuffer _graphicsBuffer;
 
                 private int _buffersLength = 0;
-                private PinnedArray<Matrix4x4> _matrices;
-                private PinnedArray<Vector4> _colors;
+                private PinnedArray<DrawData> _drawDatas;
                 private PinnedArray<Gizmo<GizmoData>> _gizmos;
 
                 private JobHandle _jobHandle;
                 private int _prepareCount = 0;
 
-                public InstancingMeshRendererBase(IStaticMesh mesh, IStaticMaterial material)
+                private readonly bool _enableInstancing;
+
+                public InstancingMeshRendererBase(IStaticMesh mesh, IStaticMaterial_InstancedProcedural material)
                 {
                     _mesh = mesh;
                     _material = material;
                     _materialPropertyBlock = new MaterialPropertyBlock();
-
-                    _matrices = PinnedArray<Matrix4x4>.Pin(DummyArray<Matrix4x4>.Get());
-                    _colors = PinnedArray<Vector4>.Pin(DummyArray<Vector4>.Get());
+                    _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
+                    _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial_InstancedProcedural().enableInstancing;
                 }
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
@@ -387,13 +389,13 @@ namespace DCFApixels
                     _prepareCount = list.Count;
                     var items = list.Items;
                     var count = list.Count;
-
-                    if (_buffersLength < count)
+                     
+                    if (_buffersLength < count) 
                     {
-                        _matrices.Dispose();
-                        _colors.Dispose();
-                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[DebugXUtility.NextPow2(count)]);
-                        _colors = PinnedArray<Vector4>.Pin(new Vector4[DebugXUtility.NextPow2(count)]);
+                        int capacity = DebugXUtility.NextPow2(count);
+                        _drawDatas.Dispose();
+                        _drawDatas = PinnedArray<DrawData>.Pin(new DrawData[capacity]);
+                        AllocateGraphicsBuffer(capacity);
                         _buffersLength = count;
                     }
                     if (ReferenceEquals(_gizmos.Array, items) == false)
@@ -408,30 +410,38 @@ namespace DCFApixels
                     var job = new PrepareJob
                     {
                         Items = _gizmos.Ptr,
-                        ResultMatrices = _matrices.Ptr,
-                        ResultColors = _colors.Ptr,
+                        ResultData = _drawDatas.Ptr,
                     };
                     _jobHandle = job.Schedule(count, 64);
                 }
                 protected void Render(CommandBuffer cb)
                 {
-                    Material material = _material.GetMaterial_SupportCumputeShaders();
                     Mesh mesh = _mesh.GetMesh();
-                    _materialPropertyBlock.Clear();
-                    _jobHandle.Complete();
-                    if (IsSupportsComputeShaders)
+                    if (_enableInstancing)
                     {
-                        _materialPropertyBlock.SetVectorArray(ColorPropertyID, _colors.Array);
-                        cb.DrawMeshInstanced(mesh, 0, material, -1, _matrices.Array, _prepareCount, _materialPropertyBlock);
+                        Material material = _material.GetMaterial_InstancedProcedural();
+                        _jobHandle.Complete();
+                        _graphicsBuffer.SetData(_drawDatas.Array);
+                        cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
                     }
                     else
                     {
+                        Material material = _material.GetMaterial();
+                        _jobHandle.Complete();
                         for (int i = 0; i < _prepareCount; i++)
                         {
-                            _materialPropertyBlock.SetColor(ColorPropertyID, _colors.Ptr[i]);
-                            cb.DrawMesh(mesh, _matrices.Ptr[i], material, 0, -1, _materialPropertyBlock);
+                            _materialPropertyBlock.SetColor(ColorPropertyID, _drawDatas.Ptr[i].Color);
+                            cb.DrawMesh(mesh, _drawDatas.Ptr[i].Matrix, material, 0, -1, _materialPropertyBlock);
                         }
                     }
+                }
+                private readonly static int _BufferPropertyID = Shader.PropertyToID("_DataBuffer");
+                private void AllocateGraphicsBuffer(int capacity)
+                {
+                    _graphicsBuffer?.Dispose();
+                    _materialPropertyBlock.Clear();
+                    _graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, capacity, Marshal.SizeOf<DrawData>());
+                    _materialPropertyBlock.SetBuffer(_BufferPropertyID, _graphicsBuffer);
                 }
             }
             #endregion
@@ -469,7 +479,7 @@ namespace DCFApixels
                     }
                 }
                 private readonly IStaticMesh _mesh = default(WireLineMesh);
-                private readonly IStaticMaterial _material;
+                private readonly IStaticMaterial_InstancedProcedural _material;
                 private readonly MaterialPropertyBlock _materialPropertyBlock;
                 private GraphicsBuffer _graphicsBuffer;
 
@@ -480,11 +490,14 @@ namespace DCFApixels
                 private JobHandle _jobHandle;
                 private int _prepareCount = 0;
 
-                public WireLineRendererBase(IStaticMaterial material)
+                private readonly bool _enableInstancing;
+
+                public WireLineRendererBase(IStaticMaterial_InstancedProcedural material)
                 {
                     _material = material;
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
+                    _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial_InstancedProcedural().enableInstancing;
                 }
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
@@ -516,22 +529,19 @@ namespace DCFApixels
                     };
                     _jobHandle = job.Schedule(count, 64);
                 }
-
-
-                private readonly static int _BufferPropertyID = Shader.PropertyToID("_DataBuffer");
                 public void Render(CommandBuffer cb)
                 {
                     Mesh mesh = _mesh.GetMesh();
-                    if (IsSupportsComputeShaders)
+                    if (_enableInstancing)
                     {
-                        Material material = _material.GetMaterial_SupportCumputeShaders();
+                        Material material = _material.GetMaterial_InstancedProcedural();
                         _jobHandle.Complete();
                         _graphicsBuffer.SetData(_drawDatas.Array);
                         cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
                     }
                     else
                     {
-                        Material material = _material.GetMaterial_Default();
+                        Material material = _material.GetMaterial();
                         _jobHandle.Complete();
                         for (int i = 0; i < _prepareCount; i++)
                         {
@@ -540,6 +550,7 @@ namespace DCFApixels
                         }
                     }
                 }
+                private readonly static int _BufferPropertyID = Shader.PropertyToID("_DataBuffer");
                 private void AllocateGraphicsBuffer(int capacity)
                 {
                     _graphicsBuffer?.Dispose();

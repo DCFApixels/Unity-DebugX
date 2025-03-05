@@ -43,12 +43,17 @@ namespace DCFApixels.DebugXCore
         public readonly struct MaterialsList
         {
             public readonly Material Lit;
+            //public readonly Material Lit_InstancedProcedural;
             public readonly Material Unlit;
-            public readonly Material Line;
+            //public readonly Material Unlit_InstancedProcedural;
             public readonly Material UnlitOverwrite;
+            //public readonly Material UnlitOverwrite_InstancedProcedural;
             public readonly Material Billboard;
+            //public readonly Material Billboard_InstancedProcedural;
             public readonly Material Dot;
+            //public readonly Material Dot_InstancedProcedural;
             public readonly Material Wire;
+            //public readonly Material Wire_InstancedProcedural;
 
             internal readonly Material TextBackground;
         }

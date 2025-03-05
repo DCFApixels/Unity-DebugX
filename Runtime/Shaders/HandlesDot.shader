@@ -50,7 +50,6 @@ Shader "DCFApixels/DebugX/Handles Dot"
             distance = lerp(distance, 1, isOrthographic);
             
             float fov = radians(UNITY_MATRIX_P[1][1] * 2.0);
-
             float scale = distance * (1 / fov) * 0.015;
 
             return scale * _DebugX_GlobalDotSize;
@@ -68,7 +67,6 @@ Shader "DCFApixels/DebugX/Handles Dot"
             M._m22 *= scaleMultiplier;
 
             float4 worldOrigin = mul(M, float4(0, 0, 0, 1));
-
             float4 viewOrigin = float4(UnityObjectToViewPos(float3(0, 0, 0)), 1);
             float4 worldPos = mul(M, v.vertex);
 
@@ -77,9 +75,8 @@ Shader "DCFApixels/DebugX/Handles Dot"
             float4 clipsPos = mul(UNITY_MATRIX_P, viewPos);
             o.vertex = clipsPos;
 
-            //o.vertex = UnityObjectToClipPos(v.vertex);
-            o.color = v.color * UNITY_ACCESS_INSTANCED_PROP(Props, _Color) * _DebugX_GlobalColor;
 
+            o.color = v.color * UNITY_ACCESS_INSTANCED_PROP(Props, _Color) * _DebugX_GlobalColor;
             return o;
         }
         ENDCG
