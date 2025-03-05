@@ -7,10 +7,6 @@ namespace DCFApixels.DebugXCore
         int GetExecuteOrder();
         Material GetMaterial();
     }
-    public interface IStaticMaterial_InstancedProcedural : IStaticMaterial
-    {
-        Material GetMaterial_InstancedProcedural();
-    }
     public interface IStaticMesh : IStaticData
     {
         Mesh GetMesh();
@@ -19,46 +15,39 @@ namespace DCFApixels.DebugXCore
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public readonly struct LitMat : IStaticMaterial_InstancedProcedural
+    public readonly struct LitMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 0;
-        public Material GetMaterial_InstancedProcedural() => DebugXAssets.Materials.Lit;
         public Material GetMaterial() => DebugXAssets.Materials.Lit;
     }
-    public readonly struct UnlitMat : IStaticMaterial_InstancedProcedural
+    public readonly struct UnlitMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 100_000;
-        public Material GetMaterial_InstancedProcedural() => DebugXAssets.Materials.Unlit;
         public Material GetMaterial() => DebugXAssets.Materials.Unlit;
     }
-    public readonly struct BillboardMat : IStaticMaterial_InstancedProcedural
+    public readonly struct BillboardMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 200_000;
-        public Material GetMaterial_InstancedProcedural() => DebugXAssets.Materials.Billboard;
         public Material GetMaterial() => DebugXAssets.Materials.Billboard;
     }
-    public readonly struct DotMat : IStaticMaterial_InstancedProcedural
+    public readonly struct DotMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 300_000;
-        public Material GetMaterial_InstancedProcedural() => DebugXAssets.Materials.Dot;
         public Material GetMaterial() => DebugXAssets.Materials.Dot;
     }
-    public readonly struct GeometryUnlitMat : IStaticMaterial_InstancedProcedural
+    public readonly struct GeometryUnlitMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 1_000_000;
-        public Material GetMaterial_InstancedProcedural() => DebugXAssets.Materials.Unlit;
         public Material GetMaterial() => DebugXAssets.Materials.Unlit;
     }
-    public readonly struct UnlitOverwriteMat : IStaticMaterial_InstancedProcedural
+    public readonly struct UnlitOverwriteMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 1_000_000;
-        public Material GetMaterial_InstancedProcedural() => DebugXAssets.Materials.UnlitOverwrite;
         public Material GetMaterial() => DebugXAssets.Materials.UnlitOverwrite;
     }
-    public readonly struct WireMat : IStaticMaterial_InstancedProcedural
+    public readonly struct WireMat : IStaticMaterial
     {
         public int GetExecuteOrder() => 1_000_000;
-        public Material GetMaterial_InstancedProcedural() => DebugXAssets.Materials.Wire;
         public Material GetMaterial() => DebugXAssets.Materials.Wire;
     }
 

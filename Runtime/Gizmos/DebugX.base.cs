@@ -46,7 +46,7 @@ namespace DCFApixels
             #region Mesh //TODO потестить
             [IN(LINE)]
             public DrawHandler Mesh<TMat>(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 size)
-                where TMat : struct, IStaticMaterial_InstancedProcedural
+                where TMat : struct, IStaticMaterial
             {
                 return Gizmo(new MeshGizmo<TMat>(mesh, position, rotation, size));
             }
@@ -81,7 +81,7 @@ namespace DCFApixels
                 }
             }
             private readonly struct MeshGizmo<TMat> : IGizmo<MeshGizmo<TMat>>
-                where TMat : struct, IStaticMaterial_InstancedProcedural
+                where TMat : struct, IStaticMaterial
             {
                 public readonly Mesh Mesh;
                 public readonly Quaternion Rotation;
@@ -116,7 +116,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler Mesh<TMesh, TMat>(Vector3 position, Quaternion rotation, Vector3 size)
                 where TMesh : struct, IStaticMesh
-                where TMat : struct, IStaticMaterial_InstancedProcedural
+                where TMat : struct, IStaticMaterial
             {
                 return Gizmo(new InstancingMeshGizmo<TMesh, TMat>(position, rotation, size));
             }
@@ -153,7 +153,7 @@ namespace DCFApixels
             }
             private readonly struct InstancingMeshGizmo<TMesh, TMat> : IGizmo<InstancingMeshGizmo<TMesh, TMat>>
                 where TMesh : struct, IStaticMesh
-                where TMat : struct, IStaticMaterial_InstancedProcedural
+                where TMat : struct, IStaticMaterial
             {
                 public readonly Quaternion Rotation;
                 public readonly Vector3 Position;
@@ -184,7 +184,7 @@ namespace DCFApixels
             #region Line
             [IN(LINE)]
             public DrawHandler Line<TMat>(Vector3 start, Vector3 end)
-                where TMat : struct, IStaticMaterial_InstancedProcedural
+                where TMat : struct, IStaticMaterial
             {
                 return Gizmo(new WireLineGizmo<TMat>(start, end));
             }
@@ -194,7 +194,7 @@ namespace DCFApixels
                 return Gizmo(new WireLineGizmo<UnlitMat>(start, end));
             }
             private readonly struct WireLineGizmo<TMat> : IGizmo<WireLineGizmo<TMat>>
-                where TMat : struct, IStaticMaterial_InstancedProcedural
+                where TMat : struct, IStaticMaterial
             {
                 public readonly Vector3 Start;
                 public readonly Vector3 End;
@@ -256,7 +256,7 @@ namespace DCFApixels
                     }
                 }
 
-                private readonly IStaticMaterial_InstancedProcedural _material;
+                private readonly IStaticMaterial _material;
 
                 private int _buffersLength = 0;
                 private PinnedArray<Matrix4x4> _matrices;
@@ -271,7 +271,7 @@ namespace DCFApixels
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
 
-                public MeshRendererBase(IStaticMaterial_InstancedProcedural material)
+                public MeshRendererBase(IStaticMaterial material)
                 {
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _material = material;
@@ -316,7 +316,7 @@ namespace DCFApixels
                 }
                 public void Render(CommandBuffer cb)
                 {
-                    Material material = _material.GetMaterial_InstancedProcedural();
+                    Material material = _material.GetMaterial();
                     var items = new GizmosList<UnmanagedGizmoData>(_gizmos.Array, _prepareCount).As<GizmoData>().Items;
                     _materialPropertyBlock.Clear();
                     _jobHandle.Complete();
@@ -360,7 +360,7 @@ namespace DCFApixels
                 }
 
                 private readonly IStaticMesh _mesh;
-                private readonly IStaticMaterial_InstancedProcedural _material;
+                private readonly IStaticMaterial _material;
                 private readonly MaterialPropertyBlock _materialPropertyBlock;
                 private GraphicsBuffer _graphicsBuffer;
 
@@ -373,13 +373,13 @@ namespace DCFApixels
 
                 private readonly bool _enableInstancing;
 
-                public InstancingMeshRendererBase(IStaticMesh mesh, IStaticMaterial_InstancedProcedural material)
+                public InstancingMeshRendererBase(IStaticMesh mesh, IStaticMaterial material)
                 {
                     _mesh = mesh;
                     _material = material;
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
-                    _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial_InstancedProcedural().enableInstancing;
+                    _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial().enableInstancing;
                 }
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
@@ -419,7 +419,7 @@ namespace DCFApixels
                     Mesh mesh = _mesh.GetMesh();
                     if (_enableInstancing)
                     {
-                        Material material = _material.GetMaterial_InstancedProcedural();
+                        Material material = _material.GetMaterial();
                         _jobHandle.Complete();
                         _graphicsBuffer.SetData(_drawDatas.Array);
                         cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
@@ -479,7 +479,7 @@ namespace DCFApixels
                     }
                 }
                 private readonly IStaticMesh _mesh = default(WireLineMesh);
-                private readonly IStaticMaterial_InstancedProcedural _material;
+                private readonly IStaticMaterial _material;
                 private readonly MaterialPropertyBlock _materialPropertyBlock;
                 private GraphicsBuffer _graphicsBuffer;
 
@@ -492,12 +492,12 @@ namespace DCFApixels
 
                 private readonly bool _enableInstancing;
 
-                public WireLineRendererBase(IStaticMaterial_InstancedProcedural material)
+                public WireLineRendererBase(IStaticMaterial material)
                 {
                     _material = material;
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
-                    _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial_InstancedProcedural().enableInstancing;
+                    _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial().enableInstancing;
                 }
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
@@ -534,7 +534,7 @@ namespace DCFApixels
                     Mesh mesh = _mesh.GetMesh();
                     if (_enableInstancing)
                     {
-                        Material material = _material.GetMaterial_InstancedProcedural();
+                        Material material = _material.GetMaterial();
                         _jobHandle.Complete();
                         _graphicsBuffer.SetData(_drawDatas.Array);
                         cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
