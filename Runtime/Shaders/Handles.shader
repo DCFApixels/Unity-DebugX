@@ -87,6 +87,7 @@ Shader "DCFApixels/DebugX/Handles"
             float fov = radians(UNITY_MATRIX_P[1][1] * 2.0);
             float scale = distance * (1 / fov) * 0.015;
 
+
             return scale * _DebugX_GlobalDotSize;
         }
 #endif
@@ -122,19 +123,18 @@ Shader "DCFApixels/DebugX/Handles"
 
 
             half4 color = _Color;
+#if _VERTEXCOLOR_ON
+            color *= v.color;
+#endif
 #if _FAKELIGHT_ON
-            float3 eyeNormal = normalize (mul ((float3x3)UNITY_MATRIX_IT_MV, v.normal).xyz);
+            float3 eyeNormal = normalize(mul((float3x3)UNITY_MATRIX_MV, v.normal).xyz);
             float nl = saturate(eyeNormal.z);
             float lighting = 0.333 + nl * 0.667 * 0.5;
             color.rgb = lighting * color.rgb;
             color = saturate(color) * _DebugX_GlobalColor;
 #endif
 
-#if _VERTEXCOLOR_ON
-            color *= v.color;
-#endif
             o.color = color * _DebugX_GlobalColor;
-                
             return o;
         }
         ENDCG
