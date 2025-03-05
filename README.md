@@ -14,7 +14,8 @@
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
 
-![image](https://github.com/user-attachments/assets/d46ae3d6-96c5-4ff2-8dac-cc27a666d56d)
+![image](https://github.com/user-attachments/assets/af09b0e3-8710-4461-99ce-a5f868b25260)
+
 
 ## Оглавление
 - [Установка](#установка)
