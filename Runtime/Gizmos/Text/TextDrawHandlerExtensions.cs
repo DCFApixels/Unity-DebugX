@@ -17,7 +17,7 @@ namespace DCFApixels
         [IN(LINE)]
         public static DrawHandler Text(this DrawHandler h, Vector3 position, object text, DebugXTextSettings settings)
         {
-            if(settings.FontSize <= float.Epsilon)
+            if (settings.FontSize <= float.Epsilon)
             {
 #if DEBUG
                 if (_singleWarningToggle)

@@ -1,5 +1,4 @@
-﻿//#undef DEBUG
-using DCFApixels.DebugXCore;
+﻿using DCFApixels.DebugXCore;
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -409,7 +408,7 @@ namespace DCFApixels
                 //}
 
                 Vector3 halfSize = size / 2f;
-                
+
                 Vector3* vertices = stackalloc Vector3[]
                 {
                     new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), // 0
@@ -421,12 +420,12 @@ namespace DCFApixels
                     new Vector3(halfSize.x, halfSize.y, halfSize.z),    // 6
                     new Vector3(-halfSize.x, halfSize.y, halfSize.z),   // 7
                 };
-                
+
                 for (int i = 0; i < 8; i++)
                 {
                     vertices[i] = rotation * vertices[i] + position;
                 }
-                
+
                 Vector3 up = rotation * Vector3.up * (size.y / cells.y);
                 for (int i = 0; i <= cells.y; i++)
                 {
@@ -454,7 +453,7 @@ namespace DCFApixels
                     Line(vertices[1] + pos, vertices[0] + pos);
                     Line(vertices[0] + pos, vertices[4] + pos);
                 }
-                
+
                 return this;
             }
             #endregion

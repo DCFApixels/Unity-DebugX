@@ -1,5 +1,4 @@
-﻿//#undef DEBUG
-using DCFApixels.DebugXCore;
+﻿using DCFApixels.DebugXCore;
 using DCFApixels.DebugXCore.Internal;
 using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
@@ -412,8 +411,8 @@ namespace DCFApixels
                     _prepareCount = list.Count;
                     var items = list.Items;
                     var count = list.Count;
-                     
-                    if (_buffersLength < count) 
+
+                    if (_buffersLength < count)
                     {
                         int capacity = DebugXUtility.NextPow2(count);
                         _drawDatas.Dispose();

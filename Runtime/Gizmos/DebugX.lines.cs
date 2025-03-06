@@ -1,5 +1,4 @@
-﻿//#undef DEBUG
-using DCFApixels.DebugXCore;
+﻿using DCFApixels.DebugXCore;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +26,7 @@ namespace DCFApixels
             }
             [IN(LINE)] public DrawHandler Lines(List<Vector3> points) => Lines(points, 0, points.Count);
             [IN(LINE)] public DrawHandler Lines(List<Vector3> points, int length) => Lines(points, 0, length);
-            [IN(LINE)] 
+            [IN(LINE)]
             public DrawHandler Lines(List<Vector3> points, int startIndex, int length)
             {
                 for (int i = startIndex, iMax = startIndex + (length & ~1); i < iMax;)
