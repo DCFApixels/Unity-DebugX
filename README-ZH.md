@@ -9,6 +9,10 @@
 
 # Unity-DebugX
 
+> [!WARNING]
+> The translation of the Readme is not completely finished
+
+
 <table>
   <tr></tr>
   <tr>
@@ -24,13 +28,13 @@
     </td>
     <td nowrap width="100">
       <a href="https://github.com/DCFApixels/Unity-DebugX">
-        <img src="https://github.com/user-attachments/assets/3c699094-f8e6-471d-a7c1-6d2e9530e721"></br>
+        <img src="https://github.com/user-attachments/assets/30528cb5-f38e-49f0-b23e-d001844ae930"></br>
         <span>English</span>
       </a>  
     </td>
     <td nowrap width="100">
       <a href="https://github.com/DCFApixels/Unity-DebugX/blob/main/README-ZH.md">
-        <img src="https://github.com/user-attachments/assets/8e598a9a-826c-4a1f-b842-0c56301d2927"></br>
+        <img src="https://github.com/user-attachments/assets/3c699094-f8e6-471d-a7c1-6d2e9530e721"></br>
         <span>中文</span>
       </a>  
     </td>
@@ -39,9 +43,9 @@
 
 </br>
 
-A multifunctional, extensible, and high-performance Gizmos drawing utility for Unity. It works both in the editor and in the build, and drawing can be done both in OnDrawGizmos and in Update. HDRP, URP, and BRP are supported, but drawing in the OnDrawGizmos callbacks is not supported in BRP.
+一个多功能、可扩展且高性能的 Unity Gizmos 绘图工具。 它既可以在编辑器中运行，也可以在 Build 中运行，绘制可以在 `OnDrawGizmos` 和 `Update` 中进行. 支持 HDRP、URP 和 BRP，但在 BRP 中不支持在 `OnDrawGizmos` 回调中进行绘制。
 
-Syntax: 
+语法：
 ```c#
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
@@ -50,10 +54,10 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 
 <br>
 
-## Table of Contents
-- [Installation](#Installation)
-- [Basic API](#Basic-api)
-- [Settings](#Settings)
+## 目录
+- [安装](#安装)
+- [基础API](#基础-api)
+- [设置](#设置)
 - [API Extension](#API-Extension)
 - [Loading Static Assets](#Loading-Static-Assets)
 - [Define Symbols](#define-symbols)
@@ -61,84 +65,84 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 <br>
 
 # Installation
-Versioning semantics - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
-### Unity-Package
-Supports installation as a Unity module. Copy the Git-URL [into PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) or into `Packages/manifest.json`. Copy this Git-URL to install the latest working version:
+版本的语义  - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
+### Unity-软件包
+支持以 Unity 模块的形式安装，只需将 Git-URL 复制到 [PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) 或  `Packages/manifest.json`中. 复制此 Git-URL 以安装最新的工作版本:
 ```
 https://github.com/DCFApixels/Unity-DebugX
 ```
-### Source Code
-The Package can also be directly copied into the project folder.
+### 作为源代码
+该包也可以直接复制到项目文件夹中。
 
 </br>
 
-# Basic API
+# 基础 API
 
-The general syntax for drawing predefined Gizmos:
+绘制预定义 Gizmo 的通用语法：
 ```c#
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
 </br>
 
-Among the predefined Gizmos, there are various primitives, lines, points, and text. Examples of some Gizmos:
+预定义的 Gizmo 包括各种图元、线条、点和文本。以下是一些 Gizmo 的示例：
 ```c#
-// Draws a regular line similar to Debug.DrawLine(...).
-// The line will be displayed for one second and will be red.
+// 绘制一条普通线条，类似于 Debug.DrawLine(...)。
+// 线条将显示一秒钟，并且为红色。
 DebugX.Draw(1, Color.red).Line(startPoint, endPoint);
 ```
 ```c#
-// Draws a cube, but for just one frame and in yellow.
+// 绘制一个立方体，但仅显示一帧，并且为黄色。
 DebugX.Draw(Color.yellow).Cube(center, rotation, size);
 ```
 ```c#
-// Draws a sphere.
+// 绘制一个球体。
 DebugX.Draw(Color.yellow).Cube(center, radius);
 ```
 ```c#
-// Draws a point. The point has a screen space size. 
+// 绘制一个点，点的大小为屏幕空间大小。
 DebugX.Draw(Color.yellow).Dot(startPoint, endPoint);
 ```
 ```c#
-// Draws text. The text can also be displayed for the specified time.
+// 绘制文本。文本也可以显示指定的时间。
 DebugX.Draw(1, Color.red).Text(center, text);
-// For advanced display settings, use DebugXTextSettings.
+// 使用 DebugXTextSettings 进行高级显示设置。
 DebugX.Draw(Color.yellow).Text(center, text, DebugXTextSettings.Default.SetBackgroundColor(Color.black));
 ```
 </br>
 
 
-In case the predefined primitives are not enough, there are methods for drawing custom meshes and materials:
+如果预定义的图元不够用，可以使用以下方法绘制自定义网格和材质：
 ```c#
-//Рисования любого меша lit материалом. Без GPU instancing. 
+// 使用 lit 材质绘制任何网格。不使用 GPU 实例化。
 DebugX.Draw(...).Mesh(mesh, pos, rot, sc);
-//UnlitMesh - меш с unlit материалом
-//WireMesh - меш с wireframe материалом
+// UnlitMesh - 使用 unlit 材质的网格
+// WireMesh - 使用线框材质的网格
 ```
 ```c#
-//Рисования статического меша lit материалом. В режиме GPU instancing. 
+// 使用 lit 材质绘制静态网格。使用 GPU 实例化。
 DebugX.Draw(...).Mesh<IStaticMesh>(pos, rot, sc);
-//UnlitMesh<IStaticMesh> - меш с unlit материалом
-//WireMesh<IStaticMesh> - меш с wireframe материалом
+// UnlitMesh<IStaticMesh> - 使用 unlit 材质的网格
+// WireMesh<IStaticMesh> - 使用线框材质的网格
 ```
 ```c#
-//Рисования статического меша статическим материалом. В режиме GPU instancing. 
+// 使用静态材质绘制静态网格。使用 GPU 实例化。
 DebugX.Draw(...).Mesh<IStaticMesh, IStaticMat>(pos, rot, sc);
 ```
 </br>
 
-Static data is used to optimize the rendering:
+为了优化绘制，使用静态数据：
 ```c#
-// Static mesh. Required for drawing with GPU instancing.
+// 静态网格。使用 GPU 实例化绘制时必须。
 public struct SomeMesh : IStaticMesh
 {
     public Mesh GetMesh() => StaticStorage.SomeMesh;
 }
 ```
 ```c#
-// Static material.
+// 静态材质。
 public struct SomeMesh : IStaticMesh
 {
-    // Control the drawing order.
+    // 控制渲染顺序。
     public int GetExecuteOrder() => 100;
     public Mesh GetMaterial() => StaticStorage.SomeMaterial;
 } 
@@ -147,8 +151,8 @@ public struct SomeMesh : IStaticMesh
 
 <br>
 
-# Settings
-Settings window "Tools -> DebugX -> Settings":
+# 设置
+设置窗口位于 "Tools -> DebugX -> Settings"：
 
 ![image](https://github.com/user-attachments/assets/7dd981c1-1e00-4b7d-9a73-376638094689)
 
