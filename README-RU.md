@@ -1,9 +1,11 @@
-![image](https://github.com/user-attachments/assets/f75e20cd-9614-41e8-887d-943987f4855d)
+
+![image](https://github.com/user-attachments/assets/a3b34566-2423-4418-8a74-1369b0c268f2)
 
 <p align="center">
-<img alt="Version" src="https://img.shields.io/github/package-json/v/DCFApixels/Unity-DebugX?style=for-the-badge&color=1e90ff">
-<img alt="License" src="https://img.shields.io/github/license/DCFApixels/Unity-DebugX?color=1e90ff&style=for-the-badge">
+<img alt="Version" src="https://img.shields.io/github/package-json/v/DCFApixels/Unity-DebugX?style=for-the-badge&color=ff3530">
+<img alt="License" src="https://img.shields.io/github/license/DCFApixels/Unity-DebugX?color=ff3530&style=for-the-badge">
 </p>
+
 
 
 # Unity-DebugX
@@ -16,19 +18,19 @@
   <tr></tr>
   <tr>
     <td nowrap width="100">
-      <a href="https://github.com/DCFApixels/DragonECS/blob/main/README-RU.md">
+      <a href="https://github.com/DCFApixels/Unity-DebugX/blob/main/README-RU.md">
         <img src="https://github.com/user-attachments/assets/3c699094-f8e6-471d-a7c1-6d2e9530e721"></br>
         <span>Русский</span>
       </a>  
     </td>
     <td nowrap width="100">
-      <a href="https://github.com/DCFApixels/DragonECS">
+      <a href="https://github.com/DCFApixels/Unity-DebugX">
         <img src="https://github.com/user-attachments/assets/30528cb5-f38e-49f0-b23e-d001844ae930"></br>
         <span>English</span>
       </a>  
     </td>
     <td nowrap width="100">
-      <a href="https://github.com/DCFApixels/DragonECS/blob/main/README-ZH.md">
+      <a href="https://github.com/DCFApixels/Unity-DebugX/blob/main/README-ZH.md">
         <img src="https://github.com/user-attachments/assets/8e598a9a-826c-4a1f-b842-0c56301d2927"></br>
         <span>中文</span>
       </a>  
@@ -38,47 +40,46 @@
 
 </br>
 
-Многофункциональная, расширяемая и производительная утилита рисования Gizmos для Unity. Работает как в редакторе так и в билде, а рисовать можно как в OnDrawGizmos так и в Update. Поддерживается HDRP, URP и BRP, но в BRP не поддерживается отрисовка в коллбеках OnDrawGizmos.
+Многофункциональная, расширяемая и производительная утилита рисования Gizmos для Unity. Работает как в редакторе так и в сборке, а рисовать можно как в `OnDrawGizmos` так и в `Update`. Поддерживается HDRP, URP и BRP, но в BRP не поддерживается отрисовка в `OnDrawGizmos`.
 
-Синтаксис: 
+Синтаксис:
 ```c#
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
 
 ![image](https://github.com/user-attachments/assets/af09b0e3-8710-4461-99ce-a5f868b25260)
 
-
 <br>
 
 ## Оглавление
 - [Установка](#установка)
-- [API](#api)
+- [Базовый API](#api)
 - [Настройки](#настройки)
-- [Кастомный Gizmo](#кастомный-gizmo)
-- [Define Symbols](#define-symbols)
+- [Расширение API](#кастомный-gizmo)
 - [Загрузка статических ассетов](#загрузка-статических-ассетов)
-
+- [Define Symbols](#define-symbols)
 
 <br>
 
 # Установка
 Семантика версионирования - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
-### Unity-пакет
-Поддерживается установка в виде Unity-пакета через добавление [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json` этого git-URL: 
+### Unity-Package
+Поддерживается установка в виде Unity-модуля, достаточно скопировать Git-URL [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или в `Packages/manifest.json`. Скопируйте этот Git-URL для установки актуальной рабочей версии:
 ```
 https://github.com/DCFApixels/Unity-DebugX
 ```
-### В виде исходников
+### 作为源代码
 Пакет так же может быть напрямую скопирован в папку проекта.
 
 </br>
 
-# API
+# Базовый API
 
-Синтаксис рисования заготовленных Gizmo: 
+Общий синтаксис рисования заготовленных Gizmo:
 ```c#
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
+</br>
 
 Среди заготовленных Gizmo есть разные вариации примитивов, линий, точек и текст. Пример некоторых Gizmo:
 ```c#
@@ -104,6 +105,8 @@ DebugX.Draw(1, Color.red).Text(center, text);
 // Для расширенной настройки отображения используется DebugXTextSettings.
 DebugX.Draw(Color.yellow).Text(center, text, DebugXTextSettings.Default.SetBackgroundColor(Color.black));
 ```
+</br>
+
 
 На случай если не хватает заготовленных примитивов есть методы для рисования кастомных меша и материала:
 ```c#
@@ -122,6 +125,7 @@ DebugX.Draw(...).Mesh<IStaticMesh>(pos, rot, sc);
 //Рисования статического меша статическим материалом. В режиме GPU instancing. 
 DebugX.Draw(...).Mesh<IStaticMesh, IStaticMat>(pos, rot, sc);
 ```
+</br>
 
 Для оптимизации отрисовки используются статические данные:
 ```c#
@@ -151,7 +155,7 @@ public struct SomeMesh : IStaticMesh
 
 <br>
 
-# Кастомный Gizmo
+# Расширение API
 Самый простой вариант это создание метода расширения который комбинирует заготовленные гизмо, например:
 ```c#
 public static class SomeGizmoExtensions
@@ -224,11 +228,6 @@ public static class SomeGizmoExtensions
 
 <br>
 
-# Define Symbols
-+ `DISABLE_DEBUGX_INBUILD` - по умолчанию Gizmo будут рисовать в сборке проекта, этот дефайн отключает рисование. Включить или выключить можно так же в окне настроек DebugX.
-
-<br>
-
 # Загрузка статических ассетов 
 Для загрузки имеется утилита `DebugXUtility.LoadStaticData(...);`. 
 
@@ -249,4 +248,9 @@ public readonly struct SomeAssets
 SomeAssets assets = DebugXUtility.LoadStaticData(new SomeAssets(), "SomeAssets");
 // Готово. 
 ```
-> Пример как с этой утилитой работать можно посмотреть в исходинках в файле `DebugXAssets.cs`.
+> Пример как с этой утилитой работать можно посмотреть в исходниках в файле `DebugXAssets.cs`.
+
+<br>
+
+# Define Symbols
++ `DISABLE_DEBUGX_INBUILD` - по умолчанию Gizmo будут рисовать в сборке проекта, этот дефайн отключает рисование. Включить или выключить можно так же в окне настроек DebugX.

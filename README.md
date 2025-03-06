@@ -1,10 +1,9 @@
 
 ![image](https://github.com/user-attachments/assets/a3b34566-2423-4418-8a74-1369b0c268f2)
 
-
 <p align="center">
-<img alt="Version" src="https://img.shields.io/github/package-json/v/DCFApixels/Unity-DebugX?style=for-the-badge&color=ff3600">
-<img alt="License" src="https://img.shields.io/github/license/DCFApixels/Unity-DebugX?color=ff3600&style=for-the-badge">
+<img alt="Version" src="https://img.shields.io/github/package-json/v/DCFApixels/Unity-DebugX?style=for-the-badge&color=ff3530">
+<img alt="License" src="https://img.shields.io/github/license/DCFApixels/Unity-DebugX?color=ff3530&style=for-the-badge">
 </p>
 
 
@@ -18,19 +17,19 @@
   <tr></tr>
   <tr>
     <td nowrap width="100">
-      <a href="https://github.com/DCFApixels/DragonECS/blob/main/README-RU.md">
+      <a href="https://github.com/DCFApixels/Unity-DebugX/blob/main/README-RU.md">
         <img src="https://github.com/user-attachments/assets/7bc29394-46d6-44a3-bace-0a3bae65d755"></br>
         <span>Русский</span>
       </a>  
     </td>
     <td nowrap width="100">
-      <a href="https://github.com/DCFApixels/DragonECS">
+      <a href="https://github.com/DCFApixels/Unity-DebugX">
         <img src="https://github.com/user-attachments/assets/3c699094-f8e6-471d-a7c1-6d2e9530e721"></br>
         <span>English</span>
       </a>  
     </td>
     <td nowrap width="100">
-      <a href="https://github.com/DCFApixels/DragonECS/blob/main/README-ZH.md">
+      <a href="https://github.com/DCFApixels/Unity-DebugX/blob/main/README-ZH.md">
         <img src="https://github.com/user-attachments/assets/8e598a9a-826c-4a1f-b842-0c56301d2927"></br>
         <span>中文</span>
       </a>  
@@ -47,40 +46,68 @@ Syntax:
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
 
-
 ![image](https://github.com/user-attachments/assets/af09b0e3-8710-4461-99ce-a5f868b25260)
 
-
-
+<br>
 
 ## Table of Contents
 - [Installation](#Installation)
-- [API](#api)
-- [Loading Static Assets](#Loading-Static-Assets)
+- [Basic API](#Basic-api)
 - [Settings](#Settings)
-- [Custom Gizmo](#Custom-gizmo)
+- [API Extension](#API-Extension)
+- [Loading Static Assets](#Loading-Static-Assets)
 - [Define Symbols](#define-symbols)
 
-# Установка
+<br>
+
+# Installation
 Versioning semantics - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
-### Unity Package
-Поддерживается установка в виде Unity-пакета через добавление [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json` этого git-URL: 
+### Unity-Package
+Supports installation as a Unity module. Copy the Git-URL [into PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) or into `Packages/manifest.json`. Copy this Git-URL to install the latest working version:
 ```
 https://github.com/DCFApixels/Unity-DebugX
 ```
 ### Source Code
-Пакет так же может быть напрямую скопирован в папку проекта.
+The Package can also be directly copied into the project folder.
+
 </br>
 
+# Basic API
 
-# API
-
-Синтаксис рисования заготовленных Gizmo: 
+The general syntax for drawing predefined Gizmos:
 ```c#
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
+</br>
 
-Рисование кастомных меша и материала:
+Among the predefined Gizmos, there are various primitives, lines, points, and text. Examples of some Gizmos:
+```c#
+// Draws a regular line similar to Debug.DrawLine(...).
+// The line will be displayed for one second and will be red.
+DebugX.Draw(1, Color.red).Line(startPoint, endPoint);
+```
+```c#
+// Draws a cube, but for just one frame and in yellow.
+DebugX.Draw(Color.yellow).Cube(center, rotation, size);
+```
+```c#
+// Draws a sphere.
+DebugX.Draw(Color.yellow).Cube(center, radius);
+```
+```c#
+// Draws a point. The point has a screen space size. 
+DebugX.Draw(Color.yellow).Dot(startPoint, endPoint);
+```
+```c#
+// Draws text. The text can also be displayed for the specified time.
+DebugX.Draw(1, Color.red).Text(center, text);
+// For advanced display settings, use DebugXTextSettings.
+DebugX.Draw(Color.yellow).Text(center, text, DebugXTextSettings.Default.SetBackgroundColor(Color.black));
+```
+</br>
+
+
+In case the predefined primitives are not enough, there are methods for drawing custom meshes and materials:
 ```c#
 //Рисования любого меша lit материалом. Без GPU instancing. 
 DebugX.Draw(...).Mesh(mesh, pos, rot, sc);
@@ -97,76 +124,76 @@ DebugX.Draw(...).Mesh<IStaticMesh>(pos, rot, sc);
 //Рисования статического меша статическим материалом. В режиме GPU instancing. 
 DebugX.Draw(...).Mesh<IStaticMesh, IStaticMat>(pos, rot, sc);
 ```
+</br>
 
-Для оптимизации отрисовки используются статические данные:
+Static data is used to optimize the rendering:
 ```c#
-// Статический меш. Обязателен для отрисовки с GPU instancing. 
+// Static mesh. Required for drawing with GPU instancing.
 public struct SomeMesh : IStaticMesh
 {
     public Mesh GetMesh() => StaticStorage.SomeMesh;
 }
 ```
 ```c#
-// Статический материал. 
+// Static material.
 public struct SomeMesh : IStaticMesh
 {
-    // Контроль порядка выполнения рендереров. 
+    // Control the drawing order.
     public int GetExecuteOrder() => 100;
     public Mesh GetMaterial() => StaticStorage.SomeMaterial;
 } 
 ```
+> In the example, StaticStorage is a conditional implementation of a static asset storage. Since in Unity static data cannot be filled through the inspector, the solution to this problem is described in the section [Loading Static Assets](#Loading-Static-Assets).
 
-# Загрузка статических ассетов 
-Для загрузки имеется утилита `DebugXUtility.LoadStaticData(...);`. 
+<br>
 
-1) Сначала создаем хранилище для ассетов. 
-```c#
-public readonly struct SomeAssets
-{
-    public readonly Mesh SomeMesh;
-    public readonly Material SomeMaterial;
-} 
-```
-2) Далее необходимо создать префаб со списком ассетов. Каждый дочерний GameObject префаба рассматривается как один ассет, а его имя должно совпадать с полем в которое будет загружаться ассет. Для загрузки мешей в GameObject необходимо добавить компонент MeshFilter с ссылкой на нужный меш. Для загрузки материала нужен любой компонент унаследованный от Renderer с заданным материалом. Сам префаб должен быть расположен в папке Resources. 
- 
-![image](https://github.com/user-attachments/assets/191dd337-81d5-43ff-b92e-e8b0927841f9)
-
-3) После подготовки хранилища и префаба-списка можно загружать 
-```c#
-SomeAssets assets = DebugXUtility.LoadStaticData(new SomeAssets(), "SomeAssets");
-// Готово. 
-```
-> Пример как с этой утилитой работать можно посмотреть в исходинках в файле `DebugXAssets.cs`.
-
-# Настройки
-Окно настроек "Tools -> DebugX -> Settings":
+# Settings
+Settings window "Tools -> DebugX -> Settings":
 
 ![image](https://github.com/user-attachments/assets/7dd981c1-1e00-4b7d-9a73-376638094689)
 
-# Кастомный Gizmo
+<br>
 
-Кастомная реализация Gizmo:
+# API Extension
+The simplest option is to create an extension method that combines predefined gizmos, for example:
+```c#
+public static class SomeGizmoExtensions
+{
+    public static DebugX.DrawHandler Distance(this DebugX.DrawHandler self, Vector3 start, Vector3 end)
+    {
+        // Draw a line.
+        self.Line(start, end);
+        // Draw text in the middle of the line showing the length of the line.
+        self.Text(Vector3.Lerp(start, end, 0.5f), Vector3.Distance(start, end), DebugXTextSettings.Default.SetAnchor(TextAnchor.UpperCenter));
+        // for support Method Chaining syntax.
+        return self;
+    }
+}
+```
+> You can also use the `Mesh` methods to create drawing methods for other primitives.
+
+Extended implementation of Gizmo, in case the built-in drawing methods are not enough:
 ```c#
 public readonly struct SomeGizmo : IGizmo<SomeGizmo>
 {
-    // Данные. 
+    // Gizmo Data.
 
     public SomeGizmo(/*...*/)
     {
-        // Заполнение данных.
+        // Fill the data.
     } 
     
     public IGizmoRenderer<SomeGizmo> RegisterNewRenderer() => new Renderer();
     private class Renderer : IGizmoRenderer<SomeGizmo>
     {
-        // Контроль порядка выполнения рендереров. 
-        public int ExecuteOrder => 0; //можно использовать default(SomeMat).GetExecutuonOrder();
-        // Флаг системе о способе оптимизации.
-        // Если метод рисовки или подготовки зависят от текущей камеры, то false，иначе true.
-        // Если не уверены то выбирайте false. 
+        // Control the execution order of renderers.
+        public int ExecuteOrder => 0; // can use default(SomeMat).GetExecutionOrder();
+        // Flag for the system about optimization.
+        // If the drawing or preparation method depends on the current camera, set to false, otherwise true.
+        // If unsure, choose false.
         public bool IsStaticRender => false;
 
-        // Подготовка данных перед рендером, тут можно выполнить дополнительные расчеты или запланировать Job. 
+        // Prepare data before rendering, you can perform additional calculations or schedule a Job here.
         public void Prepare(Camera camera, GizmosList<SomeGizmo> list) 
         {
             foreach (var item in list)
@@ -175,7 +202,7 @@ public readonly struct SomeGizmo : IGizmo<SomeGizmo>
             }
         } 
 
-        // Рендер, тут можно напрямую воспользоваться графическим API или добавить команду в CommandBuffer. 
+        // Render, you can directly use the graphics API or add a command to CommandBuffer here.
         public void Render(Camera camera, GizmosList<SomeGizmo> list, CommandBuffer cb)
         {
             foreach (var item in list)
@@ -187,7 +214,7 @@ public readonly struct SomeGizmo : IGizmo<SomeGizmo>
 }
 ```
 ```c#
-// Создание метода расширения. 
+// Create an extension method. 
 public static class SomeGizmoExtensions
 {
     public static DebugX.DrawHandler SomeGizmo(this DebugX.DrawHandler self, /*...*/) 
@@ -198,6 +225,31 @@ public static class SomeGizmoExtensions
 }
 ```
 
+<br>
+
+# Loading Static Assets
+Для загрузки имеется утилита `DebugXUtility.LoadStaticData(...);`. 
+
+1) First, create a storage for the assets.
+```c#
+public readonly struct SomeAssets
+{
+    public readonly Mesh SomeMesh;
+    public readonly Material SomeMaterial;
+} 
+```
+2) Next, create a prefab with a list of assets. Each child GameObject of the prefab is treated as one asset, and its name must match the field where the asset will be loaded. To load meshes, add a MeshFilter component to the GameObject with a reference to the desired mesh. To load a material, add any component inherited from Renderer with the specified material. The prefab itself must be located in the Resources folder.
+ 
+![image](https://github.com/user-attachments/assets/191dd337-81d5-43ff-b92e-e8b0927841f9)
+
+3) Once the repository and prefab list are prepared, assets can be uploaded.
+```c#
+SomeAssets assets = DebugXUtility.LoadStaticData(new SomeAssets(), "SomeAssets");
+// Done.
+```
+> An example of how to work with this utility can be found in the source code in the file `DebugXAssets.cs`.
+
+<br>
 
 # Define Symbols
-+ `DISABLE_DEBUGX_INBUILD` - по умолчанию Gizmo будут рисовать в сборке проекта, этот дефайн отключает рисование. Включить или выключить можно так же в окне настроек DebugX.
++ `DISABLE_DEBUGX_INBUILD` - By default, Gizmos will be drawn in the project build. This define disables drawing. It can also be enabled or disabled in the DebugX settings window.
