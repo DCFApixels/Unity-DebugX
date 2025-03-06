@@ -1,9 +1,9 @@
 ﻿using DCFApixels.DebugXCore;
 using System.Runtime.CompilerServices;
-//#if UNITY_EDITOR
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+//#if UNITY_EDITOR
+using UnityEditor;
 //#endif
 
 namespace DCFApixels
@@ -213,7 +213,11 @@ namespace DCFApixels
                 Vector3 pos1 = camera.WorldToScreenPoint(cameraPos + cameraTransform.TransformDirection(new Vector3(0f, 0f, z)));
                 Vector3 pos2 = camera.WorldToScreenPoint(cameraPos + cameraTransform.TransformDirection(new Vector3(1f, 0f, z)));
                 float magnitude = (pos1 - pos2).magnitude;
+#if UNITY_EDITOR
                 return 80f / Mathf.Max(magnitude, 0.0001f) * EditorGUIUtility.pixelsPerPoint;
+#else
+                return 80f / Mathf.Max(magnitude, 0.0001f);
+#endif
             }
             #endregion
         }
