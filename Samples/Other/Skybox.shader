@@ -5,6 +5,7 @@ Shader "DCFApixels/DebugX/Samples/Skybox"
         _TopColor ("Top Color", Color) = (1,1,1,1)
         _ButtomColor ("Buttom Color", Color) = (1,1,1,1)
         _Factor ("Factor", Float) = 1
+        _Offset ("Offset", Float) = 1
     }
     SubShader
     {
@@ -34,6 +35,7 @@ Shader "DCFApixels/DebugX/Samples/Skybox"
             float4 _TopColor;
             float4 _ButtomColor;
             float _Factor;
+            float _Offset;
 
             v2f vert (appdata v)
             {
@@ -45,7 +47,7 @@ Shader "DCFApixels/DebugX/Samples/Skybox"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 color = lerp(_ButtomColor, _TopColor, clamp(i.uv.y / _Factor + 0.5, 0, 1));
+                fixed4 color = lerp(_ButtomColor, _TopColor, clamp(i.uv.y / _Factor + 0.5 + _Offset, 0, 1));
                 return color;
             }
             ENDCG

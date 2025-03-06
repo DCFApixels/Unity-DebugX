@@ -128,7 +128,7 @@ Material:
     - _EmissionEnabled: 0
     - _EnableExternalAlpha: 0
     - _EnvironmentReflections: 1
-    - _Factor: 1
+    - _Factor: -10
     - _FlipbookMode: 0
     - _GlossMapScale: 1
     - _Glossiness: 0
@@ -138,6 +138,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _Offset: -0.56
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadows: 0
@@ -166,6 +167,6 @@ Material:
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999993, g: 0.19999993, b: 0.19999993, a: 0}
-    - _TopColor: {r: 0.03466536, g: 0.09027303, b: 0.1792453, a: 1}
+    - _TopColor: {r: 0, g: 0.25344214, b: 0.6698113, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
