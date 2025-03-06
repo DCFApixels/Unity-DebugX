@@ -1,4 +1,4 @@
-Shader "Unlit/FakeLighth"
+Shader "DCFApixels/DebugX/Samples/FakeLighth"
 {
     Properties
     {

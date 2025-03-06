@@ -1,4 +1,4 @@
-Shader "Custom/FakeLitShader"
+Shader "DCFApixels/DebugX/Samples/FakeLitShader"
 {
     Properties
     {

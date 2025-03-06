@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Skybox
-  m_Shader: {fileID: 10755, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 2e981515bbfd59549a1c8fce06a0e033, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -128,6 +128,7 @@ Material:
     - _EmissionEnabled: 0
     - _EnableExternalAlpha: 0
     - _EnvironmentReflections: 1
+    - _Factor: 1
     - _FlipbookMode: 0
     - _GlossMapScale: 1
     - _Glossiness: 0
@@ -157,6 +158,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.29222006, g: 0.20719118, b: 0.4528302, a: 1}
+    - _ButtomColor: {r: 0.0427198, g: 0.025097892, b: 0.11320752, a: 1}
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
     - _Color: {r: 0.0327363, g: 0.031372547, b: 0.13333334, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
@@ -164,5 +166,6 @@ Material:
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999993, g: 0.19999993, b: 0.19999993, a: 0}
+    - _TopColor: {r: 0.03466536, g: 0.09027303, b: 0.1792453, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
