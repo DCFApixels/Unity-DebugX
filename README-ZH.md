@@ -23,13 +23,13 @@
     </td>
     <td nowrap width="100">
       <a href="https://github.com/DCFApixels/DragonECS">
-        <img src="https://github.com/user-attachments/assets/3c699094-f8e6-471d-a7c1-6d2e9530e721"></br>
+        <img src="https://github.com/user-attachments/assets/30528cb5-f38e-49f0-b23e-d001844ae930"></br>
         <span>English</span>
       </a>  
     </td>
     <td nowrap width="100">
       <a href="https://github.com/DCFApixels/DragonECS/blob/main/README-ZH.md">
-        <img src="https://github.com/user-attachments/assets/8e598a9a-826c-4a1f-b842-0c56301d2927"></br>
+        <img src="https://github.com/user-attachments/assets/3c699094-f8e6-471d-a7c1-6d2e9530e721"></br>
         <span>中文</span>
       </a>  
     </td>
@@ -38,9 +38,9 @@
 
 </br>
 
-A multifunctional, extensible, and high-performance Gizmos drawing utility for Unity. It works both in the editor and in the build, and drawing can be done both in OnDrawGizmos and in Update. HDRP, URP, and BRP are supported, but drawing in the OnDrawGizmos callbacks is not supported in BRP.
+Многофункциональная, расширяемая и производительная утилита рисования Gizmos для Unity. Работает как в редакторе так и в билде, а рисовать можно и в Update. Поддерживается HDRP, URP и BRP, но в BRP не поддерживается отрисовка в коллбеках OnDrawGizmos.
 
-Syntax: 
+Синтаксис: 
 ```c#
 DebugX.Draw(duration, color).*Gizmo Function*(...);
 ```
@@ -49,22 +49,22 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 ![image](https://github.com/user-attachments/assets/af09b0e3-8710-4461-99ce-a5f868b25260)
 
 
-## Table of Contents
-- [Installation](#Installation)
+## Оглавление
+- [Установка](#установка)
 - [API](#api)
-- [Loading Static Assets](#Loading-Static-Assets)
-- [Settings](#Settings)
-- [Custom Gizmo](#Custom-gizmo)
+- [Загрузка статических ассетов](#загрузка-статических-ассетов)
+- [Настройки](#настройки)
+- [Кастомный Gizmo](#кастомный-gizmo)
 - [Define Symbols](#define-symbols)
 
 # Установка
-Versioning semantics - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
-### Unity Package
+Семантика версионирования - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
+### Unity-пакет
 Поддерживается установка в виде Unity-пакета через добавление [в PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) или ручного добавления в `Packages/manifest.json` этого git-URL: 
 ```
 https://github.com/DCFApixels/Unity-DebugX
 ```
-### Source Code
+### В виде исходников
 Пакет так же может быть напрямую скопирован в папку проекта.
 </br>
 
