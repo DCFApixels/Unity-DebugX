@@ -1,8 +1,10 @@
-![image](https://github.com/user-attachments/assets/f75e20cd-9614-41e8-887d-943987f4855d)
+
+![image](https://github.com/user-attachments/assets/a3b34566-2423-4418-8a74-1369b0c268f2)
+
 
 <p align="center">
-<img alt="Version" src="https://img.shields.io/github/package-json/v/DCFApixels/Unity-DebugX?style=for-the-badge&color=1e90ff">
-<img alt="License" src="https://img.shields.io/github/license/DCFApixels/Unity-DebugX?color=1e90ff&style=for-the-badge">
+<img alt="Version" src="https://img.shields.io/github/package-json/v/DCFApixels/Unity-DebugX?style=for-the-badge&color=ff3600">
+<img alt="License" src="https://img.shields.io/github/license/DCFApixels/Unity-DebugX?color=ff3600&style=for-the-badge">
 </p>
 
 
@@ -47,6 +49,8 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 
 
 ![image](https://github.com/user-attachments/assets/af09b0e3-8710-4461-99ce-a5f868b25260)
+
+
 
 
 ## Table of Contents
