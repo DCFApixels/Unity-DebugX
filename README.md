@@ -39,7 +39,7 @@
 
 </br>
 
-A multifunctional, extensible, and high-performance Gizmos drawing utility for Unity. It works both in the editor and in the build, and drawing can be done both in OnDrawGizmos and in Update. HDRP, URP, and BRP are supported, but drawing in the OnDrawGizmos callbacks is not supported in BRP.
+A multifunctional, extensible, and high-performance Gizmos drawing utility for Unity. It works both in the editor and in the build, and drawing can be done both in `OnDrawGizmos` and in `Update`. HDRP, URP, and BRP are supported, but drawing in the `OnDrawGizmos` callbacks is not supported in BRP.
 
 Syntax: 
 ```c#
