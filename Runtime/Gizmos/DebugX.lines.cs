@@ -69,7 +69,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler LineStrip(List<Vector3> points, int startIndex, int length)
             {
-                for (int i = startIndex, iMax = startIndex + length; i < iMax;)
+                for (int i = startIndex, iMax = startIndex + length - 1; i < iMax;)
                 {
                     Line(points[i], points[++i]);
                 }
@@ -147,7 +147,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler LineStrip(List<Vector2> points, int startIndex, int length)
             {
-                for (int i = startIndex, iMax = startIndex + length; i < iMax;)
+                for (int i = startIndex, iMax = startIndex + length - 1; i < iMax;)
                 {
                     Line(points[i], points[++i]);
                 }
