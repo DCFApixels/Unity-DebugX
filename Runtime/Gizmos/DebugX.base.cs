@@ -1,5 +1,4 @@
-﻿//#undef DEBUG
-using DCFApixels.DebugXCore;
+﻿using DCFApixels.DebugXCore;
 using DCFApixels.DebugXCore.Internal;
 using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
@@ -278,9 +277,11 @@ namespace DCFApixels
                     _material = material;
                     _matrices = PinnedArray<Matrix4x4>.Pin(DummyArray<Matrix4x4>.Get());
                     _colors = PinnedArray<Vector4>.Pin(DummyArray<Vector4>.Get());
-
+#if UNITY_EDITOR
                     AssemblyReloadEvents.beforeAssemblyReload += AssemblyReloadEvents_beforeAssemblyReload;
+#endif
                 }
+#if UNITY_EDITOR
                 private void AssemblyReloadEvents_beforeAssemblyReload()
                 {
                     AssemblyReloadEvents.beforeAssemblyReload -= AssemblyReloadEvents_beforeAssemblyReload;
@@ -289,6 +290,7 @@ namespace DCFApixels
                     _colors.Dispose();
                     _gizmos.Dispose();
                 }
+#endif
                 public void Prepare(GizmosList rawList)
                 {
                     var list = rawList.As<GizmoData>();
@@ -391,9 +393,11 @@ namespace DCFApixels
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
                     _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial().enableInstancing;
-
+#if UNITY_EDITOR
                     AssemblyReloadEvents.beforeAssemblyReload += AssemblyReloadEvents_beforeAssemblyReload;
+#endif
                 }
+#if UNITY_EDITOR
                 private void AssemblyReloadEvents_beforeAssemblyReload()
                 {
                     AssemblyReloadEvents.beforeAssemblyReload -= AssemblyReloadEvents_beforeAssemblyReload;
@@ -403,7 +407,7 @@ namespace DCFApixels
                     _drawDatas.Dispose();
                     _gizmos.Dispose();
                 }
-
+#endif
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
                 protected void Prepare(GizmosList rawList)
@@ -412,8 +416,8 @@ namespace DCFApixels
                     _prepareCount = list.Count;
                     var items = list.Items;
                     var count = list.Count;
-                     
-                    if (_buffersLength < count) 
+
+                    if (_buffersLength < count)
                     {
                         int capacity = DebugXUtility.NextPow2(count);
                         _drawDatas.Dispose();
@@ -520,9 +524,11 @@ namespace DCFApixels
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
                     _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial().enableInstancing;
-
+#if UNITY_EDITOR
                     AssemblyReloadEvents.beforeAssemblyReload += AssemblyReloadEvents_beforeAssemblyReload;
+#endif
                 }
+#if UNITY_EDITOR
                 private void AssemblyReloadEvents_beforeAssemblyReload()
                 {
                     AssemblyReloadEvents.beforeAssemblyReload -= AssemblyReloadEvents_beforeAssemblyReload;
@@ -532,6 +538,7 @@ namespace DCFApixels
                     _drawDatas.Dispose();
                     _gizmos.Dispose();
                 }
+#endif
                 public virtual int ExecuteOrder => _material.GetExecuteOrder() - 1;
                 public virtual bool IsStaticRender => true;
                 public void Prepare(GizmosList rawList)

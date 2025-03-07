@@ -1,8 +1,10 @@
 ﻿using DCFApixels.DebugXCore;
 using System.Runtime.CompilerServices;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+//#if UNITY_EDITOR
+using UnityEditor;
+//#endif
 
 namespace DCFApixels
 {
@@ -75,13 +77,13 @@ namespace DCFApixels
                         if (item.Value.Settings.IsHasBackground)
                         {
                             Color backgroundColor = item.Value.Settings.BackgroundColor * DebugX.GlobalColor;
-                            if(fontSize < 1)
+                            if (fontSize < 1)
                             {
                                 backgroundColor.a *= fontSize;
                             }
                             Graphics.DrawTexture(rect, _whiteTexture, new Rect(0, 0, 1, 1), 0, 0, 0, 0, backgroundColor, backgroundMaterial, -1);
                         }
-                        Color color= item.Color * DebugX.GlobalColor;
+                        Color color = item.Color * DebugX.GlobalColor;
                         if (fontSize < 1)
                         {
                             color.a *= fontSize;
@@ -202,14 +204,20 @@ namespace DCFApixels
             }
             private static float GetCameraZoom(Camera camera, Vector3 position)
             {
+#if UNITY_EDITOR
                 position = Handles.matrix.MultiplyPoint(position);
+#endif
                 Transform cameraTransform = camera.transform;
                 Vector3 cameraPos = cameraTransform.position;
                 float z = Vector3.Dot(position - cameraPos, cameraTransform.TransformDirection(new Vector3(0f, 0f, 1f)));
                 Vector3 pos1 = camera.WorldToScreenPoint(cameraPos + cameraTransform.TransformDirection(new Vector3(0f, 0f, z)));
                 Vector3 pos2 = camera.WorldToScreenPoint(cameraPos + cameraTransform.TransformDirection(new Vector3(1f, 0f, z)));
                 float magnitude = (pos1 - pos2).magnitude;
+#if UNITY_EDITOR
                 return 80f / Mathf.Max(magnitude, 0.0001f) * EditorGUIUtility.pixelsPerPoint;
+#else
+                return 80f / Mathf.Max(magnitude, 0.0001f);
+#endif
             }
             #endregion
         }

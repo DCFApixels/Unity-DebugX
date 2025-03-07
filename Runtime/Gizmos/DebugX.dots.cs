@@ -1,8 +1,5 @@
-﻿//#undef DEBUG
-using DCFApixels.DebugXCore;
-using System;
+﻿using DCFApixels.DebugXCore;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace DCFApixels
 {

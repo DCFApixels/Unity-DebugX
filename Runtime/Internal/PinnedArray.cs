@@ -1,5 +1,4 @@
 #undef DEBUG
-
 using System;
 using Unity.Collections.LowLevel.Unsafe;
 
