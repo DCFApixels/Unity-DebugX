@@ -252,4 +252,7 @@ SomeAssets assets = DebugXUtility.LoadStaticData(new SomeAssets(), "SomeAssets")
 <br>
 
 # Define Symbols
-+ `DISABLE_DEBUGX_INBUILD` - By default, Gizmos will be drawn in the project build. This define disables drawing. It can also be enabled or disabled in the DebugX settings window.
+All Define Symbols can be changed in the settings window
++ `DEBUGX_DISABLE_INBUILD` - By default, Gizmos will be drawn in the project build. This define disables drawing.
++ `DEBUGX_ENABLE_PHYSICS2D` - Enable Physics2D Gizmos.
++ `DEBUGX_ENABLE_PHYSICS3D` - Enable Physics3D Gizmos.

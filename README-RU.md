@@ -151,7 +151,7 @@ public struct SomeMesh : IStaticMesh
 # Настройки
 Окно настроек "Tools -> DebugX -> Settings":
 
-![image](https://github.com/user-attachments/assets/7dd981c1-1e00-4b7d-9a73-376638094689)
+![image](https://github.com/user-attachments/assets/dee3954a-1c8a-442c-a4bb-d2c710e065a4)
 
 <br>
 
@@ -253,4 +253,7 @@ SomeAssets assets = DebugXUtility.LoadStaticData(new SomeAssets(), "SomeAssets")
 <br>
 
 # Define Symbols
-+ `DISABLE_DEBUGX_INBUILD` - по умолчанию Gizmo будут рисовать в сборке проекта, этот дефайн отключает рисование. Включить или выключить можно так же в окне настроек DebugX.
+Все Define Symbols можно менять в окне настроек.
++ `DEBUGX_DISABLE_INBUILD` - По умолчанию Gizmo будут рисовать в сборке проекта, этот дефайн отключает рисование.
++ `DEBUGX_ENABLE_PHYSICS2D` - Включает Gizmos для Physics2D.
++ `DEBUGX_ENABLE_PHYSICS3D` - Включает Gizmos для Physics3D.
