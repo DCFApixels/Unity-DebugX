@@ -150,7 +150,7 @@ public struct SomeMesh : IStaticMesh
 # Settings
 Settings window "Tools -> DebugX -> Settings":
 
-![image](https://github.com/user-attachments/assets/7dd981c1-1e00-4b7d-9a73-376638094689)
+![image](https://github.com/user-attachments/assets/dee3954a-1c8a-442c-a4bb-d2c710e065a4)
 
 <br>
 
