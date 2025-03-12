@@ -48,19 +48,19 @@ namespace DCFApixels.DebugXCore
     public static class DebugXDefines
     {
         public const bool DEBUGX_DISABLE_INBUILD =
-#if DISABLE_DEBUGX_INBUILD
+#if DEBUGX_DISABLE_INBUILD
             true;
 #else
             false;
 #endif
         public const bool DEBUGX_ENABLE_PHYSICS2D =
-#if DISABLE_DEBUGX_INBUILD
+#if DEBUGX_ENABLE_PHYSICS2D
             true;
 #else
             false;
 #endif
         public const bool DEBUGX_ENABLE_PHYSICS3D =
-#if DISABLE_DEBUGX_INBUILD
+#if DEBUGX_ENABLE_PHYSICS3D
             true;
 #else
             false;
