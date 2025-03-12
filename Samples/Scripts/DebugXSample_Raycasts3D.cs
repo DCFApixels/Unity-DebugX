@@ -9,6 +9,8 @@ namespace DCFApixels.DebugXCore.Samples
         public float GradientMultiplier = 5;
         public Transform[] Points;
 
+
+
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
@@ -23,6 +25,7 @@ namespace DCFApixels.DebugXCore.Samples
 
         private void Draw()
         {
+#if DEBUGX_ENABLE_PHYSICS3D
             int i = 0;
             const float RADIUS_M = 0.5f;
 
@@ -51,6 +54,7 @@ namespace DCFApixels.DebugXCore.Samples
             Vector3 point2 = ray.origin + point.up * point.localScale.y * RADIUS_M * -0.5f;
             Physics.CapsuleCast(point1, point2, point.localScale.x * RADIUS_M, ray.direction, out hit, float.PositiveInfinity, int.MaxValue, QueryTriggerInteraction.UseGlobal);
             DebugX.Draw(GetColor(point)).CapsuleCast(point1, point2, ray.direction, point.localScale.x * RADIUS_M, hit);
+#endif
         }
         private Color GetColor(Transform pos1)
         {

@@ -23,6 +23,7 @@ namespace DCFApixels.DebugXCore.Samples
 
         private void Draw()
         {
+#if DEBUGX_ENABLE_PHYSICS2D
             int i = 0;
             const float RADIUS_M = 0.5f;
 
@@ -49,6 +50,7 @@ namespace DCFApixels.DebugXCore.Samples
             ray = new Ray(point.position, point.forward);
             hit = Physics2D.CapsuleCast(ray.origin, point.localScale, CapsuleDirection2D.Vertical, point.eulerAngles.z, ray.direction, float.PositiveInfinity, int.MaxValue);
             DebugX.Draw(GetColor(point)).CapsuleCast2D(ray, point.eulerAngles.z, point.localScale, CapsuleDirection2D.Vertical, hit);
+#endif
         }
         private Color GetColor(Transform pos1)
         {

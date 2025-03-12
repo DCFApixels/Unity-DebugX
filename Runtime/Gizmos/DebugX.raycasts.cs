@@ -10,6 +10,7 @@ namespace DCFApixels
         private const float ShadowAlphaMultiplier = 0.3f;
         public readonly partial struct DrawHandler
         {
+#if DEBUGX_ENABLE_PHYSICS3D
             #region RaycastHit
             [IN(LINE)]
             public DrawHandler RaycastHit(RaycastHit hit)
@@ -21,24 +22,7 @@ namespace DCFApixels
                 }
                 return this;
             }
-            [IN(LINE)]
-            public DrawHandler RaycastHit(RaycastHit2D hit)
-            {
-                if (hit.collider != null)
-                {
-                    DotDiamond(hit.point);
-                    RayArrow(hit.point, hit.normal);
-                }
-                return this;
-            }
-            [IN(LINE)]
-            private void RaycastHit_Internal(float offsetZ, RaycastHit2D hit)
-            {
-                DotDiamond(new Vector3(hit.point.x, hit.point.y, offsetZ));
-                RayArrow(new Vector3(hit.point.x, hit.point.y, offsetZ), hit.normal);
-            }
             #endregion
-
 
             #region Raycast
             [IN(LINE)] public DrawHandler Raycast(Ray ray, RaycastHit hit) => Raycast(ray.origin, ray.direction, hit);
@@ -143,7 +127,27 @@ namespace DCFApixels
                 return this;
             }
             #endregion
+#endif
 
+#if DEBUGX_ENABLE_PHYSICS2D
+            #region RaycastHit2D
+            [IN(LINE)]
+            public DrawHandler RaycastHit(RaycastHit2D hit)
+            {
+                if (hit.collider != null)
+                {
+                    DotDiamond(hit.point);
+                    RayArrow(hit.point, hit.normal);
+                }
+                return this;
+            }
+            [IN(LINE)]
+            private void RaycastHit_Internal(float offsetZ, RaycastHit2D hit)
+            {
+                DotDiamond(new Vector3(hit.point.x, hit.point.y, offsetZ));
+                RayArrow(new Vector3(hit.point.x, hit.point.y, offsetZ), hit.normal);
+            }
+            #endregion
 
             #region Raycast2D
             [IN(LINE)] public DrawHandler Raycast2D(Ray ray, RaycastHit2D hit) => Raycast2D(ray.origin, ray.direction, hit);
@@ -238,6 +242,7 @@ namespace DCFApixels
                 return this;
             }
             #endregion
+#endif
         }
     }
 }
