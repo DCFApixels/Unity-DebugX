@@ -65,7 +65,7 @@ Versioning semantics - [Открыть](https://gist.github.com/DCFApixels/e5328
 ### Unity-Package
 Supports installation as a Unity module. Copy the Git-URL [into PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) or into `Packages/manifest.json`. Copy this Git-URL to install the latest working version:
 ```
-https://github.com/DCFApixels/Unity-DebugX
+https://github.com/DCFApixels/Unity-DebugX.git
 ```
 ### Source Code
 The Package can also be directly copied into the project folder.

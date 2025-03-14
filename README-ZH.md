@@ -69,7 +69,7 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 ### Unity-软件包
 支持以 Unity 模块的形式安装，只需将 Git-URL 复制到 [PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) 或  `Packages/manifest.json`中. 复制此 Git-URL 以安装最新的工作版本:
 ```
-https://github.com/DCFApixels/Unity-DebugX
+https://github.com/DCFApixels/Unity-DebugX.git
 ```
 ### 作为源代码
 该包也可以直接复制到项目文件夹中。
