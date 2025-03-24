@@ -202,6 +202,8 @@ namespace DCFApixels
         {
             return new DrawHandler(duration, color);
         }
+        //public static DrawHandler Draw(float r, float g, float b, float a = 1f) //TODO
+
         public readonly partial struct DrawHandler
         {
             public readonly Color Color;
