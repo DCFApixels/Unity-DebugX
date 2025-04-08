@@ -12,16 +12,40 @@ namespace DCFApixels
         public readonly partial struct DrawHandler
         {
             #region BillboardCircle
-            [IN(LINE)] public DrawHandler BillboardCircle(Vector3 position, float radius) => Mesh<CircleMesh, BillboardMat>(position, Quaternion.identity, new Vector3(radius, radius, radius));
+            [IN(LINE)]
+            public DrawHandler BillboardCircle(Vector3 position, float radius)
+            {
+                return Mesh<CircleMesh, BillboardMat>(position, Quaternion.identity, new Vector3(radius, radius, radius));
+            }
             #endregion
 
-            #region Cross
-            [IN(LINE)] public DrawHandler Cross(Vector3 position, float size) => Mesh<DotCrossMesh, BillboardMat>(position, Quaternion.identity, new Vector3(size, size, size));
+            #region BillboardCross
+            [IN(LINE)]
+            [Obsolete("Use BillboardCross(position, size)")]
+            public DrawHandler Cross(Vector3 position, float size)
+            {
+                return Mesh<DotCrossMesh, BillboardMat>(position, Quaternion.identity, new Vector3(size, size, size));
+            }
+            [IN(LINE)]
+            public DrawHandler BillboardCross(Vector3 position, float size)
+            {
+                return Mesh<DotCrossMesh, BillboardMat>(position, Quaternion.identity, new Vector3(size, size, size));
+            }
             #endregion
 
 
             #region Sphere
-            [IN(LINE)] public DrawHandler Sphere(Vector3 position, float radius) => Mesh<SphereMesh, LitMat>(position, Quaternion.identity, new Vector3(radius, radius, radius));
+            [IN(LINE)]
+            public DrawHandler Sphere<TMat>(Vector3 position, float radius)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<SphereMesh, TMat>(position, Quaternion.identity, new Vector3(radius, radius, radius));
+            }
+            [IN(LINE)]
+            public DrawHandler Sphere(Vector3 position, float radius)
+            {
+                return Mesh<SphereMesh>(position, Quaternion.identity, new Vector3(radius, radius, radius));
+            }
             #endregion
 
             #region WireSphere
@@ -107,9 +131,30 @@ namespace DCFApixels
             }
             #endregion
 
+
             #region Circle
-            [IN(LINE)] public DrawHandler Circle(Vector3 position, Vector3 normal, float radius) => Mesh<CircleMesh, LitMat>(position, Quaternion.LookRotation(normal), new Vector3(radius, radius, radius));
-            [IN(LINE)] public DrawHandler Circle(Vector3 position, Quaternion rotation, float radius) => Mesh<CircleMesh, LitMat>(position, rotation, new Vector3(radius, radius, radius));
+            [IN(LINE)]
+            public DrawHandler Circle<TMat>(Vector3 position, Vector3 normal, float radius)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<CircleMesh, TMat>(position, Quaternion.LookRotation(normal), new Vector3(radius, radius, radius));
+            }
+            [IN(LINE)]
+            public DrawHandler Circle<TMat>(Vector3 position, Quaternion rotation, float radius)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<CircleMesh, TMat>(position, rotation, new Vector3(radius, radius, radius));
+            }
+            [IN(LINE)]
+            public DrawHandler Circle(Vector3 position, Vector3 normal, float radius)
+            {
+                return Mesh<CircleMesh>(position, Quaternion.LookRotation(normal), new Vector3(radius, radius, radius));
+            }
+            [IN(LINE)]
+            public DrawHandler Circle(Vector3 position, Quaternion rotation, float radius)
+            {
+                return Mesh<CircleMesh>(position, rotation, new Vector3(radius, radius, radius));
+            }
             #endregion
 
             #region WireCircle
@@ -120,10 +165,15 @@ namespace DCFApixels
 
             #region Cylinder
             [IN(LINE)]
+            public DrawHandler Cylinder<TMat>(Vector3 position, Quaternion rotation, float radius, float height)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<CylinderMesh, TMat>(position, rotation * Quaternion.Euler(-90, 0, 0), new Vector3(radius * 2f, radius * 2f, height));
+            }
+            [IN(LINE)]
             public DrawHandler Cylinder(Vector3 position, Quaternion rotation, float radius, float height)
             {
-                Mesh<CylinderMesh, LitMat>(position, rotation * Quaternion.Euler(-90, 0, 0), new Vector3(radius * 2f, radius * 2f, height));
-                return this;
+                return Mesh<CylinderMesh>(position, rotation * Quaternion.Euler(-90, 0, 0), new Vector3(radius * 2f, radius * 2f, height));
             }
             #endregion
 
@@ -169,12 +219,18 @@ namespace DCFApixels
             }
             #endregion
 
+
             #region Cone
+            [IN(LINE)]
+            public DrawHandler Cone<TMat>(Vector3 position, Quaternion rotation, float radius, float height)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<ConeMesh, TMat>(position, rotation * Quaternion.Euler(-90, 0, 0), new Vector3(radius * 2f, radius * 2f, height));
+            }
             [IN(LINE)]
             public DrawHandler Cone(Vector3 position, Quaternion rotation, float radius, float height)
             {
-                Mesh<ConeMesh, LitMat>(position, rotation * Quaternion.Euler(-90, 0, 0), new Vector3(radius * 2f, radius * 2f, height));
-                return this;
+                return Mesh<ConeMesh>(position, rotation * Quaternion.Euler(-90, 0, 0), new Vector3(radius * 2f, radius * 2f, height));
             }
             #endregion
 
@@ -215,12 +271,18 @@ namespace DCFApixels
             }
             #endregion
 
+
             #region Triangle
+            [IN(LINE)]
+            public DrawHandler Triangle<TMat>(Vector3 position, Quaternion rotation, Vector2 size)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<TriangleMesh, TMat>(position, rotation, new Vector3(size.x, size.y, 1f));
+            }
             [IN(LINE)]
             public DrawHandler Triangle(Vector3 position, Quaternion rotation, Vector2 size)
             {
-                Mesh<TriangleMesh, LitMat>(position, rotation, new Vector3(size.x, size.y, 1f));
-                return this;
+                return Mesh<TriangleMesh>(position, rotation, new Vector3(size.x, size.y, 1f));
             }
             #endregion
 
@@ -236,7 +298,8 @@ namespace DCFApixels
 
             #region Capsule
             [IN(LINE)]
-            public DrawHandler Capsule(Vector3 position, Quaternion rotation, float radius, float height)
+            public DrawHandler Capsule<TMat>(Vector3 position, Quaternion rotation, float radius, float height)
+                where TMat : struct, IStaticMaterial
             {
                 radius = Mathf.Max(0, radius);
                 height -= radius * 2f;
@@ -244,10 +307,15 @@ namespace DCFApixels
                 var halfHeigth = height * 0.5f;
                 var normal = rotation * Vector3.up;
 
-                Mesh<CapsuleHeadMesh, LitMat>(position + normal * halfHeigth, rotation, new Vector3(radius, radius, radius));
-                Mesh<CapsuleBodyMesh, LitMat>(position, rotation, new Vector3(radius, height, radius));
-                Mesh<CapsuleHeadMesh, LitMat>(position - normal * halfHeigth, rotation * Quaternion.Euler(0, 0, 180), new Vector3(radius, radius, radius));
+                Mesh<CapsuleHeadMesh, TMat>(position + normal * halfHeigth, rotation, new Vector3(radius, radius, radius));
+                Mesh<CapsuleBodyMesh, TMat>(position, rotation, new Vector3(radius, height, radius));
+                Mesh<CapsuleHeadMesh, TMat>(position - normal * halfHeigth, rotation * Quaternion.Euler(0, 0, 180), new Vector3(radius, radius, radius));
                 return this;
+            }
+            [IN(LINE)]
+            public DrawHandler Capsule(Vector3 position, Quaternion rotation, float radius, float height)
+            {
+                return Capsule<LitMat>(position, rotation, radius, height);
             }
             #endregion
 
@@ -280,9 +348,11 @@ namespace DCFApixels
             }
             #endregion
 
+
             #region FlatCapsule
             [IN(LINE)]
-            public DrawHandler FlatCapsule(Vector3 position, Quaternion rotation, float radius, float height)
+            public DrawHandler FlatCapsule<TMat>(Vector3 position, Quaternion rotation, float radius, float height)
+                where TMat : struct, IStaticMaterial
             {
                 radius = Mathf.Max(0, radius);
                 height -= radius * 2f;
@@ -290,10 +360,15 @@ namespace DCFApixels
                 var halfHeigth = height * 0.5f;
                 var normal = rotation * Vector3.up;
 
-                Mesh<FlatCapsuleHeadMesh, LitMat>(position + normal * halfHeigth, rotation, new Vector3(radius, radius, radius));
-                Mesh<FlatCapsuleBodyMesh, LitMat>(position, rotation, new Vector3(radius, height, radius));
-                Mesh<FlatCapsuleHeadMesh, LitMat>(position - normal * halfHeigth, rotation * Quaternion.Euler(0, 0, 180), new Vector3(radius, radius, radius));
+                Mesh<FlatCapsuleHeadMesh, TMat>(position + normal * halfHeigth, rotation, new Vector3(radius, radius, radius));
+                Mesh<FlatCapsuleBodyMesh, TMat>(position, rotation, new Vector3(radius, height, radius));
+                Mesh<FlatCapsuleHeadMesh, TMat>(position - normal * halfHeigth, rotation * Quaternion.Euler(0, 0, 180), new Vector3(radius, radius, radius));
                 return this;
+            }
+            [IN(LINE)]
+            public DrawHandler FlatCapsule(Vector3 position, Quaternion rotation, float radius, float height)
+            {
+                return FlatCapsule<LitMat>(position, rotation, radius, height);
             }
             #endregion
 
@@ -336,8 +411,28 @@ namespace DCFApixels
             #region Cube
             //[IN(LINE)] public void Cube(Vector3 position, float size) => Cube(position, Quaternion.identity, new Vector3(size, size, size));
             //[IN(LINE)] public void Cube(Vector3 position, Vector3 size) => Cube(position, Quaternion.identity, size);
-            [IN(LINE)] public DrawHandler Cube(Vector3 position, Quaternion rotation, float size) => Mesh<CubeMesh, LitMat>(position, rotation, new Vector3(size, size, size));
-            [IN(LINE)] public DrawHandler Cube(Vector3 position, Quaternion rotation, Vector3 size) => Mesh<CubeMesh, LitMat>(position, rotation, size);
+            [IN(LINE)]
+            public DrawHandler Cube<TMat>(Vector3 position, Quaternion rotation, float size)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<CubeMesh, TMat>(position, rotation, new Vector3(size, size, size));
+            }
+            [IN(LINE)]
+            public DrawHandler Cube<TMat>(Vector3 position, Quaternion rotation, Vector3 size)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<CubeMesh, TMat>(position, rotation, size);
+            }
+            [IN(LINE)]
+            public DrawHandler Cube(Vector3 position, Quaternion rotation, float size)
+            {
+                return Mesh<CubeMesh>(position, rotation, new Vector3(size, size, size));
+            }
+            [IN(LINE)]
+            public DrawHandler Cube(Vector3 position, Quaternion rotation, Vector3 size)
+            {
+                return Mesh<CubeMesh>(position, rotation, size);
+            }
             #endregion
 
             #region WireCube
@@ -458,11 +553,32 @@ namespace DCFApixels
             }
             #endregion
 
+
             #region Quad
             //[IN(LINE)] public DrawHandler Quad(Vector3 position, Vector3 normal, float size) => Mesh(Meshes.Quad, position, Quaternion.LookRotation(normal), new Vector3(size, size, size));
             //[IN(LINE)] public DrawHandler Quad(Vector3 position, Vector3 normal, Vector2 size) => Mesh(Meshes.Quad, position, Quaternion.LookRotation(normal), size); 
-            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, float size) => Mesh<QuadMesh, LitMat>(position, rotation, new Vector3(size, size, 1f)); //TODO fix quad mesh
-            [IN(LINE)] public DrawHandler Quad(Vector3 position, Quaternion rotation, Vector2 size) => Mesh<QuadMesh, LitMat>(position, rotation, new Vector3(size.x, size.y, 1f)); //TODO fix quad mesh
+            [IN(LINE)]
+            public DrawHandler Quad<TMat>(Vector3 position, Quaternion rotation, float size)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<QuadMesh, TMat>(position, rotation, new Vector3(size, size, 1f));
+            }
+            [IN(LINE)]
+            public DrawHandler Quad<TMat>(Vector3 position, Quaternion rotation, Vector2 size)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<QuadMesh, TMat>(position, rotation, new Vector3(size.x, size.y, 1f));
+            }
+            [IN(LINE)]
+            public DrawHandler Quad(Vector3 position, Quaternion rotation, float size)
+            {
+                return Mesh<QuadMesh>(position, rotation, new Vector3(size, size, 1f));
+            }
+            [IN(LINE)]
+            public DrawHandler Quad(Vector3 position, Quaternion rotation, Vector2 size)
+            {
+                return Mesh<QuadMesh>(position, rotation, new Vector3(size.x, size.y, 1f));
+            }
             #endregion
 
             #region WireQuad
