@@ -33,15 +33,23 @@ Shader "DCFApixels/DebugX/Handles Overwrite"
             #pragma instancing_options procedural:setup
 
             #include "UnityCG.cginc"
+            #include "HandlesLibrary.cginc"
 
-#if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED)
+            #if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED)
             struct InstanceData
             {
                 float4x4 m;
                 float4 color;
             };
             StructuredBuffer<InstanceData> _DataBuffer;
-#endif
+            void setup()
+            {
+                InstanceData data = _DataBuffer[unity_InstanceID];
+                UNITY_MATRIX_M = data.m; //UNITY_MATRIX_M
+                _Color = data.color;
+            }
+            #endif
+
             struct appdata_t
             {
                 float4 vertex : POSITION;
@@ -60,54 +68,13 @@ Shader "DCFApixels/DebugX/Handles Overwrite"
                 half4 color : COLOR;
             };
 
-            float4 _Color;
             float4 _DebugX_GlobalColor;      
-
-            void setup()
-            {
-#if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED)
-                InstanceData data = _DataBuffer[unity_InstanceID];
-            
-                UNITY_MATRIX_M = data.m; //UNITY_MATRIX_M
-                _Color = data.color;
-#endif
-            }
-
-
-
-        
-#if _DOT_ON
-            float _DebugX_GlobalDotSize;      
-            float GetHandleSize(float3 objectPosition)
-            {
-                float3 viewDir = normalize(_WorldSpaceCameraPos - objectPosition);
-
-                float distance = length(_WorldSpaceCameraPos - objectPosition);
-                float isOrthographic = UNITY_MATRIX_P[3][3];
-                distance = lerp(distance, 1, isOrthographic);
-            
-                float fov = radians(UNITY_MATRIX_P[1][1] * 2.0);
-                float scale = distance * (1 / fov) * 0.015;
-
-                return scale * _DebugX_GlobalDotSize;
-            }
-#endif
-
-
 
             v2f vert (appdata_t v)
             {
                 v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
-
-                float4x4 M = UNITY_MATRIX_M;
-#if _DOT_ON
-                float scaleMultiplier = GetHandleSize(mul(UNITY_MATRIX_M, float4(0, 0, 0, 1)).xyz);
-                M._m00 *= scaleMultiplier;
-                M._m11 *= scaleMultiplier;
-                M._m22 *= scaleMultiplier;
-#endif
-
+                float4x4 M = GET_HANDLE_UNITY_MATRIX_M();
 
 #if _BILLBOARD_ON
                 float4 worldOrigin = mul(M, float4(0, 0, 0, 1));
