@@ -9,5 +9,10 @@ namespace DCFApixels.DebugXCore.Internal
             self.a *= v;
             return self;
         }
+        public static Color ToColor(ref this (Color color, float alpha) self)
+        {
+            self.color.a *= self.alpha;
+            return self.color;
+        }
     }
 }
