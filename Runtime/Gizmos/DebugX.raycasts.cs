@@ -11,6 +11,7 @@ namespace DCFApixels
         public readonly partial struct DrawHandler
         {
 #if DEBUGX_ENABLE_PHYSICS3D
+
             #region RaycastHit
             [IN(LINE)]
             public DrawHandler RaycastHit(RaycastHit hit)
@@ -130,6 +131,7 @@ namespace DCFApixels
 #endif
 
 #if DEBUGX_ENABLE_PHYSICS2D
+
             #region RaycastHit2D
             [IN(LINE)]
             public DrawHandler RaycastHit(RaycastHit2D hit)

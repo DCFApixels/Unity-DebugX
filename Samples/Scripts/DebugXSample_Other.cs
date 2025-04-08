@@ -26,7 +26,7 @@ namespace DCFApixels.DebugXCore.Samples
             int i = -1;
             const float RADIUS_M = 0.5f;
 
-            i++; DebugX.Draw(GetColor(Points[i])).Cross(Points[i].position, Points[i].localScale.x);
+            i++; DebugX.Draw(GetColor(Points[i])).BillboardCross(Points[i].position, Points[i].localScale.x);
             i++; DebugX.Draw(GetColor(Points[i])).BillboardCircle(Points[i].position, Points[i].localScale.x * RADIUS_M);
             i++; DebugX.Draw(GetColor(Points[i])).WireMesh<SphereMesh>(Points[i].position, Points[i].rotation, Points[i].localScale * RADIUS_M);
             i++; DebugX.Draw(GetColor(Points[i])).Text(Points[i].position, Points[i].name, DebugXTextSettings.WorldSpaceScale.SetSize(26).SetBackground(TextBackgroundColor));

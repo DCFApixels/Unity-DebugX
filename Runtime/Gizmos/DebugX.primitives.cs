@@ -137,7 +137,7 @@ namespace DCFApixels
             public DrawHandler Circle<TMat>(Vector3 position, Vector3 normal, float radius)
                 where TMat : struct, IStaticMaterial
             {
-                return Mesh<CircleMesh, TMat>(position, Quaternion.LookRotation(normal), new Vector3(radius, radius, radius));
+                return Mesh<CircleMesh, TMat>(position, Quaternion.LookRotation(normal.CheckNormalOrDefault()), new Vector3(radius, radius, radius));
             }
             [IN(LINE)]
             public DrawHandler Circle<TMat>(Vector3 position, Quaternion rotation, float radius)
@@ -148,7 +148,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler Circle(Vector3 position, Vector3 normal, float radius)
             {
-                return Mesh<CircleMesh>(position, Quaternion.LookRotation(normal), new Vector3(radius, radius, radius));
+                return Mesh<CircleMesh>(position, Quaternion.LookRotation(normal.CheckNormalOrDefault()), new Vector3(radius, radius, radius));
             }
             [IN(LINE)]
             public DrawHandler Circle(Vector3 position, Quaternion rotation, float radius)
