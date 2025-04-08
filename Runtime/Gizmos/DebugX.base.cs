@@ -43,7 +43,7 @@ namespace DCFApixels
             //}
             #endregion
 
-            #region Mesh //TODO потестить
+            #region Mesh
             [IN(LINE)]
             public DrawHandler Mesh<TMat>(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 size)
                 where TMat : struct, IStaticMaterial
