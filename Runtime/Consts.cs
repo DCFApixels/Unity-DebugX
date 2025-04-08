@@ -4,6 +4,7 @@ using UnityEngine.Rendering;
 
 namespace DCFApixels
 {
+    //TODO для разработки аналога Handlers.DrawWireArc можно посмотреть в сторону того чтобы на уровне шейдера делать пиксели прозрачными
     public static class DebugXConsts
     {
         public const float IMMEDIATE_DURATION = -1;
