@@ -27,9 +27,11 @@ namespace DCFApixels.DebugXCore.Internal
         //private bool? _isHasDisableDebugXInBuildSymbols = false;
         //private const string DEFINE_NAME = nameof(DebugXDefines.DEBUGX_DISABLE_INBUILD);
         private static (string name, bool flag)[] _defines = null;
+        private static Vector2 _pos;
+
         private void OnGUI()
         {
-
+            _pos = GUILayout.BeginScrollView(_pos, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
             float tmpValue;
 
             DebugX.GlobalTimeScale = EditorGUILayout.FloatField("TimeScale", DebugX.GlobalTimeScale);
@@ -53,6 +55,23 @@ namespace DCFApixels.DebugXCore.Internal
             color.a = EditorGUILayout.Slider(DebugX.GlobalColor.a, 0, 1);
             DebugX.GlobalColor = color;
 
+            if (GUILayout.Button("Reset"))
+            {
+                DebugX.ResetGlobals();
+            }
+            if (GUILayout.Button("Clear All Gizmos"))
+            {
+                DebugX.ClearAllGizmos();
+            }
+
+            GUILayout.Space(4);
+
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("Information", EditorStyles.helpBox);
+            DrawReadonlyLeftToggle("Is SRP", DebugXConsts.IsSRP);
+            DrawReadonlyLeftToggle("Support GPU Instancing", DebugXConsts.IsSupportsComputeShaders);
+            DrawReadonlyLeftToggle("Support OnGizmosDraw methods", DebugXConsts.IsSRP);
+            GUILayout.EndVertical();
 
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label("Scripting Define Symbols", EditorStyles.helpBox);
@@ -71,72 +90,18 @@ namespace DCFApixels.DebugXCore.Internal
             }
             GUILayout.EndVertical();
 
-            //            if (_isCompilation == false)
-            //            {
-            //                if (_isHasDisableDebugXInBuildSymbols == null)
-            //                {
-            //                    BuildTargetGroup group = EditorUserBuildSettings.selectedBuildTargetGroup;
-            //#if UNITY_6000_0_OR_NEWER
-            //                    string symbolsString = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(group));
-            //#else
-            //                    string symbolsString = PlayerSettings.GetScriptingDefineSymbolsForGroup(group);
-            //#endif
-            //                    _isHasDisableDebugXInBuildSymbols = symbolsString.Contains(DEFINE_NAME);
-            //                }
-            //
-            //                EditorGUI.BeginChangeCheck();
-            //                _isHasDisableDebugXInBuildSymbols = !EditorGUILayout.ToggleLeft("Show Gizmos in Build", !_isHasDisableDebugXInBuildSymbols.Value);
-            //
-            //
-            //
-            //
-            //
-            //                if (EditorGUI.EndChangeCheck())
-            //                {
-            //                    BuildTargetGroup group = EditorUserBuildSettings.selectedBuildTargetGroup;
-            //#if UNITY_6000_0_OR_NEWER
-            //                    string symbolsString = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(group));
-            //#else
-            //                string symbolsString = PlayerSettings.GetScriptingDefineSymbolsForGroup(group);
-            //#endif
-            //                    if (symbolsString.Contains(DEFINE_NAME) == false)
-            //                    {
-            //                        symbolsString = symbolsString + ", " + DEFINE_NAME;
-            //                    }
-            //                    else
-            //                    {
-            //                        symbolsString = symbolsString.Replace(DEFINE_NAME, "");
-            //
-            //                    }
-            //
-            //#if UNITY_6000_0_OR_NEWER
-            //                    PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(group), symbolsString);
-            //#else
-            //                PlayerSettings.SetScriptingDefineSymbolsForGroup(group, symbolsString);
-            //#endif
-            //                    _isCompilation = true;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                _isHasDisableDebugXInBuildSymbols = null;
-            //                GUI.enabled = false;
-            //                EditorGUILayout.ToggleLeft("Show Gizmos in Build (Locked for compilation)", false);
-            //                GUI.enabled = true;
-            //            }
+            GUILayout.EndScrollView();
+        }
 
-
-
-
-            if (GUILayout.Button("Reset"))
-            {
-                DebugX.ResetGlobals();
-            }
-
-            if (GUILayout.Button("Clear All Gizmos"))
-            {
-                DebugX.ClearAllGizmos();
-            }
+        private void DrawReadonlyLeftToggle(string text, bool value)
+        {
+            GUILayout.BeginHorizontal();
+            bool GUI_enabled_default = GUI.enabled;
+            GUI.enabled = false;
+            EditorGUILayout.Toggle(value, GUILayout.Width(14), GUILayout.ExpandWidth(false));
+            GUI.enabled = GUI_enabled_default;
+            EditorGUILayout.LabelField(text, GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
         }
     }
 }
