@@ -198,9 +198,17 @@ namespace DCFApixels
         {
             return new DrawHandler(GetCurrentDefaultDuration(), color);
         }
+        public static DrawHandler Draw((Color color, float alphaMultiplier) color)
+        {
+            return new DrawHandler(GetCurrentDefaultDuration(), color.ToColor());
+        }
         public static DrawHandler Draw(float duration, Color color)
         {
             return new DrawHandler(duration, color);
+        }
+        public static DrawHandler Draw(float duration, (Color color, float alphaMultiplier) color)
+        {
+            return new DrawHandler(duration, color.ToColor());
         }
         //public static DrawHandler Draw(float r, float g, float b, float a = 1f) //TODO
 
@@ -221,8 +229,10 @@ namespace DCFApixels
                 //ContextController = GetCurrenRenderContextController();
             }
             [IN(LINE)] public DrawHandler Setup(float duration, Color color) => new DrawHandler(duration, color);
+            [IN(LINE)] public DrawHandler Setup(float duration, (Color color, float alphaMultiplier) color) => new DrawHandler(duration, color.ToColor());
             [IN(LINE)] public DrawHandler Setup(float duration) => new DrawHandler(duration, Color);
             [IN(LINE)] public DrawHandler Setup(Color color) => new DrawHandler(Duration, color);
+            [IN(LINE)] public DrawHandler Setup((Color color, float alphaMultiplier) color) => new DrawHandler(Duration, color.ToColor());
             //[IN(LINE)]
             //private DrawHandler(float time, Color color, RenderContextController contextController)
             //{
