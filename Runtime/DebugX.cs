@@ -406,7 +406,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler Gizmo<T>(T value) where T : IGizmo<T>
             {
-#if UNITY_EDITOR || !DISABLE_DEBUGX_INBUILD
+#if UNITY_EDITOR || !DEBUGX_DISABLE_INBUILD
                 GetCurrentContextController().Add(value, Duration, Color);
 #endif
                 return this;
@@ -414,7 +414,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler Gizmos<T>(ReadOnlySpan<T> values) where T : IGizmo<T>
             {
-#if UNITY_EDITOR || !DISABLE_DEBUGX_INBUILD
+#if UNITY_EDITOR || !DEBUGX_DISABLE_INBUILD
                 GetCurrentContextController().AddRange(values, Duration, Color);
 #endif
                 return this;
