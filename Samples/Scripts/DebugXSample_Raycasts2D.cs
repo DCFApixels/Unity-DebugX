@@ -1,3 +1,4 @@
+using DCFApixels.DebugXCore.Samples.Internal;
 using UnityEngine;
 
 namespace DCFApixels.DebugXCore.Samples
@@ -53,24 +54,12 @@ namespace DCFApixels.DebugXCore.Samples
             hit = Physics2D.CapsuleCast(ray.origin, point.localScale, CapsuleDirection2D.Vertical, point.eulerAngles.z, ray.direction, float.PositiveInfinity, int.MaxValue);
             DebugX.Draw(GetColor(point)).CapsuleCast2D(ray, point.eulerAngles.z, point.localScale, CapsuleDirection2D.Vertical, hit);
 #else
-            DebugX.Draw(Inverse(GetColor(WarrningPoint))).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS2D\" define", DebugXTextSettings.WorldSpaceScale.SetSize(22).SetAnchor(TextAnchor.MiddleCenter));
+            DebugX.Draw(GetColor(WarrningPoint).Inverse()).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS2D\" define", DebugXTextSettings.WorldSpaceScale.SetSize(22).SetAnchor(TextAnchor.MiddleCenter));
 #endif
         }
         private Color GetColor(Transform pos1)
         {
-            Vector3 pos = pos1.localPosition;
-            pos /= GradientMultiplier == 0 ? 1 : GradientMultiplier;
-            pos += Vector3.one * 0.5f;
-            float t = pos.x + pos.z;
-            t /= 2f;
-            return Gradient.Evaluate(Mathf.Clamp01(t));
-        }
-        private Color Inverse(Color c)
-        {
-            var a = c.a;
-            c = Color.white - c;
-            c.a = a;
-            return c;
+            return Gradient.Evaluate(pos1, GradientMultiplier);
         }
     }
 }

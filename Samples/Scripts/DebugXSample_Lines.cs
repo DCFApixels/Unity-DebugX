@@ -1,3 +1,4 @@
+using DCFApixels.DebugXCore.Samples.Internal;
 using UnityEngine;
 
 namespace DCFApixels.DebugXCore.Samples
@@ -39,12 +40,7 @@ namespace DCFApixels.DebugXCore.Samples
         }
         private Color GetColor(Transform pos1, Transform pos2)
         {
-            Vector3 pos = (pos1.localPosition + pos2.localPosition) * 0.5f;
-            pos /= GradientMultiplier == 0 ? 1 : GradientMultiplier;
-            pos += Vector3.one * 0.5f;
-            float t = pos.x + pos.y + pos.z;
-            t /= 3f;
-            return Gradient.Evaluate(Mathf.Clamp01(t));
+            return Gradient.Evaluate(pos1, pos2, GradientMultiplier);
         }
     }
 }

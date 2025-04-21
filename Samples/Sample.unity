@@ -622,7 +622,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
-  GradientMultiplier: 2
+  GradientMultiplier: 3
   Points:
   - {fileID: 1728437382}
   - {fileID: 54381892}
@@ -1654,7 +1654,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
-  GradientMultiplier: 2
+  GradientMultiplier: 1.5
   WidthMultiplier: 1
   StartLines:
   - {fileID: 1105319542}
@@ -5579,7 +5579,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
-  GradientMultiplier: 2
+  GradientMultiplier: 3
   Points:
   - {fileID: 1170244042}
   - {fileID: 151432312}
