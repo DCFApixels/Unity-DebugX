@@ -63,10 +63,15 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 # Installation
 Versioning semantics - [Открыть](https://gist.github.com/DCFApixels/e53281d4628b19fe5278f3e77a7da9e8#file-dcfapixels_versioning_ru-md)
 ### Unity-Package
-Supports installation as a Unity module. Copy the Git-URL [into PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html) or into `Packages/manifest.json`. Copy this Git-URL to install the latest working version:
+Supports installation as a Unity module. Copy the Git-URL [into PackageManager](https://docs.unity3d.com/2023.2/Documentation/Manual/upm-ui-giturl.html):
 ```
 https://github.com/DCFApixels/Unity-DebugX.git
 ```
+Alternatively, copy this line into `Packages/manifest.json`:
+```
+"com.dcfa_pixels.debugx": "https://github.com/DCFApixels/Unity-DebugX.git"
+```
+
 ### Source Code
 The Package can also be directly copied into the project folder.
 
