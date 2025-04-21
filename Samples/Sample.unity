@@ -875,6 +875,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2137543453}
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+--- !u!1 &223293503
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 223293504}
+  m_Layer: 0
+  m_Name: Warrning
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &223293504
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223293503}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1.82}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 241950277}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &227658960
 GameObject:
   m_ObjectHideFlags: 0
@@ -975,6 +1006,7 @@ Transform:
   - {fileID: 629058557}
   - {fileID: 1190527457}
   - {fileID: 607411204}
+  - {fileID: 1275004640}
   m_Father: {fileID: 2070085917}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &239565651
@@ -1096,6 +1128,7 @@ Transform:
   - {fileID: 1968074010}
   - {fileID: 1230489027}
   - {fileID: 82819859}
+  - {fileID: 223293504}
   m_Father: {fileID: 700624119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &290054995
@@ -2506,6 +2539,7 @@ MonoBehaviour:
   - {fileID: 1968074010}
   - {fileID: 1230489027}
   - {fileID: 82819859}
+  WarrningPoint: {fileID: 223293504}
 --- !u!4 &700624119
 Transform:
   m_ObjectHideFlags: 0
@@ -3650,6 +3684,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 162132448}
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+--- !u!1 &1275004639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1275004640}
+  m_Layer: 0
+  m_Name: Warrning
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1275004640
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275004639}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.58000004, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 234433271}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1302158462
 GameObject:
   m_ObjectHideFlags: 0
@@ -5727,6 +5792,7 @@ MonoBehaviour:
   - {fileID: 629058557}
   - {fileID: 1190527457}
   - {fileID: 607411204}
+  WarrningPoint: {fileID: 1275004640}
 --- !u!4 &2070085917
 Transform:
   m_ObjectHideFlags: 0

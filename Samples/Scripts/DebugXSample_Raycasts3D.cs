@@ -8,7 +8,7 @@ namespace DCFApixels.DebugXCore.Samples
         public Gradient Gradient;
         public float GradientMultiplier = 5;
         public Transform[] Points;
-
+        public Transform WarrningPoint;
 
 
 #if UNITY_EDITOR
@@ -54,6 +54,8 @@ namespace DCFApixels.DebugXCore.Samples
             Vector3 point2 = ray.origin + point.up * point.localScale.y * RADIUS_M * -0.5f;
             Physics.CapsuleCast(point1, point2, point.localScale.x * RADIUS_M, ray.direction, out hit, float.PositiveInfinity, int.MaxValue, QueryTriggerInteraction.UseGlobal);
             DebugX.Draw(GetColor(point)).CapsuleCast(point1, point2, ray.direction, point.localScale.x * RADIUS_M, hit);
+#else
+            DebugX.Draw(Inverse(GetColor(WarrningPoint))).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS3D\" define", DebugXTextSettings.WorldSpaceScale.SetSize(22).SetAnchor(TextAnchor.MiddleCenter));
 #endif
         }
         private Color GetColor(Transform pos1)
@@ -61,9 +63,16 @@ namespace DCFApixels.DebugXCore.Samples
             Vector3 pos = pos1.localPosition;
             pos /= GradientMultiplier == 0 ? 1 : GradientMultiplier;
             pos += Vector3.one * 0.5f;
-            float t = pos.x + pos.y + pos.z;
-            t /= 3f;
+            float t = pos.x + pos.z;
+            t /= 2f;
             return Gradient.Evaluate(Mathf.Clamp01(t));
+        }
+        private Color Inverse(Color c)
+        {
+            var a = c.a;
+            c = Color.white - c;
+            c.a = a;
+            return c;
         }
     }
 }
