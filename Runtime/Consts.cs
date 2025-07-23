@@ -23,9 +23,11 @@ namespace DCFApixels
         private const string GLOBAL_TIME_SCALE_PREF_NAME = "DCFApixels.DebugX.TimeScale";
         private const string GLOBAL_DOT_SIZE_PREF_NAME = "DCFApixels.DebugX.DotSize";
         private const string GLOBAL_COLOR_PREF_NAME = "DCFApixels.DebugX.Color";
+        private const string GLOBAL_GREATER_PASS_ALPHA_PREF_NAME = "DCFApixels.DebugX.GreaterPassAlpha";
 
         private readonly static int GlobalDotSizePropertyID = Shader.PropertyToID("_DebugX_GlobalDotSize");
         private readonly static int GlobalColorPropertyID = Shader.PropertyToID("_DebugX_GlobalColor");
+        private readonly static int GlobalGreaterPassAlphaPropertyID = Shader.PropertyToID("_DebugX_GlobalGreaterPassAlpha");
         internal readonly static int ColorPropertyID = Shader.PropertyToID("_Color");
 
 

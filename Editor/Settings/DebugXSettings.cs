@@ -55,6 +55,15 @@ namespace DCFApixels.DebugXCore.Internal
             color.a = EditorGUILayout.Slider(DebugX.GlobalColor.a, 0, 1);
             DebugX.GlobalColor = color;
 
+
+            DebugX.GlobalGreaterPassAlpha = EditorGUILayout.FloatField("GreaterPassAlpha", DebugX.GlobalGreaterPassAlpha);
+            EditorGUI.BeginChangeCheck();
+            tmpValue = EditorGUILayout.Slider(DebugX.GlobalGreaterPassAlpha, 0, 2);
+            if (EditorGUI.EndChangeCheck())
+            {
+                DebugX.GlobalGreaterPassAlpha = tmpValue;
+            }
+
             if (GUILayout.Button("Reset"))
             {
                 DebugX.ResetGlobals();

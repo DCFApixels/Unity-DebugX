@@ -67,7 +67,7 @@ Shader "DCFApixels/DebugX/Handles"
         };
 
         float4 _DebugX_GlobalColor;      
-
+        float _DebugX_GlobalGreaterPassAlpha;      
 
         v2f vert (appdata_t v)
         {
@@ -123,7 +123,8 @@ Shader "DCFApixels/DebugX/Handles"
             CGPROGRAM
             half4 frag (v2f i) : SV_Target
             {
-                return i.color * half4(1, 1, 1, 0.1);
+                //return i.color * half4(1, 1, 1, 0.1);
+                return i.color * half4(1, 1, 1, _DebugX_GlobalGreaterPassAlpha);
             }
             ENDCG
         }

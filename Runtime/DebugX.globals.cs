@@ -52,28 +52,48 @@ namespace DCFApixels
 #endif
             }
         }
+        private static float _globalGreaterPassAlphaCache;
+        public static float GlobalGreaterPassAlpha
+        {
+            get { return _globalGreaterPassAlphaCache; }
+            set
+            {
+                if (_globalGreaterPassAlphaCache == value) { return; }
+                _globalGreaterPassAlphaCache = value;
+                Shader.SetGlobalFloat(nameID: GlobalGreaterPassAlphaPropertyID, _globalGreaterPassAlphaCache);
+
+#if UNITY_EDITOR
+                EditorPrefs.SetFloat(GLOBAL_GREATER_PASS_ALPHA_PREF_NAME, _globalGreaterPassAlphaCache);
+#endif
+            }
+        }
         public static void ResetGlobals()
         {
 #if UNITY_EDITOR
             EditorPrefs.DeleteKey(GLOBAL_TIME_SCALE_PREF_NAME);
             EditorPrefs.DeleteKey(GLOBAL_DOT_SIZE_PREF_NAME);
             EditorPrefs.DeleteKey(GLOBAL_COLOR_PREF_NAME);
+            EditorPrefs.DeleteKey(GLOBAL_GREATER_PASS_ALPHA_PREF_NAME);
 #endif
-            _dotSizeCache = default;
             _timeScaleCache = default;
+            _dotSizeCache = default;
             _globalColorCache = default;
+            _globalGreaterPassAlphaCache = default;
             InitGlobals();
         }
         private static void InitGlobals()
         {
-            GlobalTimeScale = 1;
-            GlobalDotSize = 1;
-            GlobalColor = Color.white;
 #if UNITY_EDITOR
             GlobalTimeScale = EditorPrefs.GetFloat(GLOBAL_TIME_SCALE_PREF_NAME, 1f);
             GlobalDotSize = EditorPrefs.GetFloat(GLOBAL_DOT_SIZE_PREF_NAME, 1f);
             var colorCode = EditorPrefs.GetInt(GLOBAL_COLOR_PREF_NAME, -1);
             GlobalColor = (Color)(*(Color32*)&colorCode);
+            GlobalGreaterPassAlpha = EditorPrefs.GetFloat(GLOBAL_GREATER_PASS_ALPHA_PREF_NAME, 0.1f);
+#else
+            GlobalTimeScale = 1;
+            GlobalDotSize = 1;
+            GlobalColor = Color.white;
+            GlobalGreaterPassAlpha = 0.1f;
 #endif
         }
     }
