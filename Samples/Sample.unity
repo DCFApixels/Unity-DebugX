@@ -2542,6 +2542,7 @@ MonoBehaviour:
   - {fileID: 82819859}
   WarrningPoint: {fileID: 223293504}
   RotatedTransform: {fileID: 819845932}
+  RotationSpeed: 30
 --- !u!4 &700624119
 Transform:
   m_ObjectHideFlags: 0
