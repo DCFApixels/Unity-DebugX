@@ -1,4 +1,5 @@
 ﻿using DCFApixels.DebugXCore;
+using DCFApixels.DebugXCore.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -263,24 +264,65 @@ namespace DCFApixels
             }
             #endregion
 
+            #region Line primitives
+            [IN(LINE)]
+            public DrawHandler LineWireBox(Vector3 start, Vector3 end, Quaternion rotation, Vector3 size)
+            {
+                size *= 2f;
+                WidthOutLine(start, end, size.x);
+                WireCube(start, rotation, size);
+                WireCube(end, rotation, size);
+                Setup(Color.SetAlpha(ShadowAlphaMultiplier)).Line(start, end);
+                return this;
+            }
+            [IN(LINE)]
+            public DrawHandler LineWireSphere(Vector3 start, Vector3 end, float radius)
+            {
+                WidthOutLine(start, end, radius * 2f);
+                WireSphere(start, radius);
+                WireSphere(end, radius);
+                Setup(Color.SetAlpha(ShadowAlphaMultiplier)).Line(start, end);
+                return this;
+            }
+            [IN(LINE)]
+            public DrawHandler LineWireCapsule(Vector3 startPoint1, Vector3 startPoint2, Vector3 end, float radius) => LineWireCapsule_Internal(startPoint1, startPoint1, (startPoint1 + startPoint2) * 0.5f, end, radius);
+            [IN(LINE)]
+            private DrawHandler LineWireCapsule_Internal(Vector3 startPoint1, Vector3 startPoint2, Vector3 startCenter, Vector3 end, float radius)
+            {
+                Quaternion rotation = Quaternion.LookRotation(startPoint2 - startPoint1, Vector3.up);
+                rotation = rotation * Quaternion.Euler(90, 0, 0);
+                LineWireCapsule(startCenter, end, rotation, radius, Vector3.Distance(startPoint1, startPoint2) + radius * 2f);
+                return this;
+            }
+            [IN(LINE)]
+            public DrawHandler LineWireCapsule(Vector3 start, Vector3 end, Quaternion rotation, float radius, float height)
+            {
+                WidthOutLine(start, end, radius * 2f);
+                WireCapsule(start, rotation, radius, height);
+                WireCapsule(end, rotation, radius, height);
+                Setup(Color.SetAlpha(ShadowAlphaMultiplier)).Line(start, end);
+                return this;
+            }
+            #endregion
+
 
             #region Ray
-            [IN(LINE)] public DrawHandler Ray(Transform origin, Vector3 localVector) => Ray(origin.position, origin.rotation * localVector);
-            [IN(LINE)] public DrawHandler Ray(Vector3 origin, Quaternion rotation) => Ray(origin, rotation * Vector3.forward);
+            [IN(LINE)] public DrawHandler Ray(Transform transform, Vector3 localVector) => Ray(transform.position, transform.rotation * localVector);
+            [IN(LINE)] public DrawHandler Ray(Vector3 origin, Quaternion direction) => Ray(origin, direction * Vector3.forward);
             [IN(LINE)] public DrawHandler Ray(Ray ray) => Ray(ray.origin, ray.direction);
             [IN(LINE)] public DrawHandler Ray(Vector3 origin, Vector3 direction) => Line(origin, origin + direction);
             #endregion
 
             #region RayFade
-            [IN(LINE)] public DrawHandler RayFade(Transform origin, Vector3 localVector) => RayFade(origin.position, origin.rotation * localVector);
-            [IN(LINE)] public DrawHandler RayFade(Vector3 origin, Quaternion rotation) => RayFade(origin, rotation * Vector3.forward);
+            [IN(LINE)] public DrawHandler RayFade(Transform transform, Vector3 localVector) => RayFade(transform.position, transform.rotation * localVector);
+            [IN(LINE)] public DrawHandler RayFade(Vector3 origin, Quaternion direction) => RayFade(origin, direction * Vector3.forward);
             [IN(LINE)] public DrawHandler RayFade(Ray ray) => RayFade(ray.origin, ray.direction);
             [IN(LINE)] public DrawHandler RayFade(Vector3 origin, Vector3 direction) => LineFade(origin, origin + direction);
             #endregion
 
             #region RayArrow
-            [IN(LINE)] public DrawHandler RayArrow(Transform origin, Vector3 localVector) => RayArrow(origin.position, origin.rotation * localVector);
-            [IN(LINE)] public DrawHandler RayArrow(Vector3 origin, Quaternion rotation) => RayArrow(origin, rotation * Vector3.forward);
+            [IN(LINE)] public DrawHandler RayArrow(Transform transform, Vector3 localVector) => RayArrow(transform.position, transform.rotation * localVector);
+            [IN(LINE)] public DrawHandler RayArrow(Vector3 origin, Quaternion direction) => RayArrow(origin, direction * Vector3.forward);
             [IN(LINE)] public DrawHandler RayArrow(Ray ray) => RayArrow(ray.origin, ray.direction);
             [IN(LINE)] public DrawHandler RayArrow(Vector3 origin, Vector3 direction) => LineArrow(origin, origin + direction);
             #endregion
@@ -295,6 +337,37 @@ namespace DCFApixels
             public DrawHandler Ray(Vector3 origin, Quaternion rotation, DebugXLine startType, DebugXLine endType) => Ray(origin, rotation * Vector3.forward, startType, endType);
             public DrawHandler Ray(Ray ray, DebugXLine startType, DebugXLine endType) => Ray(ray.origin, ray.direction, startType, endType);
             public DrawHandler Ray(Vector3 origin, Vector3 direction, DebugXLine startType, DebugXLine endType) => Line(origin, origin + direction, startType, endType);
+            #endregion
+
+            #region Ray primitives
+            [IN(LINE)] public DrawHandler RayWireBox(Transform transform, Vector3 localVector, Quaternion rotation, Vector3 size) => RayWireBox(transform.position, transform.rotation * localVector, transform.rotation * rotation, transform.lossyScale.Mult(size));
+            [IN(LINE)] public DrawHandler RayWireBox(Vector3 origin, Quaternion direction, Quaternion rotation, Vector3 size) => RayWireBox(origin, direction * Vector3.forward, rotation, size);
+            [IN(LINE)] public DrawHandler RayWireBox(Ray ray, Quaternion rotation, Vector3 size) => RayWireBox(ray.origin, ray.direction, rotation, size);
+            [IN(LINE)] public DrawHandler RayWireBox(Vector3 origin, Vector3 direction, Quaternion rotation, Vector3 size) => LineWireBox(origin, origin + direction, rotation, size);
+
+            [IN(LINE)] public DrawHandler RayWireSphere(Transform transform, Vector3 localVector, float radius) => RayWireSphere(transform.position, transform.rotation * localVector, radius);
+            [IN(LINE)] public DrawHandler RayWireSphere(Vector3 origin, Quaternion direction, float radius) => RayWireSphere(origin, direction * Vector3.forward, radius);
+            [IN(LINE)] public DrawHandler RayWireSphere(Ray ray, float radius) => RayWireSphere(ray.origin, ray.direction, radius);
+            [IN(LINE)] public DrawHandler RayWireSphere(Vector3 origin, Vector3 direction, float radius) => LineWireSphere(origin, origin + direction, radius);
+
+
+            [IN(LINE)] public DrawHandler RayWireCapsule(Vector3 startPoint1, Vector3 startPoint2, Quaternion direction, float radius) => RayWireCapsule(startPoint1, startPoint2, direction * Vector3.forward, radius);
+            [IN(LINE)]
+            public DrawHandler RayWireCapsule(Vector3 startPoint1, Vector3 startPoint2, Vector3 direction, float radius)
+            {
+                var center = (startPoint1 + startPoint2) * 0.5f;
+                return LineWireCapsule_Internal(startPoint1, startPoint1, center, center + direction, radius);
+            }
+
+            [IN(LINE)]
+            public DrawHandler RayWireCapsule(Transform transform, Vector3 localVector, Quaternion rotation, float radius, float height)
+            {
+                var scale = transform.lossyScale;
+                return RayWireCapsule(transform.position, transform.rotation * localVector, transform.rotation * rotation, radius + scale.x, height * scale.y);
+            }
+            [IN(LINE)] public DrawHandler RayWireCapsule(Vector3 origin, Quaternion direction, Quaternion rotation, float radius, float height) => RayWireCapsule(origin, direction * Vector3.forward, rotation, radius, height);
+            [IN(LINE)] public DrawHandler RayWireCapsule(Ray ray, Quaternion rotation, float radius, float height) => RayWireCapsule(ray.origin, ray.direction, rotation, radius, height);
+            [IN(LINE)] public DrawHandler RayWireCapsule(Vector3 origin, Vector3 direction, Quaternion rotation, float radius, float height) => LineWireCapsule(origin, origin + direction, rotation, radius, height);
             #endregion
 
 

@@ -1,9 +1,9 @@
 ﻿using DCFApixels.DebugXCore;
 using System.Runtime.CompilerServices;
-using UnityEngine;
-using UnityEngine.Rendering;
 //#if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.Rendering;
 //#endif
 
 namespace DCFApixels
