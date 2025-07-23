@@ -11,6 +11,8 @@ namespace DCFApixels.DebugXCore.Samples
         public Transform[] Points;
         public Transform WarrningPoint;
 
+        public Transform RotatedTransform;
+        public float RotationSpeed = 30;
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -58,6 +60,11 @@ namespace DCFApixels.DebugXCore.Samples
 #else
             DebugX.Draw(GetColor(WarrningPoint).Inverse()).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS3D\" define", DebugXTextSettings.WorldSpaceScale.SetSize(22).SetAnchor(TextAnchor.MiddleCenter));
 #endif
+
+            if (Application.isPlaying && RotatedTransform)
+            {
+                RotatedTransform.Rotate(new Vector3(0, RotationSpeed * Time.deltaTime, 0));
+            }
         }
         private Color GetColor(Transform pos1)
         {
