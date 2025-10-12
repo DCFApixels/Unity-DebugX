@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using UnityEngine;
 
 namespace DCFApixels
 {

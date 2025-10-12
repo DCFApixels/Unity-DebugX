@@ -1,4 +1,7 @@
-﻿using DCFApixels.DebugXCore.Internal;
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
+using DCFApixels.DebugXCore.Internal;
 using UnityEngine;
 
 namespace DCFApixels

@@ -1,9 +1,14 @@
-﻿using DCFApixels.DebugXCore;
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using DCFApixels.DebugXCore;
 using DCFApixels.DebugXCore.Internal;
 using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 

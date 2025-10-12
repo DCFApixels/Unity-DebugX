@@ -1,7 +1,11 @@
-//#undef DEBUG
-
+#if DISABLE_DEBUG
+#undef DEBUG
+#endif
 #if DEBUG
 #define DEV_MODE
+#endif
+#if UNITY_EDITOR
+using UnityEditor;
 #endif
 using System;
 using DCFApixels.DebugXCore;
@@ -13,9 +17,6 @@ using UnityEngine.PlayerLoop;
 using Unity.Collections.LowLevel.Unsafe;
 using DCFApixels.DebugXCore.Internal;
 using System.Linq;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace DCFApixels
 {

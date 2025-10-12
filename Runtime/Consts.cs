@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -50,6 +53,12 @@ namespace DCFApixels.DebugXCore
 {
     public static class DebugXDefines
     {
+        public const bool DISABLE_DEBUG =
+#if DISABLE_DEBUG
+            true;
+#else
+            false;
+#endif
         public const bool DEBUGX_DISABLE_INBUILD =
 #if DEBUGX_DISABLE_INBUILD
             true;

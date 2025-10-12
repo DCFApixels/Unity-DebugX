@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace DCFApixels

@@ -1,9 +1,12 @@
-﻿using DCFApixels.DebugXCore;
-using UnityEngine;
-using UnityEngine.Rendering;
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using DCFApixels.DebugXCore;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DCFApixels
 {

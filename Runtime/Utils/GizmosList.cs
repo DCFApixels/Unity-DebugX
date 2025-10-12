@@ -1,5 +1,6 @@
-﻿#undef DEBUG
-
+﻿#if DISABLE_DEBUG
+#undef DEBUG
+#endif
 #if DEBUG
 #define DEV_MODE
 #endif
