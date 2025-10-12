@@ -14,6 +14,8 @@ namespace DCFApixels
     {
         public readonly partial struct DrawHandler
         {
+            private static Quaternion _rot_x_90 = Quaternion.Euler(90, 0, 0);
+
             #region BillboardCircle
             [IN(LINE)]
             public DrawHandler BillboardCircle(Vector3 position, float radius)
@@ -300,6 +302,13 @@ namespace DCFApixels
 
 
             #region Capsule
+            public DrawHandler Capsule<TMat>(Vector3 point1, Vector3 point2, float radius)
+                where TMat : struct, IStaticMaterial
+            {
+                //var norm = Vector3.Cross(Vector3.Normalize(point2 - point1), Vector3.up);
+                var norm = Vector3.Normalize(point2 - point1);
+                return Capsule<TMat>((point1 + point2) * 0.5f, Quaternion.LookRotation(norm, Vector3.up) * _rot_x_90, radius, Vector3.Distance(point1, point2));
+            }
             [IN(LINE)]
             public DrawHandler Capsule<TMat>(Vector3 position, Quaternion rotation, float radius, float height)
                 where TMat : struct, IStaticMaterial
@@ -316,6 +325,13 @@ namespace DCFApixels
                 return this;
             }
             [IN(LINE)]
+            public DrawHandler Capsule(Vector3 point1, Vector3 point2, float radius)
+            {
+                //var norm = Vector3.Cross(Vector3.Normalize(point2 - point1), Vector3.up);
+                var norm = Vector3.Normalize(point2 - point1);
+                return Capsule((point1 + point2) * 0.5f, Quaternion.LookRotation(norm, Vector3.up) * _rot_x_90, radius, Vector3.Distance(point1, point2));
+            }
+            [IN(LINE)]
             public DrawHandler Capsule(Vector3 position, Quaternion rotation, float radius, float height)
             {
                 return Capsule<LitMat>(position, rotation, radius, height);
@@ -325,8 +341,9 @@ namespace DCFApixels
             #region WireCapsule
             public DrawHandler WireCapsule(Vector3 point1, Vector3 point2, float radius)
             {
-                //TODO посмотреть поворот
-                return WireCapsule((point1 + point2) * 0.5f, Quaternion.LookRotation(point2 - point1), radius, Vector3.Distance(point1, point2));
+                //var norm = Vector3.Cross(Vector3.Normalize(point2 - point1), Vector3.up);
+                var norm = Vector3.Normalize(point2 - point1);
+                return WireCapsule((point1 + point2) * 0.5f, Quaternion.LookRotation(norm, Vector3.up) * _rot_x_90, radius, Vector3.Distance(point1, point2));
             }
             public DrawHandler WireCapsule(Vector3 position, Quaternion rotation, float radius, float height)
             {

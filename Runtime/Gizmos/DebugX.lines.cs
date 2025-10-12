@@ -292,8 +292,7 @@ namespace DCFApixels
             [IN(LINE)]
             private DrawHandler LineWireCapsule_Internal(Vector3 startPoint1, Vector3 startPoint2, Vector3 startCenter, Vector3 end, float radius)
             {
-                Quaternion rotation = Quaternion.LookRotation(startPoint2 - startPoint1, Vector3.up);
-                rotation = rotation * Quaternion.Euler(90, 0, 0);
+                Quaternion rotation = Quaternion.LookRotation(startPoint2 - startPoint1, Vector3.up) * _rot_x_90;
                 LineWireCapsule(startCenter, end, rotation, radius, Vector3.Distance(startPoint1, startPoint2) + radius * 2f);
                 return this;
             }

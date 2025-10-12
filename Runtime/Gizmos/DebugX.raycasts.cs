@@ -100,8 +100,7 @@ namespace DCFApixels
             public DrawHandler CapsuleCast(Vector3 point1, Vector3 point2, Vector3 direction, float radius, RaycastHit hit)
             {
                 Vector3 center = (point1 + point2) * 0.5f;
-                Quaternion rotation = Quaternion.LookRotation(point2 - point1, Vector3.up);
-                rotation = rotation * Quaternion.Euler(90, 0, 0);
+                Quaternion rotation = Quaternion.LookRotation(point2 - point1, Vector3.up) * _rot_x_90;
                 CapsuleCast(center, direction, rotation, radius, Vector3.Distance(point1, point2) + radius * 2f, hit);
                 return this;
             }
