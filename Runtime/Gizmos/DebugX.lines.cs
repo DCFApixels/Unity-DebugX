@@ -201,7 +201,7 @@ namespace DCFApixels
                 const float MinDistance = 2.5f;
                 Vector3 direction = end - start;
 
-                float distance = DebugXUtility.FastSqrt(direction.sqrMagnitude);
+                float distance = direction.magnitude;
                 Quaternion rotation = direction == default ? Quaternion.identity : Quaternion.LookRotation(direction);
 
                 var arrowSize = 0.5f;

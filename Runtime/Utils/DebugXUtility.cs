@@ -92,29 +92,6 @@ namespace DCFApixels.DebugXCore
             return isFull ? type.FullName : type.Name;
 #endif
         }
-
-        [IN(LINE)]
-        public static float FastMagnitude(Vector3 v)
-        {
-            return FastSqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-        }
-        [IN(LINE)]
-        public static unsafe float FastSqrt(float number)
-        {
-            long i;
-            float x2, y;
-            const float threehalfs = 1.5F;
-
-            x2 = number * 0.5F;
-            y = number;
-            i = *(long*)&y;                         // evil floating point bit level hacking
-            i = 0x5f3759df - (i >> 1);              // what the fuck?
-            y = *(float*)&i;
-            y = y * (threehalfs - (x2 * y * y));    // 1st iteration
-            //y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
-
-            return 1 / y;
-        }
         [IN(LINE)]
         public static int NextPow2(int v)
         {

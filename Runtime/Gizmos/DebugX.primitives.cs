@@ -111,7 +111,7 @@ namespace DCFApixels
                                 float x = sqrRadius * sqrRadius / sqrMagnitude;
                                 if (x / sqrRadius < 1f)
                                 {
-                                    float resultSize = DebugXUtility.FastSqrt(sqrRadius - x);
+                                    float resultSize = Mathf.Sqrt(sqrRadius - x);
 
                                     _buffer[i] = new Gizmo<InstancingMeshGizmoLayout>(
                                         new InstancingMeshGizmoLayout(
