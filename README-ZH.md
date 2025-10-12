@@ -61,6 +61,8 @@ DebugX.Draw(duration, color).*Gizmo Function*(...);
 - [API Extension](#API-Extension)
 - [Loading Static Assets](#Loading-Static-Assets)
 - [Define Symbols](#define-symbols)
+- [Projects Using DebugX](#Projects-Using-DebugX)
+- [License](#-license)
 
 <br>
 
@@ -260,3 +262,51 @@ All Define Symbols can be changed in the settings window
 + `DEBUGX_DISABLE_INBUILD` - By default, Gizmos will be drawn in the project build. This define disables drawing.
 + `DEBUGX_ENABLE_PHYSICS2D` - Enable Physics2D Gizmos.
 + `DEBUGX_ENABLE_PHYSICS3D` - Enable Physics3D Gizmos.
+
+
+<br>
+
+# Projects Using DebugX
+
+<table>
+  <tr></tr>
+  <tr>
+    <td align="center">
+      <a href="https://avastrad.itch.io/clear-and-move">
+        Clear And Move
+        <img src="https://github.com/user-attachments/assets/9292c220-fc16-4709-b978-02099b5f95a5">
+      </a> 
+    </td>
+    <td align="center">
+      <a href="https://play.google.com/store/apps/details?id=com.ZlodeyStudios.OrdersMatter">
+        Order matters
+        <img src="https://github.com/user-attachments/assets/c55b2647-9b6e-4145-98ff-c3d094600fa1">
+      </a> 
+    </td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align="center">
+      <a href="https://dcfapixels.github.io/Project8.html">
+        Crystal Siege
+        <img src="https://github.com/user-attachments/assets/1aa60a50-2668-4919-aca9-d6d2b980c3dd">
+      </a> 
+    </td>
+    <td align="center">
+      <span>
+        ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+        <img tabindex="-1" src="https://github.com/user-attachments/assets/3fa1ca6d-29f6-43e6-aafe-cc9648d20490" alt="screenshot">
+      </span> 
+    </td>
+  </tr>
+</table>
+
+
+# License
+
+The MIT License: [https://raw.githubusercontent.com/DCFApixels/Unity-DebugX/refs/heads/main/LICENSE.md](https://raw.githubusercontent.com/DCFApixels/Unity-DebugX/refs/heads/main/LICENSE.md)
+
+</br>
+</br>
+</br>
+</br>

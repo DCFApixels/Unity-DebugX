@@ -264,6 +264,8 @@ All Define Symbols can be changed in the settings window
 + `DEBUGX_ENABLE_PHYSICS2D` - Enable Physics2D Gizmos.
 + `DEBUGX_ENABLE_PHYSICS3D` - Enable Physics3D Gizmos.
 
+<br>
+
 # Projects Using DebugX
 
 <table>
