@@ -58,7 +58,7 @@ namespace DCFApixels.DebugXCore.Internal
 
             DebugX.GlobalGreaterPassAlpha = EditorGUILayout.FloatField("GreaterPassAlpha", DebugX.GlobalGreaterPassAlpha);
             EditorGUI.BeginChangeCheck();
-            tmpValue = EditorGUILayout.Slider(DebugX.GlobalGreaterPassAlpha, 0, 2);
+            tmpValue = EditorGUILayout.Slider(DebugX.GlobalGreaterPassAlpha, 0, 1);
             if (EditorGUI.EndChangeCheck())
             {
                 DebugX.GlobalGreaterPassAlpha = tmpValue;
