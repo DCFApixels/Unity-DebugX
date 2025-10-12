@@ -19,7 +19,14 @@ namespace DCFApixels
         public TextGizmo(Vector3 position, object text, DebugXTextSettings settings)
         {
             Position = position;
-            Text = text.ToString();
+            if(text == null)
+            {
+                Text = "";
+            }
+            else
+            {
+                Text = text.ToString();
+            }
             Settings = settings;
         }
 
