@@ -56,7 +56,7 @@ namespace DCFApixels.DebugXCore.Samples
             hit = Physics2D.CapsuleCast(ray.origin, point.localScale, CapsuleDirection2D.Vertical, point.eulerAngles.z, ray.direction, float.PositiveInfinity, int.MaxValue);
             DebugX.Draw(GetColor(point)).CapsuleCast2D(ray, point.eulerAngles.z, point.localScale, CapsuleDirection2D.Vertical, hit);
 #else
-            DebugX.Draw(GetColor(WarrningPoint).Inverse()).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS2D\" define", DebugXTextSettings.WorldSpaceScale.SetSize(22).SetAnchor(TextAnchor.MiddleCenter));
+            DebugX.Draw(GetColor(WarrningPoint).Inverse()).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS2D\" define", DebugXTextSettings.WorldSpace.SetSize(22).SetAnchor(TextAnchor.MiddleCenter));
 #endif
 
             if (Application.isPlaying && RotatedTransform)

@@ -16,7 +16,7 @@ namespace DCFApixels
         private static bool _singleWarningToggle = true;
 #endif
         [IN(LINE)]
-        public static DrawHandler Text(this DrawHandler h, Vector3 position, object text) => h.Text(position, text, DebugXTextSettings.Default);
+        public static DrawHandler Text(this DrawHandler h, Vector3 position, object text) => h.Text(position, text, DebugXTextSettings.ScreenSpace);
         [IN(LINE)]
         public static DrawHandler Text(this DrawHandler h, Vector3 position, object text, DebugXTextSettings settings)
         {

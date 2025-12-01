@@ -58,7 +58,7 @@ namespace DCFApixels.DebugXCore.Samples
             Physics.CapsuleCast(point1, point2, point.localScale.x * RADIUS_M, ray.direction, out hit, float.PositiveInfinity, int.MaxValue, QueryTriggerInteraction.UseGlobal);
             DebugX.Draw(GetColor(point)).CapsuleCast(point1, point2, ray.direction, point.localScale.x * RADIUS_M, hit);
 #else
-            DebugX.Draw(GetColor(WarrningPoint).Inverse()).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS3D\" define", DebugXTextSettings.WorldSpaceScale.SetSize(22).SetAnchor(TextAnchor.MiddleCenter));
+            DebugX.Draw(GetColor(WarrningPoint).Inverse()).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS3D\" define", DebugXTextSettings.WorldSpace.SetSize(22).SetAnchor(TextAnchor.MiddleCenter));
 #endif
 
             if (Application.isPlaying && RotatedTransform)

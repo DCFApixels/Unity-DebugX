@@ -77,7 +77,7 @@ namespace DCFApixels
                     GUIStyle style = _labelStyle;
 
                     var zoom = GetCameraZoom(camera, item.Value.Position);
-                    float fontSize = Mathf.Lerp(item.Value.Settings.FontSize, item.Value.Settings.FontSize / zoom, item.Value.Settings.WorldSpaceScaleFactor);
+                    float fontSize = Mathf.Lerp(item.Value.Settings.FontSize, item.Value.Settings.FontSize / zoom, item.Value.Settings.WorldSpaceBlendMultiplier);
                     style.fontSize = Mathf.Max(1, Mathf.FloorToInt(fontSize));
 
                     style.alignment = item.Value.Settings.TextAnchor;
