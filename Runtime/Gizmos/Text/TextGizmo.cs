@@ -47,7 +47,7 @@ namespace DCFApixels
             public void Render(Camera camera, GizmosList<TextGizmo> list, CommandBuffer cb) { }
             public void PostRender(Camera camera, GizmosList<TextGizmo> list)
             {
-                if (camera == null) { return; }
+                if (camera == null || Event.current == null) { return; }
                 if (Event.current.type != EventType.Repaint) { return; }
                 Color dfColor = GUI.color;
                 InitStatic();
