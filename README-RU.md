@@ -171,7 +171,7 @@ public static class SomeGizmoExtensions
         // Рисуем линию.
         self.Line(start, end);
         // Рисуем текст посреди линии который показывает длину линии.
-        self.Text(Vector3.Lerp(start, end, 0.5f), Vector3.Distance(start, end), DebugXTextSettings.Default.SetAnchor(TextAnchor.UpperCenter));
+        self.Text(Vector3.Lerp(start, end, 0.5f), Vector3.Distance(start, end), DebugXTextSettings.ScreenSpace.SetAnchor(TextAnchor.UpperCenter));
         // для поддержки Method Chaining синтаксиса.
         return self;
     }
