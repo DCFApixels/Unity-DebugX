@@ -32,22 +32,23 @@ namespace DCFApixels.DebugXCore.Internal
         private void OnGUI()
         {
             _pos = GUILayout.BeginScrollView(_pos, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
-            float tmpValue;
+            float tmpFloat;
+            int tmpInt;
 
             DebugX.GlobalTimeScale = EditorGUILayout.FloatField("TimeScale", DebugX.GlobalTimeScale);
             EditorGUI.BeginChangeCheck();
-            tmpValue = EditorGUILayout.Slider(DebugX.GlobalTimeScale, 0, 2);
+            tmpFloat = EditorGUILayout.Slider(DebugX.GlobalTimeScale, 0, 2);
             if (EditorGUI.EndChangeCheck())
             {
-                DebugX.GlobalTimeScale = tmpValue;
+                DebugX.GlobalTimeScale = tmpFloat;
             }
 
             DebugX.GlobalDotSize = EditorGUILayout.FloatField("DotSize", DebugX.GlobalDotSize);
             EditorGUI.BeginChangeCheck();
-            tmpValue = EditorGUILayout.Slider(DebugX.GlobalDotSize, 0, 2);
+            tmpFloat = EditorGUILayout.Slider(DebugX.GlobalDotSize, 0, 2);
             if (EditorGUI.EndChangeCheck())
             {
-                DebugX.GlobalDotSize = tmpValue;
+                DebugX.GlobalDotSize = tmpFloat;
             }
 
             DebugX.GlobalColor = EditorGUILayout.ColorField("Color", DebugX.GlobalColor);
@@ -58,11 +59,15 @@ namespace DCFApixels.DebugXCore.Internal
 
             DebugX.GlobalGreaterPassAlpha = EditorGUILayout.FloatField("GreaterPassAlpha", DebugX.GlobalGreaterPassAlpha);
             EditorGUI.BeginChangeCheck();
-            tmpValue = EditorGUILayout.Slider(DebugX.GlobalGreaterPassAlpha, 0, 1);
+            tmpFloat = EditorGUILayout.Slider(DebugX.GlobalGreaterPassAlpha, 0, 1);
             if (EditorGUI.EndChangeCheck())
             {
-                DebugX.GlobalGreaterPassAlpha = tmpValue;
+                DebugX.GlobalGreaterPassAlpha = tmpFloat;
             }
+
+            DebugX.AvailablePoolMemory = EditorGUILayout.IntField("AvailablePoolMemory (kb)", DebugX.AvailablePoolMemory);
+            EditorGUI.BeginChangeCheck();
+
 
             if (GUILayout.Button("Reset"))
             {

@@ -17,6 +17,8 @@ using UnityEngine.PlayerLoop;
 using Unity.Collections.LowLevel.Unsafe;
 using DCFApixels.DebugXCore.Internal;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DCFApixels
 {
@@ -661,6 +663,18 @@ namespace DCFApixels
         }
         private class GizmosBuffer<T> : GizmosBuffer where T : IGizmo<T>
         {
+            private static int _lastAvailablePoolMemory;
+            private static int _bufferMaxSize;
+            private static readonly int _elementSize = RuntimeHelpers.IsReferenceOrContainsReferences<T>() ? sizeof(IntPtr) : Marshal.SizeOf<T>();
+            private static void CheckAvailablePoolMemory()
+            {
+                if(_lastAvailablePoolMemory == DebugX.AvailablePoolMemory)
+                {
+                    return;
+                }
+                _bufferMaxSize = _lastAvailablePoolMemory / _elementSize * 1024;
+                _lastAvailablePoolMemory = DebugX.AvailablePoolMemory;
+            }
             private class DummyRenderer : IGizmoRenderer<T>
             {
                 public int ExecuteOrder { get { return 0; } }
@@ -714,17 +728,24 @@ namespace DCFApixels
             [IN(LINE)]
             public void Add(T value, float time, Color color)
             {
+                CheckAvailablePoolMemory();
+                if ((_gizmos.Count + 1) >= _bufferMaxSize) { return; }
+
                 _gizmos.Add(new GizmoInternal<T>(value, time, color));
             }
             [IN(LINE)]
             public void AddRange(ReadOnlySpan<T> values, float time, Color color)
             {
+                CheckAvailablePoolMemory();
+                if ((_gizmos.Count + values.Length) >= _bufferMaxSize) { return; }
+
                 _gizmos.UpSize(_gizmos._count + values.Length);
                 for (int i = 0; i < values.Length; i++)
                 {
                     _gizmos.Add(new GizmoInternal<T>(values[i], time, color));
                 }
             }
+            
 
             public sealed override int UpdateTimer(float deltaTime)
             {
