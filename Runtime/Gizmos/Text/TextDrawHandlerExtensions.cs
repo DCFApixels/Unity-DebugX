@@ -29,7 +29,7 @@ namespace DCFApixels
                     _singleWarningToggle = false;
                 }
 #endif
-                settings = settings.SetSize(DebugXTextSettings.DEFAULT_FONT_SIZE);
+                settings = settings.Size(DebugXTextSettings.DEFAULT_FONT_SIZE);
             }
             return h.Gizmo(new TextGizmo(position, text, settings));
         }

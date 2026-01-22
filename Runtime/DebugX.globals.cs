@@ -70,6 +70,20 @@ namespace DCFApixels
 #endif
             }
         }
+        private static int _availablePoolMemory; //KB
+        public static int AvailablePoolMemory
+        {
+            get { return _availablePoolMemory; }
+            set
+            {
+                value = Mathf.Max(0, value);
+                if (_availablePoolMemory == value) { return; }
+                _availablePoolMemory = value;
+#if UNITY_EDITOR
+                EditorPrefs.SetInt(GLOBAL_AVAILABLE_POOL_MEMORY_PREF_NAME, value);
+#endif
+            }
+        }
         public static void ResetGlobals()
         {
 #if UNITY_EDITOR
@@ -77,6 +91,7 @@ namespace DCFApixels
             EditorPrefs.DeleteKey(GLOBAL_DOT_SIZE_PREF_NAME);
             EditorPrefs.DeleteKey(GLOBAL_COLOR_PREF_NAME);
             EditorPrefs.DeleteKey(GLOBAL_GREATER_PASS_ALPHA_PREF_NAME);
+            EditorPrefs.DeleteKey(GLOBAL_AVAILABLE_POOL_MEMORY_PREF_NAME);
 #endif
             _timeScaleCache = default;
             _dotSizeCache = default;
@@ -92,11 +107,13 @@ namespace DCFApixels
             var colorCode = EditorPrefs.GetInt(GLOBAL_COLOR_PREF_NAME, -1);
             GlobalColor = (Color)(*(Color32*)&colorCode);
             GlobalGreaterPassAlpha = EditorPrefs.GetFloat(GLOBAL_GREATER_PASS_ALPHA_PREF_NAME, 0.1f);
+            AvailablePoolMemory = EditorPrefs.GetInt(GLOBAL_AVAILABLE_POOL_MEMORY_PREF_NAME, 524288);
 #else
             GlobalTimeScale = 1;
             GlobalDotSize = 1;
             GlobalColor = Color.white;
             GlobalGreaterPassAlpha = 0.1f;
+            AvailablePoolMemory = 524288;
 #endif
         }
     }
