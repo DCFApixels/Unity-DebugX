@@ -668,11 +668,18 @@ namespace DCFApixels
             private static readonly int _elementSize = RuntimeHelpers.IsReferenceOrContainsReferences<T>() ? sizeof(IntPtr) : Marshal.SizeOf<T>();
             private static void CheckAvailablePoolMemory()
             {
-                if(_lastAvailablePoolMemory == DebugX.AvailablePoolMemory)
+                if(_bufferMaxSize != 0 && _lastAvailablePoolMemory == DebugX.AvailablePoolMemory)
                 {
                     return;
                 }
-                _bufferMaxSize = _lastAvailablePoolMemory / _elementSize * 1024;
+                if(DebugX.AvailablePoolMemory < _elementSize * 10)
+                {
+                    _bufferMaxSize = DebugX.AvailablePoolMemory * 1024 / _elementSize;
+                }
+                else
+                {
+                    _bufferMaxSize = DebugX.AvailablePoolMemory / _elementSize * 1024;
+                }
                 _lastAvailablePoolMemory = DebugX.AvailablePoolMemory;
             }
             private class DummyRenderer : IGizmoRenderer<T>
