@@ -1,8 +1,4 @@
 ﻿#undef DEBUG
-
-#if DEBUG
-#define DEV_MODE
-#endif
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -13,10 +9,6 @@ using static DCFApixels.DebugX;
 namespace DCFApixels.DebugXCore.Internal
 {
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
-    internal interface IStructListElement<T>
-    {
-        void OnSwap(ref T element);
-    }
     [System.Diagnostics.DebuggerDisplay("Count: {Count}")]
     internal struct StructList
     {
@@ -42,11 +34,6 @@ namespace DCFApixels.DebugXCore.Internal
     [System.Diagnostics.DebuggerDisplay("Count: {Count}")]
     internal struct StructList<T> : IDisposable
     {
-        //private struct Dummy : IStructListElement<T>
-        //{
-        //    public void OnSwap(ref T element) { }
-        //}
-        //private static IStructListElement<T> _internal = default(T) as IStructListElement<T> ?? default(Dummy);
         internal T[] _items;
         internal int _count;
         internal readonly bool _isUseArrayPool;
@@ -76,7 +63,7 @@ namespace DCFApixels.DebugXCore.Internal
             [IN(LINE)]
             get
             {
-#if DEV_MODE
+#if DEBUG
                     if (index < 0 || index >= _count) { new ArgumentOutOfRangeException(); }
 #endif
                 return _items[index];
@@ -84,7 +71,7 @@ namespace DCFApixels.DebugXCore.Internal
             [IN(LINE)]
             set
             {
-#if DEV_MODE
+#if DEBUG
                     if (index < 0 || index >= _count) { new ArgumentOutOfRangeException(); }
 #endif
                 _items[index] = value;
@@ -117,7 +104,6 @@ namespace DCFApixels.DebugXCore.Internal
         public void Add(T item)
         {
             UpSize(_count + 1);
-            //_internal.OnSwap(ref item);
             _items[_count++] = item;
         }
         [IN(LINE)]
@@ -126,7 +112,6 @@ namespace DCFApixels.DebugXCore.Internal
             UpSize(_count + items.Length);
             for (int i = 0; i < items.Length; i++)
             {
-                //_internal.OnSwap(ref item);
                 _items[_count++] = items[i];
             }
         }
@@ -161,38 +146,33 @@ namespace DCFApixels.DebugXCore.Internal
             T tmp = _items[idnex1];
             _items[idnex1] = _items[idnex2];
             _items[idnex2] = tmp;
-            //_internal.OnSwap(ref _items[idnex1]);
-            //_internal.OnSwap(ref _items[idnex2]);
         }
         [IN(LINE)]
         public void FastRemoveAt(int index)
         {
-#if DEV_MODE
+#if DEBUG
                 if (index < 0 || index >= _count) { new ArgumentOutOfRangeException(); }
 #endif
             _items[index] = _items[--_count];
-            //_internal.OnSwap(ref _items[index]);
         }
         [IN(LINE)]
         public void RemoveAt(int index)
         {
-#if DEV_MODE
+#if DEBUG
                 if (index < 0 || index >= _count) { new ArgumentOutOfRangeException(); }
 #endif
             _items[index] = _items[--_count];
-            //_internal.OnSwap(ref _items[index]);
             _items[_count] = default;
         }
         [IN(LINE)]
         public void RemoveAtWithOrder(int index)
         {
-#if DEV_MODE
+#if DEBUG
                 if (index < 0 || index >= _count) { new ArgumentOutOfRangeException(); }
 #endif
             for (int i = index; i < _count; i++)
             {
                 _items[i] = _items[i + 1];
-                //_internal.OnSwap(ref _items[i]);
             }
         }
         [IN(LINE)]

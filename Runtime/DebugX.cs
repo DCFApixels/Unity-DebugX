@@ -1,8 +1,6 @@
-#if DISABLE_DEBUG
+#if DISABLE_DEBUGX
 #undef DEBUG
-#endif
-#if DEBUG
-#define DEV_MODE
+#undef UNITY_EDITOR
 #endif
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,9 +14,9 @@ using UnityEngine.LowLevel;
 using UnityEngine.PlayerLoop;
 using Unity.Collections.LowLevel.Unsafe;
 using DCFApixels.DebugXCore.Internal;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Buffers;
 
 namespace DCFApixels
 {
@@ -46,19 +44,26 @@ namespace DCFApixels
         {
             var invocationList = eventToClean.GetInvocationList();
 
-            var validDelegates = invocationList
-                .Where(d => d.Target as UnityEngine.Object == null || d.Target as UnityEngine.Object != null)
-                .Where(d => !(d.Target is UnityEngine.Object targetObj) || targetObj != null)
-                .ToArray();
+            var buffer = ArrayPool<Delegate>.Shared.Rent(invocationList.Length);
+            var bufferCount = 0;
+            foreach (var invocation in invocationList)
+            {
+                if(!(invocation.Target is UnityEngine.Object targetObj) || targetObj != null)
+                {
+                    buffer[bufferCount++] = invocation;
+                } 
+            }
 
-            if (validDelegates.Length != invocationList.Length)
+            if (bufferCount != invocationList.Length)
             {
                 eventToClean = null;
-                foreach (var delegateItem in validDelegates)
+                for (int i = 0; i < bufferCount; i++)
                 {
-                    eventToClean += (OnDrawGizmoHandler)delegateItem;
+                    eventToClean += (OnDrawGizmoHandler)buffer[i];
                 }
             }
+
+            ArrayPool<Delegate>.Shared.Return(buffer);
         }
 
         internal static void CleanupOnDrawGizmo()
@@ -85,7 +90,7 @@ namespace DCFApixels
         private static ulong _timeTicks = 0;
 
 #if UNITY_EDITOR
-        private static readonly Unity.Profiling.ProfilerMarker _onDrawGizmoCalllback = new Unity.Profiling.ProfilerMarker($"{nameof(DebugX)}.{nameof(DebugXEvents.OnDrawGizmo)}");
+        private static readonly Unity.Profiling.ProfilerMarker _onDrawGizmoCallback = new Unity.Profiling.ProfilerMarker($"{nameof(DebugX)}.{nameof(DebugXEvents.OnDrawGizmo)}");
 #endif
 
         public static ulong RenderTicks
@@ -121,6 +126,7 @@ namespace DCFApixels
         #region ctor
         static DebugX()
         {
+#if UNITY_EDITOR || !DEBUGX_DISABLE_INBUILD
             InitGlobals();
 
             if (IsSRP)
@@ -166,7 +172,7 @@ namespace DCFApixels
 
             //Application.onBeforeRender -= Application_onBeforeRender;
             //Application.onBeforeRender += Application_onBeforeRender;
-
+#endif
 
 #if UNITY_EDITOR
             EditorApplication.pauseStateChanged -= EditorApplication_pauseStateChanged;
@@ -371,7 +377,7 @@ namespace DCFApixels
             if (DebugXUtility.IsGizmosRender())
             {
 #if UNITY_EDITOR
-                using (_onDrawGizmoCalllback.Auto())
+                using (_onDrawGizmoCallback.Auto())
 #endif
                 {
                     DebugXEvents.InvokeOnDrawGizmo(camera);
@@ -702,7 +708,7 @@ namespace DCFApixels
             private readonly IGizmoRenderer_PostRender<T> _rendererUnityGizmos;
             private readonly bool _isStatic;
 
-#if DEV_MODE
+#if DEBUG
             private static readonly Unity.Profiling.ProfilerMarker _timerMarker = new Unity.Profiling.ProfilerMarker($"{DebugXUtility.GetGenericTypeName(typeof(T), 3, false)}.{nameof(UpdateTimer)}");
             private static readonly Unity.Profiling.ProfilerMarker _prepareMarker = new Unity.Profiling.ProfilerMarker($"{DebugXUtility.GetGenericTypeName(typeof(T), 3, false)}.{nameof(Prepare)}");
             private static readonly Unity.Profiling.ProfilerMarker _renderMarker = new Unity.Profiling.ProfilerMarker($"{DebugXUtility.GetGenericTypeName(typeof(T), 3, false)}.{nameof(Render)}");
@@ -758,7 +764,7 @@ namespace DCFApixels
             {
                 _staticCommandBuffer.Clear();
                 int removeCount = 0;
-#if DEV_MODE
+#if DEBUG
                 using (_timerMarker.Auto())
 #endif
                 {
@@ -781,7 +787,7 @@ namespace DCFApixels
             public sealed override int RunEnd()
             {
                 int removeCount = 0;
-#if DEV_MODE
+#if DEBUG
                 using (_timerMarker.Auto())
 #endif
                 {
@@ -814,7 +820,7 @@ namespace DCFApixels
             public override void Prepare()
             {
                 if (_gizmos.Count <= 0) { return; }
-#if DEV_MODE
+#if DEBUG
                 using (_prepareMarker.Auto())
 #endif
                 {
@@ -834,7 +840,7 @@ namespace DCFApixels
             public override void Render(ICommandBufferExecutor cbExecutor)
             {
                 if (_gizmos.Count <= 0) { return; }
-#if DEV_MODE
+#if DEBUG
                 using (_renderMarker.Auto())
 #endif
                 {
@@ -857,7 +863,7 @@ namespace DCFApixels
                 if (_rendererUnityGizmos == null) { return; }
                 //Debug.Log(_gizmos._count);
                 if (_gizmos.Count <= 0) { return; }
-#if DEV_MODE
+#if DEBUG
                 using (_renderMarker.Auto())
 #endif
                 {

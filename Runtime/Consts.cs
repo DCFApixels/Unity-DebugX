@@ -1,5 +1,6 @@
-﻿#if DISABLE_DEBUG
+﻿#if DISABLE_DEBUGX
 #undef DEBUG
+#undef UNITY_EDITOR
 #endif
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -54,8 +55,8 @@ namespace DCFApixels.DebugXCore
 {
     public static class DebugXDefines
     {
-        public const bool DISABLE_DEBUG =
-#if DISABLE_DEBUG
+        public const bool DISABLE_DEBUGX =
+#if DISABLE_DEBUGX
             true;
 #else
             false;
@@ -80,3 +81,24 @@ namespace DCFApixels.DebugXCore
 #endif
     }
 }
+
+
+
+
+// Example of DefineConstsType
+// public static class SomeDefineConstsType
+// {
+//     public const bool SOME_DEFINE_1 =
+// #if SOME_DEFINE_1
+//         true;
+// #else
+//         false;
+// #endif
+//     public const bool SOME_DEFINE_2 =
+// #if SOME_DEFINE_2
+//         true;
+// #else
+//         false;
+// #endif
+//     // ...
+// }

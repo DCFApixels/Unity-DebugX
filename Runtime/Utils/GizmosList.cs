@@ -1,8 +1,6 @@
-﻿#if DISABLE_DEBUG
+﻿#if DISABLE_DEBUGX
 #undef DEBUG
-#endif
-#if DEBUG
-#define DEV_MODE
+#undef UNITY_EDITOR
 #endif
 using System;
 using System.Diagnostics;

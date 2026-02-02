@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿#pragma warning disable CS0162 // Обнаружен недостижимый код
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
@@ -12,28 +13,26 @@ namespace DCFApixels.DebugXCore.Internal
         {
             DebugXSettings window = (DebugXSettings)EditorWindow.GetWindow(typeof(DebugXSettings));
             window.Show();
-            //window._isHasDisableDebugXInBuildSymbols = null;
             CompilationPipeline.compilationFinished -= CompilationPipeline_compilationFinished;
             CompilationPipeline.compilationFinished += CompilationPipeline_compilationFinished;
         }
 
         private static void CompilationPipeline_compilationFinished(object obj)
         {
-            //_isCompilation = false;
             _defines = null;
         }
 
-        //private static bool _isCompilation;
-        //private bool? _isHasDisableDebugXInBuildSymbols = false;
-        //private const string DEFINE_NAME = nameof(DebugXDefines.DEBUGX_DISABLE_INBUILD);
         private static (string name, bool flag)[] _defines = null;
         private static Vector2 _pos;
 
         private void OnGUI()
         {
+            if (DebugXDefines.DISABLE_DEBUGX)
+            {
+                GUI.enabled = false;
+            }
             _pos = GUILayout.BeginScrollView(_pos, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
             float tmpFloat;
-            int tmpInt;
 
             DebugX.GlobalTimeScale = EditorGUILayout.FloatField("TimeScale", DebugX.GlobalTimeScale);
             EditorGUI.BeginChangeCheck();
@@ -77,7 +76,10 @@ namespace DCFApixels.DebugXCore.Internal
             {
                 DebugX.ClearAllGizmos();
             }
-
+            if (DebugXDefines.DISABLE_DEBUGX)
+            {
+                GUI.enabled = true;
+            }
             GUILayout.Space(4);
 
             GUILayout.BeginVertical(EditorStyles.helpBox);

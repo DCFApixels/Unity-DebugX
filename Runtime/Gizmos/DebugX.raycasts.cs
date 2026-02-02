@@ -1,5 +1,6 @@
-﻿#if DISABLE_DEBUG
+﻿#if DISABLE_DEBUGX
 #undef DEBUG
+#undef UNITY_EDITOR
 #endif
 using DCFApixels.DebugXCore.Internal;
 using UnityEngine;
