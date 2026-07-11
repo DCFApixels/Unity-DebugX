@@ -143,7 +143,7 @@ namespace DCFApixels
             public DrawHandler Circle<TMat>(Vector3 position, Vector3 normal, float radius)
                 where TMat : struct, IStaticMaterial
             {
-                return Mesh<CircleMesh, TMat>(position, Quaternion.LookRotation(normal.CheckNormalOrDefault()), new Vector3(radius, radius, radius));
+                return Mesh<CircleMesh, TMat>(position, Quaternion.LookRotation(normal.SafeNormalized()), new Vector3(radius, radius, radius));
             }
             [IN(LINE)]
             public DrawHandler Circle<TMat>(Vector3 position, Quaternion rotation, float radius)
@@ -154,7 +154,7 @@ namespace DCFApixels
             [IN(LINE)]
             public DrawHandler Circle(Vector3 position, Vector3 normal, float radius)
             {
-                return Mesh<CircleMesh>(position, Quaternion.LookRotation(normal.CheckNormalOrDefault()), new Vector3(radius, radius, radius));
+                return Mesh<CircleMesh>(position, Quaternion.LookRotation(normal.SafeNormalized()), new Vector3(radius, radius, radius));
             }
             [IN(LINE)]
             public DrawHandler Circle(Vector3 position, Quaternion rotation, float radius)
@@ -600,13 +600,23 @@ namespace DCFApixels
             {
                 return Mesh<QuadMesh>(position, rotation, new Vector3(size.x, size.y, 1f));
             }
+            [IN(LINE)]
+            public DrawHandler Quad(Vector3 position, Vector3 normal, float angleDeg, float size)
+            {
+                return Mesh<QuadMesh>(position, Quaternion.AngleAxis(angleDeg, normal), new Vector3(size, size, 1f));
+            }
+            [IN(LINE)]
+            public DrawHandler Quad(Vector3 position, Vector3 normal, float angleDeg, Vector2 size)
+            {
+                return Mesh<QuadMesh>(position, Quaternion.AngleAxis(angleDeg, normal), new Vector3(size.x, size.y, 1f));
+            }
             #endregion
 
             #region WireQuad
-            //[IN(LINE)] public DrawHandler WireQuad(Vector3 position, Vector3 normal, float size) => WireQuad(position, Quaternion.LookRotation(normal), new Vector2(size, size));
-            //[IN(LINE)] public DrawHandler WireQuad(Vector3 position, Vector3 normal, Vector2 size) => WireQuad(position, Quaternion.LookRotation(normal), size);
             [IN(LINE)] public DrawHandler WireQuad(Vector3 position, Quaternion rotation, float size) => WireQuad(position, rotation, new Vector2(size, size));
             [IN(LINE)] public DrawHandler WireQuad(Vector3 position, Quaternion rotation, Vector2 size) => Mesh<WireCubeMesh, GeometryUnlitMat>(position, rotation, size);
+            [IN(LINE)] public DrawHandler WireQuad(Vector3 position, Vector3 normal, float angleDeg, float size) => WireQuad(position, Quaternion.AngleAxis(angleDeg, normal), new Vector2(size, size));
+            [IN(LINE)] public DrawHandler WireQuad(Vector3 position, Vector3 normal, float angleDeg, Vector2 size) => WireQuad(position, Quaternion.AngleAxis(angleDeg, normal), size);
             #endregion
 
             #region QuadPoints
@@ -631,6 +641,8 @@ namespace DCFApixels
 
                 return this;
             }
+            [IN(LINE)] public DrawHandler QuadPoints(Vector3 position, Vector3 normal, float angleDeg, float size) => QuadPoints(position, Quaternion.AngleAxis(angleDeg, normal), new Vector2(size, size));
+            [IN(LINE)] public DrawHandler QuadPoints(Vector3 position, Vector3 normal, float angleDeg, Vector2 size) => QuadPoints(position, Quaternion.AngleAxis(angleDeg, normal), size);
             #endregion
 
             #region QuadGrid
@@ -663,6 +675,8 @@ namespace DCFApixels
 
                 return this;
             }
+            [IN(LINE)] public DrawHandler QuadGrid(Vector3 position, Vector3 normal, float angle, float size, Vector2Int сells) => QuadGrid(position, Quaternion.AngleAxis(angle, normal), new Vector2(size, size), сells);
+            [IN(LINE)] public DrawHandler QuadGrid(Vector3 position, Vector3 normal, float angle, Vector2 size, Vector2Int сells) => QuadGrid(position, Quaternion.AngleAxis(angle, normal), size, сells);
             #endregion
         }
     }

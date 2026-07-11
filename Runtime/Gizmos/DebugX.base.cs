@@ -98,7 +98,7 @@ namespace DCFApixels
                 {
                     Mesh = mesh;
                     Position = position;
-                    Rotation = rotation.CheckQuaternionOrDefault();
+                    Rotation = rotation.SafeQuaternion();
                     Size = size;
                 }
                 public IGizmoRenderer<MeshGizmo<TMat>> RegisterNewRenderer() { return new Renderer(); }
@@ -152,7 +152,7 @@ namespace DCFApixels
                 public readonly Vector3 Size;
                 public InstancingMeshGizmoLayout(Vector3 position, Quaternion rotation, Vector3 size)
                 {
-                    Rotation = rotation.CheckQuaternionOrDefault();
+                    Rotation = rotation.SafeQuaternion();
                     Position = position;
                     Size = size;
                 }

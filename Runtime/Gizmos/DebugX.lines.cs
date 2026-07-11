@@ -571,6 +571,18 @@ namespace DCFApixels
 
             }
             #endregion
+
+            #region Distance
+            [IN(LINE)]
+            public DrawHandler Distance(Vector3 start, Vector3 end)
+            {
+                Line(start, end);
+                DotDiamond(start);
+                DotDiamond(end);
+                this.Text(Vector3.Lerp(start, end, 0.5f), Vector3.Distance(start, end), DebugXTextSettings.WorldSpace.Anchor(TextAnchor.UpperCenter));
+                return this;
+            }
+            #endregion
         }
     }
 }

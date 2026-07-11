@@ -17,11 +17,28 @@ namespace DCFApixels
         private static bool _singleWarningToggle = true;
 #endif
         [IN(LINE)]
-        public static DrawHandler Text(this DrawHandler h, Vector3 position, object text) => h.Text(position, text, DebugXTextSettings.ScreenSpace);
+        public static DrawHandler Text<T>(this DrawHandler h, Vector3 position, T text) 
+            where T : struct
+        {
+            return h.Text(position, text, DebugXTextSettings.ScreenSpace);
+        }
+        [IN(LINE)]
+        public static DrawHandler Text(this DrawHandler h, Vector3 position, object text)
+        {
+            return h.Text(position, text, DebugXTextSettings.ScreenSpace);
+        }
+        [IN(LINE)]
+        public static DrawHandler Text<T>(this DrawHandler h, Vector3 position, T text, DebugXTextSettings settings)
+            where T : struct
+        {
+#if DEBUG
+            return h.Text(position, (object)text, settings);
+#endif
+        }
         [IN(LINE)]
         public static DrawHandler Text(this DrawHandler h, Vector3 position, object text, DebugXTextSettings settings)
         {
-            if (settings.FontSize <= float.Epsilon)
+            if (settings.Size <= float.Epsilon)
             {
 #if DEBUG
                 if (_singleWarningToggle)
@@ -30,7 +47,7 @@ namespace DCFApixels
                     _singleWarningToggle = false;
                 }
 #endif
-                settings = settings.Size(DebugXTextSettings.DEFAULT_FONT_SIZE);
+                settings = settings.Size(DebugXTextSettings.DefaultFontSize);
             }
             return h.Gizmo(new TextGizmo(position, text, settings));
         }

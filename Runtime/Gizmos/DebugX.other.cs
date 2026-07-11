@@ -13,10 +13,67 @@ namespace DCFApixels
 {
     public static class WireArcGizmosExtensions
     {
+
         public static DebugX.DrawHandler WireArc(this DebugX.DrawHandler self, Vector3 center, Vector3 normal, Vector3 from, float angle, float radius)
         {
             return self.Gizmo(new WireArcGizmos(center, normal, from, angle, radius));
         }
+
+#if DEBUGX_ENABLE_PHYSICS3D
+        public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, BoxCollider collider)
+        {
+            Vector3 scale = collider.transform.lossyScale;
+            scale.x = Mathf.Abs(scale.x);
+            scale.y = Mathf.Abs(scale.y);
+            scale.z = Mathf.Abs(scale.z);
+            return self.WireCube(collider.transform.TransformPoint(collider.center), collider.transform.rotation, Vector3.Scale(collider.size, scale));
+        }
+        public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, SphereCollider collider)
+        {
+            Vector3 scale = collider.transform.lossyScale;
+            scale.x = Mathf.Abs(scale.x);
+            scale.y = Mathf.Abs(scale.y);
+            scale.z = Mathf.Abs(scale.z);
+            float radius = collider.radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
+            return self.WireSphere(collider.transform.TransformPoint(collider.center), radius);
+        }
+        public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, CapsuleCollider collider)
+        {
+            Vector3 scale = collider.transform.lossyScale;
+            scale.x = Mathf.Abs(scale.x);
+            scale.y = Mathf.Abs(scale.y);
+            scale.z = Mathf.Abs(scale.z);
+            float radius = collider.radius * Mathf.Max(scale.x, scale.z);
+            float height = Mathf.Max(collider.height * scale.y, radius * 2f);
+            return self.WireCapsule(collider.transform.TransformPoint(collider.center), collider.transform.rotation, radius, height);
+        }
+        public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, CharacterController collider)
+        {
+            return self.WireCapsule(collider.transform.TransformPoint(collider.center), Quaternion.identity, collider.radius, collider.height);
+        }
+        public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, MeshCollider collider)
+        {
+            var transform = collider.transform;
+            return self.WireMesh(collider.sharedMesh, transform.position, transform.rotation, transform.localScale);
+        }
+#endif
+
+#if DEBUGX_ENABLE_PHYSICS2D
+        public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, BoxCollider2D collider)
+        {
+            return self.WireQuad(collider.transform.TransformPoint(collider.offset), collider.transform.rotation, collider.size);
+        }
+        public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, CircleCollider2D collider)
+        {
+            return self.WireCircle(collider.transform.TransformPoint(collider.offset), collider.transform.rotation, collider.radius);
+        }
+        public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, CapsuleCollider2D collider)
+        {
+            float radius = collider.size.x * 0.5f;
+            float height = Mathf.Max(collider.size.y, collider.size.x);
+            return self.WireCapsule(collider.transform.TransformPoint(collider.offset), collider.transform.rotation, radius, height);
+        }
+#endif
     }
 }
 
@@ -24,7 +81,7 @@ namespace DCFApixels.DebugXCore
 {
     using static DebugX;
     using IN = System.Runtime.CompilerServices.MethodImplAttribute;
-    public struct WireArcGizmos : IGizmo<WireArcGizmos>
+    public readonly struct WireArcGizmos : IGizmo<WireArcGizmos>
     {
         public readonly Vector3 Position;
         public readonly Vector3 Normal;
@@ -35,7 +92,7 @@ namespace DCFApixels.DebugXCore
         public WireArcGizmos(Vector3 position, Vector3 normal, Vector3 from, float angle, float radius)
         {
             Position = position;
-            Normal = normal.CheckNormalOrDefault();
+            Normal = normal.SafeNormalized();
             From = from;
             Angle = angle;
             Radius = radius;

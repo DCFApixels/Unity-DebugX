@@ -4,7 +4,7 @@ namespace DCFApixels.DebugXCore
 {
     public static class ValidationUtils
     {
-        public static Quaternion CheckQuaternionOrDefault(this Quaternion quaternion)
+        public static Quaternion SafeQuaternion(this Quaternion quaternion)
         {
             float sqrMagnitude = quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w;
             if (float.IsNaN(sqrMagnitude) || (sqrMagnitude < float.Epsilon))
@@ -14,7 +14,7 @@ namespace DCFApixels.DebugXCore
             return quaternion;
         }
 
-        public static Vector3 CheckNormalOrDefault(this Vector3 normal)
+        public static Vector3 SafeNormalized(this Vector3 normal)
         {
             float sqrMagnitude = normal.sqrMagnitude;
             if (float.IsNaN(sqrMagnitude) || (sqrMagnitude < float.Epsilon))
