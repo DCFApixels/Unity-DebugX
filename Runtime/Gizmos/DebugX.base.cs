@@ -551,6 +551,19 @@ namespace DCFApixels
                     public Matrix4x4 Matrix;
                     public Color Color;
                 }
+                private struct PrepareJob : IJobParallelFor
+                {
+                    [NativeDisableUnsafePtrRestriction]
+                    public Gizmo<GizmoData>* Items;
+                    [NativeDisableUnsafePtrRestriction]
+                    public DrawData* ResultData;
+                    public void Execute(int index)
+                    {
+                        ref readonly var item = ref Items[index];
+                        (ResultData + index)->Matrix = item.Value.Matrix;
+                        (ResultData + index)->Color = item.Color;
+                    }
+                }
 
                 private readonly IStaticMesh _mesh;
                 private readonly IStaticMaterial _material;
@@ -561,6 +574,7 @@ namespace DCFApixels
                 private PinnedArray<DrawData> _drawDatas;
                 private PinnedArray<Gizmo<GizmoData>> _gizmos;
 
+                private JobHandle _jobHandle;
                 private int _prepareCount = 0;
 
                 private readonly bool _enableInstancing;
@@ -609,6 +623,13 @@ namespace DCFApixels
                         _gizmos.Dispose();
                         _gizmos = PinnedArray<Gizmo<GizmoData>>.Pin(items);
                     }
+
+                    var job = new PrepareJob
+                    {
+                        Items = _gizmos.Ptr,
+                        ResultData = _drawDatas.Ptr,
+                    };
+                    _jobHandle = job.Schedule(count, 64);
                 }
                 protected void Render(CommandBuffer cb)
                 {
@@ -616,12 +637,14 @@ namespace DCFApixels
                     if (_enableInstancing)
                     {
                         Material material = _material.GetMaterial();
+                        _jobHandle.Complete();
                         _graphicsBuffer.SetData(_drawDatas.Array);
                         cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
                     }
                     else
                     {
                         Material material = _material.GetMaterial();
+                        _jobHandle.Complete();
                         for (int i = 0; i < _prepareCount; i++)
                         {
                             _materialPropertyBlock.SetColor(ColorPropertyID, _drawDatas.Ptr[i].Color);

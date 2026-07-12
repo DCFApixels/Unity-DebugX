@@ -22,6 +22,39 @@ namespace DCFApixels
             var bounds = renderer.bounds;
             return self.WireCube(bounds.center, Quaternion.identity, bounds.size);
         }
+        public static DebugX.DrawHandler Frustum(this DebugX.DrawHandler self,
+            Vector3 center,
+            Quaternion rotation,
+            float fov,
+            float farClipPlane,
+            float nearClipPlane,
+            float aspect)
+        {
+            // Строим матрицу проекции
+            float tanHalfFov = Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad);
+            float halfHeight = nearClipPlane * tanHalfFov;
+            float halfWidth = halfHeight * aspect;
+            Matrix4x4 proj = Matrix4x4.Frustum(-halfWidth, halfWidth, -halfHeight, halfHeight, nearClipPlane, farClipPlane);
+            Matrix4x4 invProj = proj.inverse;
+
+            Matrix4x4 flipZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
+            Matrix4x4 scaleToNDC = Matrix4x4.Scale(Vector3.one * 2f);
+            Matrix4x4 localToWorld = Matrix4x4.TRS(center, rotation, Vector3.one);
+            Matrix4x4 finalMatrix = localToWorld * flipZ * invProj * scaleToNDC;
+
+            self.Mesh<WireCubeMesh, GeometryUnlitMat>(finalMatrix);
+            return self;
+        }
+        public static DebugX.DrawHandler Frustum(this DebugX.DrawHandler self, Camera camera)
+        {
+            Matrix4x4 viewProj = camera.projectionMatrix * camera.worldToCameraMatrix;
+            Matrix4x4 invVP = viewProj.inverse;
+            Matrix4x4 scale = Matrix4x4.Scale(Vector3.one * 2f);
+            Matrix4x4 finalMatrix = invVP * scale;
+
+            self.Mesh<WireCubeMesh, GeometryUnlitMat>(finalMatrix);
+            return self;
+        }
 
 #if DEBUGX_ENABLE_PHYSICS3D
         public static DebugX.DrawHandler Bounds(this DebugX.DrawHandler self, Collider collider)

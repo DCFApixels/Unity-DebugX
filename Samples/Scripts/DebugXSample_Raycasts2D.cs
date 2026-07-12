@@ -14,13 +14,18 @@ namespace DCFApixels.DebugXCore.Samples
         public Transform RotatedTransform;
         public float RotationSpeed = 30;
 
+        private void Update()
+        {
+#if !UNITY_EDITOR
+            Draw();
+#endif
+            if (Application.isPlaying && RotatedTransform)
+            {
+                RotatedTransform.Rotate(new Vector3(0, RotationSpeed * Time.deltaTime, 0));
+            }
+        }
 #if UNITY_EDITOR
         private void OnDrawGizmos()
-        {
-            Draw();
-        }
-#else
-        private void Update()
         {
             Draw();
         }
@@ -58,11 +63,6 @@ namespace DCFApixels.DebugXCore.Samples
 #else
             DebugX.Draw(GetColor(WarrningPoint).Inverse()).Text(WarrningPoint.position, "Add \"DEBUGX_ENABLE_PHYSICS2D\" define", DebugXTextSettings.WorldSpace.Size(22).Anchor(TextAnchor.MiddleCenter));
 #endif
-
-            if (Application.isPlaying && RotatedTransform)
-            {
-                RotatedTransform.Rotate(new Vector3(0, RotationSpeed * Time.deltaTime, 0));
-            }
         }
         private Color GetColor(Transform pos1)
         {
