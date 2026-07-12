@@ -51,8 +51,19 @@ namespace DCFApixels
             Matrix4x4 invVP = viewProj.inverse;
             Matrix4x4 scale = Matrix4x4.Scale(Vector3.one * 2f);
             Matrix4x4 finalMatrix = invVP * scale;
-
             self.Mesh<WireCubeMesh, GeometryUnlitMat>(finalMatrix);
+            return self;
+        }
+        public static DebugX.DrawHandler Projection(this DebugX.DrawHandler self, Plane plane, Vector3 point, float circleRadius = 1f)
+        {
+            static float SoftSign(float a) { return a / (1f + Mathf.Abs(a)); }
+            Vector3 closestPoint = plane.ClosestPointOnPlane(point);
+            self.DotDiamond(point);
+            self.Line(point, closestPoint);
+            var dsq = (point - closestPoint).sqrMagnitude;
+            float t = SoftSign(dsq * 0.06f);
+            self = DebugX.Draw(self.Duration, (self.Color, 1f - t));
+            self.Circle(closestPoint, plane.normal, Mathf.Lerp(circleRadius * 0.01f, circleRadius, t));
             return self;
         }
 
