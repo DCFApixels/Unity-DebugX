@@ -102,7 +102,7 @@ Shader "DCFApixels/DebugX/Handles Wire"
             float nl = saturate(eyeNormal.z);
             float lighting = 0.333 + nl * 0.667 * 0.5;
             color.rgb = lighting * color.rgb;
-            color = saturate(color) * _DebugX_GlobalColor;
+            color = saturate(color);
 #endif
 
 #if _VERTEXCOLOR_ON

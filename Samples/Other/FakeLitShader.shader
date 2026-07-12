@@ -32,6 +32,7 @@ Shader "DCFApixels/DebugX/Samples/FakeLitShader"
                 float2 uv : TEXCOORD0;
                 float3 worldNormal : TEXCOORD1;
                 float4 pos : SV_POSITION;
+                float3 lightDir : TEXCOORD2;
             };
 
             sampler2D _MainTex;
@@ -47,20 +48,18 @@ Shader "DCFApixels/DebugX/Samples/FakeLitShader"
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.lightDir = normalize(_FakeLightDir.xyz);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // Нормализуем нормаль и направление света
                 float3 normal = normalize(i.worldNormal);
-                float3 lightDir = normalize(_FakeLightDir.xyz);
+                float3 lightDir = i.lightDir;
 
-                // Вычисляем фейковое освещение
                 float NdotL = max(dot(normal, lightDir), 0.0);
                 float3 lighting = _FakeAmbientColor.rgb + _FakeLightColor.rgb * NdotL;
 
-                // Применяем текстуру и цвет
                 fixed4 texColor = tex2D(_MainTex, i.uv) * _Color;
                 fixed4 finalColor = texColor * float4(lighting, 1.0);
 

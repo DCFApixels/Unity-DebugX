@@ -98,7 +98,7 @@ Shader "DCFApixels/DebugX/Handles"
             float nl = saturate(eyeNormal.z);
             float lighting = 0.333 + nl * 0.667 * 0.5;
             color.rgb = lighting * color.rgb;
-            color = saturate(color) * _DebugX_GlobalColor;
+            color = saturate(color);
 #endif
 
             o.color = color * _DebugX_GlobalColor;
@@ -123,7 +123,6 @@ Shader "DCFApixels/DebugX/Handles"
             CGPROGRAM
             half4 frag (v2f i) : SV_Target
             {
-                //return i.color * half4(1, 1, 1, 0.1);
                 return i.color * half4(1, 1, 1, _DebugX_GlobalGreaterPassAlpha);
             }
             ENDCG

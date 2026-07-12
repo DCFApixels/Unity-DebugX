@@ -1,4 +1,4 @@
-Shader "DCFApixels/DebugX/Samples/FakeLighth"
+Shader "DCFApixels/DebugX/Samples/FakeLight"
 {
     Properties
     {
@@ -55,8 +55,7 @@ Shader "DCFApixels/DebugX/Samples/FakeLighth"
             fixed4 frag (v2f i) : SV_Target
             {
                 float m = (1.0 - Unity_PolarCoordinates_float(i.uv, float2(0.5, 0.5), 1, 1).r);
-                m = clamp(m, 0, 1);
-                return _Color * m;
+                return _Color * saturate(m);
             }
             ENDCG
         }
