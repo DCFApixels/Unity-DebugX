@@ -71,21 +71,6 @@ namespace DCFApixels
             {
                 return Gizmo(new MeshGizmo<WireMat>(mesh, position, rotation, size));
             }
-
-            private readonly struct MeshGizmoLayout
-            {
-                public readonly Mesh Mesh;
-                public readonly Quaternion Rotation;
-                public readonly Vector3 Position;
-                public readonly Vector3 Size;
-                public MeshGizmoLayout(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 size)
-                {
-                    Mesh = mesh;
-                    Rotation = rotation;
-                    Position = position;
-                    Size = size;
-                }
-            }
             private struct MeshGizmo<TMat> : IGizmo<MeshGizmo<TMat>>
                 where TMat : struct, IStaticMaterial
             {
@@ -111,6 +96,56 @@ namespace DCFApixels
                         Prepare(list);
                     }
                     public void Render(Camera camera, GizmosList<MeshGizmo<TMat>> list, CommandBuffer cb)
+                    {
+                        Render(cb);
+                    }
+                }
+            }
+            #endregion
+
+            #region Mesh with Matrix
+            [IN(LINE)]
+            public DrawHandler Mesh<TMat>(Mesh mesh, Matrix4x4 matrix)
+                where TMat : struct, IStaticMaterial
+            {
+                return Gizmo(new MeshWithMatrixGizmo<TMat>(mesh, matrix));
+            }
+            [IN(LINE)]
+            public DrawHandler Mesh(Mesh mesh, Matrix4x4 matrix)
+            {
+                return Gizmo(new MeshWithMatrixGizmo<LitMat>(mesh, matrix));
+            }
+            [IN(LINE)]
+            public DrawHandler UnlitMesh(Mesh mesh, Matrix4x4 matrix)
+            {
+                return Gizmo(new MeshWithMatrixGizmo<UnlitMat>(mesh, matrix));
+            }
+            [IN(LINE)]
+            public DrawHandler WireMesh(Mesh mesh, Matrix4x4 matrix)
+            {
+                return Gizmo(new MeshWithMatrixGizmo<WireMat>(mesh, matrix));
+            }
+            private struct MeshWithMatrixGizmo<TMat> : IGizmo<MeshWithMatrixGizmo<TMat>>
+                where TMat : struct, IStaticMaterial
+            {
+                public readonly Mesh Mesh;
+                public readonly Matrix4x4 Matrix;
+                [IN(LINE)]
+                public MeshWithMatrixGizmo(Mesh mesh, Matrix4x4 matrix)
+                {
+                    Mesh = mesh;
+                    Matrix = matrix;
+                }
+                public IGizmoRenderer<MeshWithMatrixGizmo<TMat>> RegisterNewRenderer() { return new Renderer(); }
+
+                private class Renderer : MatrixBasedMeshRendererBase, IGizmoRenderer<MeshWithMatrixGizmo<TMat>>
+                {
+                    public Renderer() : base(default(TMat)) { }
+                    public void Prepare(Camera camera, GizmosList<MeshWithMatrixGizmo<TMat>> list)
+                    {
+                        Prepare(list);
+                    }
+                    public void Render(Camera camera, GizmosList<MeshWithMatrixGizmo<TMat>> list, CommandBuffer cb)
                     {
                         Render(cb);
                     }
@@ -187,6 +222,67 @@ namespace DCFApixels
             }
             #endregion
 
+            #region InstancingMesh with Matrix
+            [IN(LINE)]
+            public DrawHandler Mesh<TMesh, TMat>(Matrix4x4 matrix)
+                where TMesh : struct, IStaticMesh
+                where TMat : struct, IStaticMaterial
+            {
+                return Gizmo(new InstancingMeshWithMatrixGizmo<TMesh, TMat>(matrix));
+            }
+            [IN(LINE)]
+            public DrawHandler Mesh<TMesh>(Matrix4x4 matrix)
+                where TMesh : struct, IStaticMesh
+            {
+                return Gizmo(new InstancingMeshWithMatrixGizmo<TMesh, LitMat>(matrix));
+            }
+            [IN(LINE)]
+            public DrawHandler UnlitMesh<TMesh>(Matrix4x4 matrix)
+                where TMesh : struct, IStaticMesh
+            {
+                return Gizmo(new InstancingMeshWithMatrixGizmo<TMesh, UnlitMat>(matrix));
+            }
+            [IN(LINE)]
+            public DrawHandler WireMesh<TMesh>(Matrix4x4 matrix)
+                where TMesh : struct, IStaticMesh
+            {
+                return Gizmo(new InstancingMeshWithMatrixGizmo<TMesh, WireMat>(matrix));
+            }
+
+            private readonly struct InstancingMeshWithMatrixGizmoLayout
+            {
+                public readonly Matrix4x4 Matrix;
+                public InstancingMeshWithMatrixGizmoLayout(Matrix4x4 matrix)
+                {
+                    Matrix = matrix;
+                }
+            }
+            private readonly struct InstancingMeshWithMatrixGizmo<TMesh, TMat> : IGizmo<InstancingMeshWithMatrixGizmo<TMesh, TMat>>
+                where TMesh : struct, IStaticMesh
+                where TMat : struct, IStaticMaterial
+            {
+                public readonly Matrix4x4 Matrix;
+                [IN(LINE)]
+                public InstancingMeshWithMatrixGizmo(Matrix4x4 matrix)
+                {
+                    Matrix = matrix;
+                }
+                public IGizmoRenderer<InstancingMeshWithMatrixGizmo<TMesh, TMat>> RegisterNewRenderer() { return new Renderer(); }
+                private class Renderer : MatrixBasedInstancingMeshRendererBase, IGizmoRenderer<InstancingMeshWithMatrixGizmo<TMesh, TMat>>
+                {
+                    public Renderer() : base(default(TMesh), default(TMat)) { }
+                    public void Prepare(Camera camera, GizmosList<InstancingMeshWithMatrixGizmo<TMesh, TMat>> list)
+                    {
+                        Prepare(list);
+                    }
+                    public void Render(Camera camera, GizmosList<InstancingMeshWithMatrixGizmo<TMesh, TMat>> list, CommandBuffer cb)
+                    {
+                        Render(cb);
+                    }
+                }
+            }
+            #endregion
+
             #region Line
             [IN(LINE)]
             public DrawHandler Line<TMat>(Vector3 start, Vector3 end)
@@ -228,8 +324,8 @@ namespace DCFApixels
 
             // Base Renderers
 
-            #region MatrixBaseMeshRendererBase
-            private class MatrixBaseMeshRendererBase
+            #region MatrixBasedMeshRendererBase
+            private class MatrixBasedMeshRendererBase
             {
                 private readonly struct GizmoData
                 {
@@ -257,7 +353,7 @@ namespace DCFApixels
                 public virtual int ExecuteOrder => _material.GetExecuteOrder();
                 public virtual bool IsStaticRender => true;
 
-                public MatrixBaseMeshRendererBase(IStaticMaterial material)
+                public MatrixBasedMeshRendererBase(IStaticMaterial material)
                 {
                     _materialPropertyBlock = new MaterialPropertyBlock();
                     _material = material;
@@ -439,6 +535,109 @@ namespace DCFApixels
                         _materialPropertyBlock.SetColor(ColorPropertyID, item.Color);
                         cb.DrawMesh(item.Value.Mesh, _matrices.Ptr[i], material, 0, -1, _materialPropertyBlock);
                     }
+                }
+            }
+            #endregion
+
+            #region MatrixBasedInstancingMeshRendererBase
+            private class MatrixBasedInstancingMeshRendererBase
+            {
+                private readonly struct GizmoData
+                {
+                    public readonly Matrix4x4 Matrix;
+                }
+                private struct DrawData
+                {
+                    public Matrix4x4 Matrix;
+                    public Color Color;
+                }
+
+                private readonly IStaticMesh _mesh;
+                private readonly IStaticMaterial _material;
+                private readonly MaterialPropertyBlock _materialPropertyBlock;
+                private GraphicsBuffer _graphicsBuffer;
+
+                private int _buffersLength = 0;
+                private PinnedArray<DrawData> _drawDatas;
+                private PinnedArray<Gizmo<GizmoData>> _gizmos;
+
+                private int _prepareCount = 0;
+
+                private readonly bool _enableInstancing;
+
+                public MatrixBasedInstancingMeshRendererBase(IStaticMesh mesh, IStaticMaterial material)
+                {
+                    _mesh = mesh;
+                    _material = material;
+                    _materialPropertyBlock = new MaterialPropertyBlock();
+                    _drawDatas = PinnedArray<DrawData>.Pin(DummyArray<DrawData>.Get());
+                    _enableInstancing = IsSupportsComputeShaders && _material.GetMaterial().enableInstancing;
+#if UNITY_EDITOR
+                    AssemblyReloadEvents.beforeAssemblyReload += AssemblyReloadEvents_beforeAssemblyReload;
+#endif
+                }
+#if UNITY_EDITOR
+                private void AssemblyReloadEvents_beforeAssemblyReload()
+                {
+                    AssemblyReloadEvents.beforeAssemblyReload -= AssemblyReloadEvents_beforeAssemblyReload;
+                    _graphicsBuffer?.Release();
+                    _graphicsBuffer?.Dispose();
+                    _materialPropertyBlock.Clear();
+                    _drawDatas.Dispose();
+                    _gizmos.Dispose();
+                }
+#endif
+                public virtual int ExecuteOrder => _material.GetExecuteOrder();
+                public virtual bool IsStaticRender => true;
+                protected void Prepare(GizmosList rawList)
+                {
+                    var list = rawList.As<GizmoData>();
+                    _prepareCount = list.Count;
+                    var items = list.Items;
+                    var count = list.Count;
+
+                    if (_buffersLength < count)
+                    {
+                        int capacity = DebugXUtility.NextPow2(count);
+                        _drawDatas.Dispose();
+                        _drawDatas = PinnedArray<DrawData>.Pin(new DrawData[capacity]);
+                        AllocateGraphicsBuffer(capacity);
+                        _buffersLength = count;
+                    }
+                    if (ReferenceEquals(_gizmos.Array, items) == false)
+                    {
+                        _gizmos.Dispose();
+                        _gizmos = PinnedArray<Gizmo<GizmoData>>.Pin(items);
+                    }
+                }
+                protected void Render(CommandBuffer cb)
+                {
+                    Mesh mesh = _mesh.GetMesh();
+                    if (_enableInstancing)
+                    {
+                        Material material = _material.GetMaterial();
+                        _graphicsBuffer.SetData(_drawDatas.Array);
+                        cb.DrawMeshInstancedProcedural(mesh, 0, material, -1, _prepareCount, _materialPropertyBlock);
+                    }
+                    else
+                    {
+                        Material material = _material.GetMaterial();
+                        for (int i = 0; i < _prepareCount; i++)
+                        {
+                            _materialPropertyBlock.SetColor(ColorPropertyID, _drawDatas.Ptr[i].Color);
+                            cb.DrawMesh(mesh, _drawDatas.Ptr[i].Matrix, material, 0, -1, _materialPropertyBlock);
+                        }
+                    }
+                }
+                private readonly static int _BufferPropertyID = Shader.PropertyToID("_DataBuffer");
+                private void AllocateGraphicsBuffer(int capacity)
+                {
+                    _graphicsBuffer?.Release();
+                    _graphicsBuffer?.Dispose();
+                    _graphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, capacity, Marshal.SizeOf<DrawData>());
+
+                    _materialPropertyBlock.Clear();
+                    _materialPropertyBlock.SetBuffer(_BufferPropertyID, _graphicsBuffer);
                 }
             }
             #endregion
