@@ -337,6 +337,22 @@ namespace DCFApixels
                     public readonly void* RawMesh;
                     public readonly Matrix4x4 Matrix;
                 }
+                private struct PrepareJob : IJobParallelFor
+                {
+                    [NativeDisableUnsafePtrRestriction]
+                    public Gizmo<UnmanagedGizmoData>* Items;
+                    [NativeDisableUnsafePtrRestriction]
+                    public Matrix4x4* ResultMatrices;
+                    [NativeDisableUnsafePtrRestriction]
+                    public Vector4* ResultColors;
+                    public void Execute(int index)
+                    {
+                        ref readonly var item = ref Items[index];
+                        //if (item.IsSwaped == 0) { return; }
+                        ResultMatrices[index] = item.Value.Matrix;
+                        ResultColors[index] = item.Color;
+                    }
+                }
 
                 private readonly IStaticMaterial _material;
 
@@ -400,12 +416,21 @@ namespace DCFApixels
                         var itemsUnmanaged = UnsafeUtility.As<Gizmo<GizmoData>[], Gizmo<UnmanagedGizmoData>[]>(ref items);
                         _gizmos = PinnedArray<Gizmo<UnmanagedGizmoData>>.Pin(itemsUnmanaged);
                     }
+
+                    var job = new PrepareJob
+                    {
+                        Items = _gizmos.Ptr,
+                        ResultMatrices = _matrices.Ptr,
+                        ResultColors = _colors.Ptr,
+                    };
+                    _jobHandle = job.Schedule(count, 64);
                 }
                 public void Render(CommandBuffer cb)
                 {
                     Material material = _material.GetMaterial();
                     var items = new GizmosList<UnmanagedGizmoData>(_gizmos.Array, _prepareCount).As<GizmoData>().Items;
                     _materialPropertyBlock.Clear();
+                    _jobHandle.Complete();
 
                     for (int i = 0; i < _prepareCount; i++)
                     {
