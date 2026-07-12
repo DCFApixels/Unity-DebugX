@@ -286,9 +286,20 @@ namespace DCFApixels
                 return Mesh<TriangleMesh, TMat>(position, rotation, new Vector3(size.x, size.y, 1f));
             }
             [IN(LINE)]
+            public DrawHandler Triangle<TMat>(Vector3 position, Vector3 normal, float angleDeg, Vector2 size)
+                where TMat : struct, IStaticMaterial
+            {
+                return Mesh<TriangleMesh, TMat>(position, Quaternion.AngleAxis(angleDeg, normal), new Vector3(size.x, size.y, 1f));
+            }
+            [IN(LINE)]
             public DrawHandler Triangle(Vector3 position, Quaternion rotation, Vector2 size)
             {
                 return Mesh<TriangleMesh>(position, rotation, new Vector3(size.x, size.y, 1f));
+            }
+            [IN(LINE)]
+            public DrawHandler Triangle(Vector3 position, Vector3 normal, float angleDeg, Vector2 size)
+            {
+                return Mesh<TriangleMesh>(position, Quaternion.AngleAxis(angleDeg, normal), new Vector3(size.x, size.y, 1f));
             }
             #endregion
 
@@ -297,6 +308,12 @@ namespace DCFApixels
             public DrawHandler WireTriangle(Vector3 position, Quaternion rotation, Vector2 size)
             {
                 Mesh<TriangleMesh, WireMat>(position, rotation, new Vector3(size.x, size.y, 1f));
+                return this;
+            }
+            [IN(LINE)]
+            public DrawHandler WireTriangle(Vector3 position, Vector3 normal, float angleDeg, Vector2 size)
+            {
+                Mesh<TriangleMesh, WireMat>(position, Quaternion.AngleAxis(angleDeg, normal), new Vector3(size.x, size.y, 1f));
                 return this;
             }
             #endregion
@@ -387,9 +404,20 @@ namespace DCFApixels
                 return this;
             }
             [IN(LINE)]
+            public DrawHandler FlatCapsule<TMat>(Vector3 position, Vector3 normal, float angleDeg, float radius, float height)
+                where TMat : struct, IStaticMaterial
+            {
+                return FlatCapsule<TMat>(position, Quaternion.AngleAxis(angleDeg, normal), radius, height);
+            }
+            [IN(LINE)]
             public DrawHandler FlatCapsule(Vector3 position, Quaternion rotation, float radius, float height)
             {
                 return FlatCapsule<LitMat>(position, rotation, radius, height);
+            }
+            [IN(LINE)]
+            public DrawHandler FlatCapsule(Vector3 position, Vector3 normal, float angleDeg, float radius, float height)
+            {
+                return FlatCapsule<LitMat>(position, Quaternion.AngleAxis(angleDeg, normal), radius, height);
             }
             #endregion
 
@@ -425,6 +453,10 @@ namespace DCFApixels
                 Line(lines[2], lines[3]);
 
                 return this;
+            }
+            public DrawHandler WireFlatCapsule(Vector3 position, Vector3 normal, float angleDeg, float radius, float height)
+            {
+                return WireFlatCapsule(position, Quaternion.AngleAxis(angleDeg, normal), radius, height);
             }
             #endregion
 
@@ -675,8 +707,8 @@ namespace DCFApixels
 
                 return this;
             }
-            [IN(LINE)] public DrawHandler QuadGrid(Vector3 position, Vector3 normal, float angle, float size, Vector2Int сells) => QuadGrid(position, Quaternion.AngleAxis(angle, normal), new Vector2(size, size), сells);
-            [IN(LINE)] public DrawHandler QuadGrid(Vector3 position, Vector3 normal, float angle, Vector2 size, Vector2Int сells) => QuadGrid(position, Quaternion.AngleAxis(angle, normal), size, сells);
+            [IN(LINE)] public DrawHandler QuadGrid(Vector3 position, Vector3 normal, float angleDeg, float size, Vector2Int сells) => QuadGrid(position, Quaternion.AngleAxis(angleDeg, normal), new Vector2(size, size), сells);
+            [IN(LINE)] public DrawHandler QuadGrid(Vector3 position, Vector3 normal, float angleDeg, Vector2 size, Vector2Int сells) => QuadGrid(position, Quaternion.AngleAxis(angleDeg, normal), size, сells);
             #endregion
         }
     }
