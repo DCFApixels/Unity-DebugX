@@ -11,18 +11,27 @@ using UnityEngine.Rendering;
 
 namespace DCFApixels
 {
-    public static class WireArcGizmosExtensions
+    public static class OtherGizmosExtensions
     {
-
         public static DebugX.DrawHandler WireArc(this DebugX.DrawHandler self, Vector3 center, Vector3 normal, Vector3 from, float angle, float radius)
         {
             return self.Gizmo(new WireArcGizmos(center, normal, from, angle, radius));
         }
+        public static DebugX.DrawHandler Bounds(this DebugX.DrawHandler self, Renderer renderer)
+        {
+            var bounds = renderer.bounds;
+            return self.WireCube(bounds.center, Quaternion.identity, bounds.size);
+        }
 
 #if DEBUGX_ENABLE_PHYSICS3D
+        public static DebugX.DrawHandler Bounds(this DebugX.DrawHandler self, Collider collider)
+        {
+            var bounds = collider.bounds;
+            return self.WireCube(bounds.center, Quaternion.identity, bounds.size);
+        }
         public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, BoxCollider collider)
         {
-            Vector3 scale = collider.transform.lossyScale;
+            var scale = collider.transform.lossyScale;
             scale.x = Mathf.Abs(scale.x);
             scale.y = Mathf.Abs(scale.y);
             scale.z = Mathf.Abs(scale.z);
@@ -30,7 +39,7 @@ namespace DCFApixels
         }
         public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, SphereCollider collider)
         {
-            Vector3 scale = collider.transform.lossyScale;
+            var scale = collider.transform.lossyScale;
             scale.x = Mathf.Abs(scale.x);
             scale.y = Mathf.Abs(scale.y);
             scale.z = Mathf.Abs(scale.z);
@@ -39,7 +48,7 @@ namespace DCFApixels
         }
         public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, CapsuleCollider collider)
         {
-            Vector3 scale = collider.transform.lossyScale;
+            var scale = collider.transform.lossyScale;
             scale.x = Mathf.Abs(scale.x);
             scale.y = Mathf.Abs(scale.y);
             scale.z = Mathf.Abs(scale.z);
@@ -59,6 +68,11 @@ namespace DCFApixels
 #endif
 
 #if DEBUGX_ENABLE_PHYSICS2D
+        public static DebugX.DrawHandler Bounds(this DebugX.DrawHandler self, Collider2D collider)
+        {
+            var bounds = collider.bounds;
+            return self.WireCube(bounds.center, Quaternion.identity, bounds.size);
+        }
         public static DebugX.DrawHandler Collider(this DebugX.DrawHandler self, BoxCollider2D collider)
         {
             return self.WireQuad(collider.transform.TransformPoint(collider.offset), collider.transform.rotation, collider.size);

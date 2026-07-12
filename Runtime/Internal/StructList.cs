@@ -107,6 +107,12 @@ namespace DCFApixels.DebugXCore.Internal
             _items[_count++] = item;
         }
         [IN(LINE)]
+        public ref T Add()
+        {
+            UpSize(_count + 1);
+            return ref _items[_count++];
+        }
+        [IN(LINE)]
         public void AddRange(ReadOnlySpan<T> items)
         {
             UpSize(_count + items.Length);

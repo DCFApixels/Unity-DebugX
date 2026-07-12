@@ -259,7 +259,7 @@ namespace DCFApixels
         #region Gizmo data
         internal struct GizmoInternal<T> where T : IGizmo<T>
         {
-            public readonly T Value;
+            public T Value;
             public readonly Color Color;
             public float Timer;
             //public int IsSwaped;

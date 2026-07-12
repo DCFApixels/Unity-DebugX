@@ -86,7 +86,7 @@ namespace DCFApixels
                     Size = size;
                 }
             }
-            private readonly struct MeshGizmo<TMat> : IGizmo<MeshGizmo<TMat>>
+            private struct MeshGizmo<TMat> : IGizmo<MeshGizmo<TMat>>
                 where TMat : struct, IStaticMaterial
             {
                 public readonly Mesh Mesh;
@@ -227,6 +227,99 @@ namespace DCFApixels
             #endregion
 
             // Base Renderers
+
+            #region MatrixBaseMeshRendererBase
+            private class MatrixBaseMeshRendererBase
+            {
+                private readonly struct GizmoData
+                {
+                    public readonly Mesh Mesh;
+                    public readonly Matrix4x4 Matrix;
+                }
+                private readonly struct UnmanagedGizmoData
+                {
+                    public readonly void* RawMesh;
+                    public readonly Matrix4x4 Matrix;
+                }
+
+                private readonly IStaticMaterial _material;
+
+                private int _buffersLength = 0;
+                private PinnedArray<Matrix4x4> _matrices;
+                private PinnedArray<Vector4> _colors;
+                private PinnedArray<Gizmo<UnmanagedGizmoData>> _gizmos;
+
+                private readonly MaterialPropertyBlock _materialPropertyBlock;
+
+                private JobHandle _jobHandle;
+                private int _prepareCount = 0;
+
+                public virtual int ExecuteOrder => _material.GetExecuteOrder();
+                public virtual bool IsStaticRender => true;
+
+                public MatrixBaseMeshRendererBase(IStaticMaterial material)
+                {
+                    _materialPropertyBlock = new MaterialPropertyBlock();
+                    _material = material;
+                    _matrices = PinnedArray<Matrix4x4>.Pin(DummyArray<Matrix4x4>.Get());
+                    _colors = PinnedArray<Vector4>.Pin(DummyArray<Vector4>.Get());
+#if UNITY_EDITOR
+                    AssemblyReloadEvents.beforeAssemblyReload += AssemblyReloadEvents_beforeAssemblyReload;
+#endif
+                }
+#if UNITY_EDITOR
+                private void AssemblyReloadEvents_beforeAssemblyReload()
+                {
+                    AssemblyReloadEvents.beforeAssemblyReload -= AssemblyReloadEvents_beforeAssemblyReload;
+                    _materialPropertyBlock.Clear();
+                    _matrices.Dispose();
+                    _colors.Dispose();
+                    _gizmos.Dispose();
+                }
+#endif
+                public void Prepare(GizmosList rawList)
+                {
+                    var list = rawList.As<GizmoData>();
+                    var items = list.Items;
+                    var count = list.Count;
+                    _prepareCount = count;
+
+                    if (_buffersLength < count)
+                    {
+                        if (_matrices.Array != null)
+                        {
+                            _matrices.Dispose();
+                            _colors.Dispose();
+                        }
+                        _matrices = PinnedArray<Matrix4x4>.Pin(new Matrix4x4[DebugXUtility.NextPow2(count)]);
+                        _colors = PinnedArray<Color>.Pin(new Color[DebugXUtility.NextPow2(count)]).As<Vector4>();
+                        _buffersLength = count;
+                    }
+                    if (ReferenceEquals(_gizmos.Array, items) == false)
+                    {
+                        if (_gizmos.Array != null)
+                        {
+                            _gizmos.Dispose();
+                        }
+                        var itemsUnmanaged = UnsafeUtility.As<Gizmo<GizmoData>[], Gizmo<UnmanagedGizmoData>[]>(ref items);
+                        _gizmos = PinnedArray<Gizmo<UnmanagedGizmoData>>.Pin(itemsUnmanaged);
+                    }
+                }
+                public void Render(CommandBuffer cb)
+                {
+                    Material material = _material.GetMaterial();
+                    var items = new GizmosList<UnmanagedGizmoData>(_gizmos.Array, _prepareCount).As<GizmoData>().Items;
+                    _materialPropertyBlock.Clear();
+
+                    for (int i = 0; i < _prepareCount; i++)
+                    {
+                        ref readonly var item = ref items[i];
+                        _materialPropertyBlock.SetColor(ColorPropertyID, item.Color);
+                        cb.DrawMesh(item.Value.Mesh, _matrices.Ptr[i], material, 0, -1, _materialPropertyBlock);
+                    }
+                }
+            }
+            #endregion
 
             #region MeshRendererBase
             private class MeshRendererBase
