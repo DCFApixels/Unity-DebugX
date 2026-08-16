@@ -187,6 +187,9 @@ using DCFApixels.DebugXCore;
 Bounds, colliders, frustums, projection, and arcs:
 
 ```csharp
+DebugX.Draw(Color.yellow).Bone(startTransform, endTransform);
+DebugX.Draw(Color.yellow).Bone(startPosition, endPosition, radius);
+DebugX.Draw(Color.yellow).Bones(rootTransform);
 DebugX.Draw(Color.yellow).Bounds(renderer);
 DebugX.Draw(Color.yellow).Frustum(camera);
 DebugX.Draw(Color.yellow).Frustum(center, rotation, fov, farClipPlane, nearClipPlane, aspect);
